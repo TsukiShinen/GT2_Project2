@@ -147,9 +147,18 @@
   <ItemGroup>
     <ClCompile Include="main.cpp" />
     <ClCompile Include="ParticleSystem.cpp" />
+    <ClCompile Include="TileMap.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="json.h" />
     <ClInclude Include="ParticleSystem.h" />
+    <ClInclude Include="TileMap.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Assets\Map\SandBox.json" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="Assets\Map\Minifantasy_ForgottenPlainsTiles.png" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
