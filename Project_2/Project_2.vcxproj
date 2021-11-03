@@ -158,6 +158,7 @@
     <None Include="Assets\Map\SandBox.json" />
   </ItemGroup>
   <ItemGroup>
+    <Image Include="Assets\Map\Minifantasy_ForgottenPlainsProps.png" />
     <Image Include="Assets\Map\Minifantasy_ForgottenPlainsTiles.png" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

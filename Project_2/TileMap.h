@@ -15,7 +15,19 @@ class TileMap
 		bool isVisible;
 	};
 
+	struct Tile {
+		size_t id;
+		sf::Sprite sprite;
+		bool isSolid = false;
+	};
+
+	struct TileSet {
+		std::vector<Tile> tiles;
+		std::vector<sf::Texture*> textures;
+	};
+
 	const std::string PATH = "./Assets/Map/";
+	const size_t SCALE = 4;
 
 	std::string m_name;
 
@@ -25,8 +37,15 @@ class TileMap
 	size_t m_tileWidth = 0;
 
 	std::vector<Layer> m_layers;
+	TileSet m_tileSet;
+
+	bool m_showCollsion = false;
 
 	void loadMap(std::string fileName);
 public:
 	TileMap(std::string fileName);
+
+	void draw(sf::RenderWindow& window);
+
+	void changeShowDebug() { m_showCollsion = !m_showCollsion; }
 };

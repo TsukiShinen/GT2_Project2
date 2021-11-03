@@ -14859,7 +14859,7 @@
                         {
                          "name":"isSolid",
                          "type":"bool",
-                         "value":false
+                         "value":true
                         }]
                 }, 
                 {
@@ -15057,7 +15057,7 @@
                         {
                          "name":"isSolid",
                          "type":"bool",
-                         "value":false
+                         "value":true
                         }]
                 }, 
                 {
@@ -15651,7 +15651,7 @@
                         {
                          "name":"isSolid",
                          "type":"bool",
-                         "value":false
+                         "value":true
                         }]
                 }, 
                 {
@@ -15849,7 +15849,7 @@
                         {
                          "name":"isSolid",
                          "type":"bool",
-                         "value":false
+                         "value":true
                         }]
                 }, 
                 {

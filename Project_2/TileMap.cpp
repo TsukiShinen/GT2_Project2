@@ -24,6 +24,7 @@ void TileMap::loadMap(std::string fileName)
     m_tileHeight = jsonTiled["tileheight"];
     m_tileWidth = jsonTiled["tilewidth"];
 
+    // Load the layer
     for (auto &layer : jsonTiled["layers"])
     {
         // Create a new layer
@@ -40,6 +41,51 @@ void TileMap::loadMap(std::string fileName)
         // Add the new layer
         m_layers.push_back(newLayer);
     }
+
+    // Load the tileset
+    size_t idTexture = 0;
+    size_t lastTileId = 0;
+    Tile newTile;
+    m_tileSet.tiles.push_back(newTile);
+    for (auto& tileset : jsonTiled["tilesets"]) {
+        // Load texture
+        std::string imageName = tileset["image"];
+        m_tileSet.textures.emplace_back(new sf::Texture); 
+        if (!m_tileSet.textures[idTexture]->loadFromFile(PATH + imageName))
+            std::cerr << "Can't load file: " << PATH + imageName << std::endl;
+        // Load Tile of the texture
+        size_t x = 0;
+        size_t y = -1;
+        for (auto& tile : tileset["tiles"])
+        {
+            Tile newTile;
+
+            // Set the id
+            newTile.id = lastTileId++;
+
+            // Set the Texture (sprite)
+            newTile.sprite.setTexture(*m_tileSet.textures[idTexture]);
+            newTile.sprite.setScale(SCALE, SCALE);
+            size_t c = tileset["columns"];
+            x = tile["id"] % c;
+            if (x == 0) 
+            {
+                y++;
+            }
+            newTile.sprite.setTextureRect(sf::IntRect(x * 8, y * 8, 8, 8));
+
+            // Set propertie
+            for (auto& property : tile["properties"]) {
+                std::string name = property["name"];
+                if (name == "isSolid") {
+                    newTile.isSolid = property["value"];
+                }
+            }
+
+            m_tileSet.tiles.push_back(newTile);
+        }
+        idTexture++;
+    }
 }
 
 TileMap::TileMap(std::string fileName)
@@ -47,22 +93,25 @@ TileMap::TileMap(std::string fileName)
 	loadMap(fileName);
 
     std::cout << "Succefully charged tileMap : " << m_name << std::endl;
-    std::cout << "Width : " << m_width << std::endl;
-    std::cout << "Height : " << m_height << std::endl;
+}
 
-    std::cout << std::endl;
-    for (auto &layer : m_layers)
+void TileMap::draw(sf::RenderWindow& window)
+{
+    for (auto& layer : m_layers)
     {
-        std::cout << "Layer : " << layer.name << std::endl;
-
         for (size_t y = 0; y < layer.height; y++)
         {
             for (size_t x = 0; x < layer.width; x++)
             {
-                std::cout << layer.data[y * layer.width + x] << ", ";
+                if (layer.data[y * layer.width + x] != 0) {
+                    if (m_tileSet.tiles[layer.data[y * layer.width + x]].isSolid && m_showCollsion) {
+                        m_tileSet.tiles[layer.data[y * layer.width + x]].sprite.setColor(sf::Color::Red);
+                    }
+                    m_tileSet.tiles[layer.data[y * layer.width + x]].sprite.setPosition(x * 8 * SCALE, y * 8 * SCALE);
+                    window.draw(m_tileSet.tiles[layer.data[y * layer.width + x]].sprite);
+                    m_tileSet.tiles[layer.data[y * layer.width + x]].sprite.setColor(sf::Color::White);
+                }
             }
-            std::cout << std::endl;
         }
-        std::cout << std::endl;
     }
 }

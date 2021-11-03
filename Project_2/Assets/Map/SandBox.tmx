@@ -8219,7 +8219,7 @@
   </tile>
   <tile id="86">
    <properties>
-    <property name="isSolid" type="bool" value="false"/>
+    <property name="isSolid" type="bool" value="true"/>
    </properties>
   </tile>
   <tile id="87">
@@ -8659,7 +8659,7 @@
   </tile>
   <tile id="174">
    <properties>
-    <property name="isSolid" type="bool" value="false"/>
+    <property name="isSolid" type="bool" value="true"/>
    </properties>
   </tile>
   <tile id="175">

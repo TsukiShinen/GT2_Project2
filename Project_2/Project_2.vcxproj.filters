@@ -46,5 +46,8 @@
     <Image Include="Assets\Map\Minifantasy_ForgottenPlainsTiles.png">
       <Filter>Fichiers de ressources</Filter>
     </Image>
+    <Image Include="Assets\Map\Minifantasy_ForgottenPlainsProps.png">
+      <Filter>Fichiers de ressources</Filter>
+    </Image>
   </ItemGroup>
 </Project>
