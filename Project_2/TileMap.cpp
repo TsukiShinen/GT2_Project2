@@ -45,8 +45,8 @@ void TileMap::loadMap(std::string fileName)
     // Load the tileset
     size_t idTexture = 0;
     size_t lastTileId = 0;
-    Tile newTile;
-    m_tileSet.tiles.push_back(newTile);
+    // Tile 0 is empty
+    m_tileSet.tiles.emplace_back();
     for (auto& tileset : jsonTiled["tilesets"]) {
         // Load texture
         std::string imageName = tileset["image"];
@@ -58,27 +58,41 @@ void TileMap::loadMap(std::string fileName)
         size_t y = -1;
         for (auto& tile : tileset["tiles"])
         {
-            Tile newTile;
+            Tile* newTile = new Tile();
 
             // Set the id
-            newTile.id = lastTileId++;
+            newTile->id = lastTileId++;
 
             // Set the Texture (sprite)
-            newTile.sprite.setTexture(*m_tileSet.textures[idTexture]);
-            newTile.sprite.setScale(SCALE, SCALE);
+            newTile->sprite.setTexture(*m_tileSet.textures[idTexture]);
+            newTile->sprite.setScale(SCALE, SCALE);
             size_t c = tileset["columns"];
             x = tile["id"] % c;
             if (x == 0) 
             {
                 y++;
             }
-            newTile.sprite.setTextureRect(sf::IntRect(x * 8, y * 8, 8, 8));
+            newTile->sprite.setTextureRect(sf::IntRect(x * m_tileWidth, y * m_tileHeight, m_tileWidth, m_tileHeight));
 
             // Set propertie
             for (auto& property : tile["properties"]) {
                 std::string name = property["name"];
                 if (name == "isSolid") {
-                    newTile.isSolid = property["value"];
+                    newTile->isSolid = property["value"];
+                }
+            }
+
+            if (tile["animation"] > 0) { // Verify if something in it
+                size_t animX;
+                size_t animY = y;
+                for (auto& anim : tile["animation"])
+                {
+                    TileAnimation newTileAnim;
+                    animX = anim["tileid"] % c;
+                    newTileAnim.rect = sf::IntRect(animX * m_tileWidth, animY * m_tileHeight, m_tileWidth, m_tileHeight);
+                    newTileAnim.duration = anim["duration"];
+                    newTile->animation.push_back(newTileAnim);
+                    m_animatedTile.push_back(newTile);
                 }
             }
 
@@ -104,13 +118,30 @@ void TileMap::draw(sf::RenderWindow& window)
             for (size_t x = 0; x < layer.width; x++)
             {
                 if (layer.data[y * layer.width + x] != 0) {
-                    if (m_tileSet.tiles[layer.data[y * layer.width + x]].isSolid && m_showCollsion) {
-                        m_tileSet.tiles[layer.data[y * layer.width + x]].sprite.setColor(sf::Color::Red);
+                    if (m_tileSet.tiles[layer.data[y * layer.width + x]]->isSolid && m_showCollsion) 
+                    {
+                        m_tileSet.tiles[layer.data[y * layer.width + x]]->sprite.setColor(sf::Color::Red);
                     }
-                    m_tileSet.tiles[layer.data[y * layer.width + x]].sprite.setPosition(x * 8 * SCALE, y * 8 * SCALE);
-                    window.draw(m_tileSet.tiles[layer.data[y * layer.width + x]].sprite);
-                    m_tileSet.tiles[layer.data[y * layer.width + x]].sprite.setColor(sf::Color::White);
+                    m_tileSet.tiles[layer.data[y * layer.width + x]]->sprite.setPosition(x * 8 * SCALE, y * 8 * SCALE);
+                    window.draw(m_tileSet.tiles[layer.data[y * layer.width + x]]->sprite);
+                    m_tileSet.tiles[layer.data[y * layer.width + x]]->sprite.setColor(sf::Color::White);
                 }
+            }
+        }
+    }
+}
+
+void TileMap::update(sf::Time deltaTime) 
+{
+    for (Tile* tile : m_animatedTile) 
+    {
+        tile->animation[tile->currentAnim].time += deltaTime.asMilliseconds();
+        if (tile->animation[tile->currentAnim].time >= tile->animation[tile->currentAnim].duration) {
+            tile->animation[tile->currentAnim].time = 0;
+            tile->sprite.setTextureRect(tile->animation[tile->currentAnim].rect);
+            tile->currentAnim++;
+            if (tile->currentAnim >= tile->animation.size()) {
+                tile->currentAnim = 0;
             }
         }
     }

@@ -31,6 +31,7 @@ int main()
         }
         sf::Time deltaTime = clock.restart();
 
+        tileMap.update(deltaTime);
 
         window.clear();
         tileMap.draw(window);
