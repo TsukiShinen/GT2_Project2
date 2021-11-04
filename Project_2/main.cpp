@@ -2,9 +2,9 @@
 #include <iostream>
 
 #include "ParticleSystem.h"
+#include "Point.h"
+
 #include "TileMap.h"
-
-
 
 int main()
 {
@@ -13,8 +13,10 @@ int main()
     sf::Clock clock; 
     window.setKeyRepeatEnabled(false);
 
-    TileMap tileMap("SandBox.json");
+    TileMap tileMap("SandBox2.json");
+    sf::View view(tileMap.getStartingPosition().toVector2(), sf::Vector2f(200, 150));
 
+    sf::Vector2f movement = view.getCenter();
 
     while (window.isOpen())
     {
@@ -33,7 +35,22 @@ int main()
 
         tileMap.update(deltaTime);
 
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up) && movement.y > 75) {
+            movement.y -= deltaTime.asSeconds() * 50;
+        }
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right)) {
+            movement.x += deltaTime.asSeconds() * 50;
+        }
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down)) {
+            movement.y += deltaTime.asSeconds() * 50;
+        }
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left) && movement.x > 100) {
+            movement.x -= deltaTime.asSeconds() * 50;
+        }
+        view.setCenter(movement);
+
         window.clear();
+        window.setView(view);
         tileMap.draw(window);
         window.display();
     }

@@ -3,6 +3,8 @@
 #include <vector>
 #include <SFML/Graphics.hpp>
 
+struct Point;
+
 class TileMap
 {
 	struct Layer {
@@ -36,7 +38,7 @@ class TileMap
 	};
 
 	const std::string PATH = "./Assets/Map/";
-	const size_t SCALE = 4;
+	const size_t SCALE = 1;
 
 	std::string m_name;
 
@@ -49,15 +51,19 @@ class TileMap
 	TileSet m_tileSet;
 	std::vector<Tile*> m_animatedTile;
 
+	Point m_startingPosition;
+
 	bool m_showCollsion = false;
 
 	void loadMap(std::string fileName);
 public:
 	TileMap(std::string fileName);
 
+	Point getStartingPosition() { return m_startingPosition; }
+
 	void draw(sf::RenderWindow& window);
 
 	void update(sf::Time deltaTime);
 
-	void changeShowDebug() { m_showCollsion = !m_showCollsion; }
+	void changeShowDebug();
 };

@@ -1,5 +1,6 @@
 #include <fstream>
 #include <iostream>
+#include "Point.h"
 
 #include "TileMap.h"
 
@@ -25,21 +26,31 @@ void TileMap::loadMap(std::string fileName)
     m_tileWidth = jsonTiled["tilewidth"];
 
     // Load the layer
-    for (auto &layer : jsonTiled["layers"])
+    for (auto& layer : jsonTiled["layers"])
     {
-        // Create a new layer
-        Layer newLayer;
-        newLayer.id = layer["id"];
-        newLayer.name = layer["name"];
-        newLayer.width = layer["width"];
-        newLayer.height = layer["height"];
-        newLayer.isVisible = layer["visible"];
-        for (auto& id : layer["data"]) {
-            newLayer.data.push_back(id);
-        }
+        if (layer["type"] == "tilelayer") {
+            // Create a new layer
+            Layer newLayer;
+            newLayer.id = layer["id"];
+            newLayer.name = layer["name"];
+            newLayer.width = layer["width"];
+            newLayer.height = layer["height"];
+            newLayer.isVisible = layer["visible"];
+            for (auto& id : layer["data"]) {
+                newLayer.data.push_back(id);
+            }
 
-        // Add the new layer
-        m_layers.push_back(newLayer);
+            // Add the new layer
+            m_layers.push_back(newLayer);
+        }
+        else if (layer["type"] == "objectgroup") 
+        {
+            for (auto& obj : layer["objects"]) {
+                if (obj["name"] == "Player") {
+                    m_startingPosition = Point(obj["x"], obj["y"]);
+                }
+            }
+        }
     }
 
     // Load the tileset
@@ -75,12 +86,12 @@ void TileMap::loadMap(std::string fileName)
             newTile->sprite.setTextureRect(sf::IntRect(x * m_tileWidth, y * m_tileHeight, m_tileWidth, m_tileHeight));
 
             // Set propertie
-            for (auto& property : tile["properties"]) {
-                std::string name = property["name"];
-                if (name == "isSolid") {
-                    newTile->isSolid = property["value"];
-                }
-            }
+            //for (auto& property : tile["properties"]) {
+            //    std::string name = property["name"];
+            //    if (name == "isSolid") {
+            //        newTile->isSolid = property["value"];
+            //    }
+            //}
 
             if (tile["animation"] > 0) { // Verify if something in it
                 size_t animX;
@@ -113,18 +124,16 @@ void TileMap::draw(sf::RenderWindow& window)
 {
     for (auto& layer : m_layers)
     {
-        for (size_t y = 0; y < layer.height; y++)
-        {
-            for (size_t x = 0; x < layer.width; x++)
+        if (layer.isVisible) {
+            for (size_t y = 0; y < layer.height; y++)
             {
-                if (layer.data[y * layer.width + x] != 0) {
-                    if (m_tileSet.tiles[layer.data[y * layer.width + x]]->isSolid && m_showCollsion) 
-                    {
-                        m_tileSet.tiles[layer.data[y * layer.width + x]]->sprite.setColor(sf::Color::Red);
+                for (size_t x = 0; x < layer.width; x++)
+                {
+                    if (layer.data[y * layer.width + x] != 0) {
+                        m_tileSet.tiles[layer.data[y * layer.width + x]]->sprite.setPosition(x * 8 * SCALE, y * 8 * SCALE);
+                        window.draw(m_tileSet.tiles[layer.data[y * layer.width + x]]->sprite);
+                        m_tileSet.tiles[layer.data[y * layer.width + x]]->sprite.setColor(sf::Color::White);
                     }
-                    m_tileSet.tiles[layer.data[y * layer.width + x]]->sprite.setPosition(x * 8 * SCALE, y * 8 * SCALE);
-                    window.draw(m_tileSet.tiles[layer.data[y * layer.width + x]]->sprite);
-                    m_tileSet.tiles[layer.data[y * layer.width + x]]->sprite.setColor(sf::Color::White);
                 }
             }
         }
@@ -143,6 +152,16 @@ void TileMap::update(sf::Time deltaTime)
             if (tile->currentAnim >= tile->animation.size()) {
                 tile->currentAnim = 0;
             }
+        }
+    }
+}
+
+void TileMap::changeShowDebug()
+{
+    for (auto& layer : m_layers)
+    {
+        if (layer.name == "Collision") {
+            layer.isVisible = !layer.isVisible;
         }
     }
 }
