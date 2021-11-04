@@ -1,16 +1,24 @@
 #include <SFML/Graphics.hpp>
-
+#include "Player.h"
 #include "ParticleSystem.h"
 
 int main()
 {
-    sf::RenderWindow window(sf::VideoMode(200, 200), "SFML works!");
+    sf::RenderWindow window(sf::VideoMode(800, 600), "SFML works!");
     sf::Clock clock;
 
-    // test for the particle system
-    std::vector<sf::Color> particlesColor{ sf::Color(226, 40, 34), sf::Color(226, 56, 34), sf::Color(226, 72, 34), sf::Color(226, 88, 34), sf::Color(226, 104, 34), sf::Color(226, 120, 34), sf::Color(226, 136, 34), };
-    ParticleSystem particles(50, sf::Vector2f(100.f, 100.f), 10.f, new sf::Vector2f(0.f, -1.f), 45, particlesColor);
+    Player player;
+    sf::Texture pTexture;
+    pTexture.loadFromFile("./zizou.png");
+    player.setTexture(pTexture);
+    player.setScale(sf::Vector2f(0.25, 0.25));
 
+    std::vector<sf::RectangleShape> listOfElement(10);
+    for (sf::RectangleShape rectangle : listOfElement) {
+        rectangle.setSize(sf::Vector2f(50, 50));
+        rectangle.setFillColor(sf::Color::Red);
+        rectangle.setPosition(rand()%800, rand()%600);
+    }
     while (window.isOpen())
     {
         sf::Event event;
@@ -21,12 +29,13 @@ int main()
         }
         sf::Time deltaTime = clock.restart();
 
-        // test for the particle system
-        particles.update(deltaTime);
-
+        player.update(deltaTime, listOfElement);
+        
         window.clear();
-        // test for the particle system
-        window.draw(particles);
+        window.draw(player);
+       for (sf::RectangleShape rectangle : listOfElement) {
+            window.draw(rectangle);
+       }
         window.display();
     }
 
