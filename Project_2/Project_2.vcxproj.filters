@@ -27,6 +27,9 @@
     <ClCompile Include="TileMap.cpp">
       <Filter>Map</Filter>
     </ClCompile>
+    <ClCompile Include="Player.cpp">
+      <Filter>Fichiers sources</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ParticleSystem.h">
@@ -41,6 +44,9 @@
     <ClInclude Include="Point.h">
       <Filter>Fichiers sources</Filter>
     </ClInclude>
+    <ClInclude Include="Player.h">
+      <Filter>Fichiers d%27en-tête</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\Map\SandBox.json" />
@@ -51,6 +57,9 @@
       <Filter>Fichiers de ressources</Filter>
     </Image>
     <Image Include="Assets\Map\Minifantasy_ForgottenPlainsProps.png">
+      <Filter>Fichiers de ressources</Filter>
+    </Image>
+    <Image Include="Assets\PlayerAnimations.png">
       <Filter>Fichiers de ressources</Filter>
     </Image>
   </ItemGroup>

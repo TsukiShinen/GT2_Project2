@@ -15,12 +15,13 @@ int main()
 
     Player player;
     sf::Texture pTexture;
-    pTexture.loadFromFile("./zizou.png");
+    pTexture.loadFromFile("./Assets/PlayerAnimations.png");
     player.setTexture(pTexture);
-    player.setScale(sf::Vector2f(0.25, 0.25));
+    player.setTextureRect(sf::IntRect(12, 364, 8, 8));
 
     TileMap tileMap("SandBox2.json");
     sf::View view(tileMap.getStartingPosition().toVector2(), sf::Vector2f(200, 150));
+    player.setPosition(tileMap.getStartingPosition().toVector2());
 
     sf::Vector2f movement = view.getCenter();
 
@@ -48,27 +49,22 @@ int main()
         player.update(deltaTime, listOfElement);
         tileMap.update(deltaTime);
 
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up) && movement.y > 75) {
-            movement.y -= deltaTime.asSeconds() * 50;
+        sf::Vector2f cameraPosition = player.getPosition();
+        if (cameraPosition.y < 75) {
+            cameraPosition.y = 75;
         }
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right)) {
-            movement.x += deltaTime.asSeconds() * 50;
+        if (cameraPosition.x < 100) {
+            cameraPosition.x = 100;
         }
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down)) {
-            movement.y += deltaTime.asSeconds() * 50;
-        }
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left) && movement.x > 100) {
-            movement.x -= deltaTime.asSeconds() * 50;
-        }
-        view.setCenter(movement);
+        view.setCenter(cameraPosition);
 
         window.clear();
         window.setView(view);
+        tileMap.draw(window);
         window.draw(player);
         for (sf::RectangleShape rectangle : listOfElement) {
             window.draw(rectangle);
         }
-        tileMap.draw(window);
         window.display();
     }
 
