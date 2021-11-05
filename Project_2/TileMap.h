@@ -26,13 +26,12 @@ class TileMap
 	struct Tile {
 		size_t id;
 		sf::Sprite sprite;
-		bool isSolid = false;
 		int currentAnim = 0;
 
 		std::vector<TileAnimation> animation;
 	};
 
-	struct TileSet {
+	struct TileSets {
 		std::vector<Tile*> tiles;
 		std::vector<sf::Texture*> textures;
 	};
@@ -48,12 +47,10 @@ class TileMap
 	size_t m_tileWidth = 0;
 
 	std::vector<Layer> m_layers;
-	TileSet m_tileSet;
+	TileSets m_tileSet;
 	std::vector<Tile*> m_animatedTile;
 
 	Point m_startingPosition;
-
-	bool m_showCollsion = false;
 
 	void loadMap(std::string fileName);
 public:

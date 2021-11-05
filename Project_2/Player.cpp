@@ -16,39 +16,42 @@ void Player::update(sf::Time clock, std::vector<sf::RectangleShape>& listOfEleme
     float speed = _speed * clock.asSeconds();
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Z)) {
         // move(0, -_speed*clock.asSeconds());
-        _direction.second = -speed;
+        _direction.y = -speed;
     }
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::D)) {
         // move(_speed * clock.asSeconds(), 0);
-        _direction.first = speed;
+        _direction.x = speed;
     }
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::S)) {
         // move(0, _speed*clock.asSeconds());
-        _direction.second = speed;
+        _direction.y = speed;
     }
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Q)) {
         // move(-_speed*clock.asSeconds(), 0);
-        _direction.first = -speed;
+        _direction.x = -speed;
     }
 
-    if (_direction.first != 0.f && _direction.second != 0.f) {
+    if (_direction.x != 0.f && _direction.y != 0.f) {
         float ratio = speed / std::sqrtf(2);
-        _direction.first *= ratio/speed;
-        _direction.second *= ratio / speed;
+        _direction.x *= ratio/speed;
+        _direction.y *= ratio / speed;
     }
     
-
-    move(_direction.first, _direction.second);
+    bool canMove = true;
     for (sf::RectangleShape& thing : listOfElements) {
         if (collides(thing.getPosition())) {
-            move(-_direction.first, -_direction.second);
+            canMove = false;
         }
+    }
+    if (canMove) {
+        move(_direction.x, _direction.y);
     }
 }
 
 bool Player::collides(sf::Vector2f element) {
-    sf::FloatRect boundings = this->getGlobalBounds(); 
+    sf::FloatRect boundings = this->getGlobalBounds();
     if (boundings.contains(element)) {
+        std::cout << "e";
         return true;
     }
     return false;

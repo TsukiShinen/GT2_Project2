@@ -65,8 +65,6 @@ void TileMap::loadMap(std::string fileName)
         if (!m_tileSet.textures[idTexture]->loadFromFile(PATH + imageName))
             std::cerr << "Can't load file: " << PATH + imageName << std::endl;
         // Load Tile of the texture
-        size_t x = 0;
-        size_t y = -1;
         for (auto& tile : tileset["tiles"])
         {
             Tile* newTile = new Tile();
@@ -78,28 +76,20 @@ void TileMap::loadMap(std::string fileName)
             newTile->sprite.setTexture(*m_tileSet.textures[idTexture]);
             newTile->sprite.setScale(SCALE, SCALE);
             size_t c = tileset["columns"];
-            x = tile["id"] % c;
-            if (x == 0) 
+            size_t x = tile["id"] % c;
+            size_t y = 0;
+            if (x != 0) 
             {
-                y++;
+                y = tile["id"] / c;
             }
             newTile->sprite.setTextureRect(sf::IntRect(x * m_tileWidth, y * m_tileHeight, m_tileWidth, m_tileHeight));
 
-            // Set propertie
-            //for (auto& property : tile["properties"]) {
-            //    std::string name = property["name"];
-            //    if (name == "isSolid") {
-            //        newTile->isSolid = property["value"];
-            //    }
-            //}
-
             if (tile["animation"] > 0) { // Verify if something in it
-                size_t animX;
-                size_t animY = y;
                 for (auto& anim : tile["animation"])
                 {
                     TileAnimation newTileAnim;
-                    animX = anim["tileid"] % c;
+                    size_t animX = anim["tileid"] % c;
+                    size_t animY = anim["tileid"] / c;
                     newTileAnim.rect = sf::IntRect(animX * m_tileWidth, animY * m_tileHeight, m_tileWidth, m_tileHeight);
                     newTileAnim.duration = anim["duration"];
                     newTile->animation.push_back(newTileAnim);

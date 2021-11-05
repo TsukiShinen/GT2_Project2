@@ -20,16 +20,14 @@ int main()
     player.setTextureRect(sf::IntRect(12, 364, 8, 8));
 
     TileMap tileMap("SandBox2.json");
-    sf::View view(tileMap.getStartingPosition().toVector2(), sf::Vector2f(200, 150));
     player.setPosition(tileMap.getStartingPosition().toVector2());
-
-    sf::Vector2f movement = view.getCenter();
+    sf::View view(player.getPosition(), sf::Vector2f(200, 150));
 
     std::vector<sf::RectangleShape> listOfElement(10);
-    for (sf::RectangleShape rectangle : listOfElement) {
-        rectangle.setSize(sf::Vector2f(50, 50));
+    for (sf::RectangleShape& rectangle : listOfElement) {
+        rectangle.setSize(sf::Vector2f(8, 8));
         rectangle.setFillColor(sf::Color::Red);
-        rectangle.setPosition(rand()%800, rand()%600);
+        rectangle.setPosition(rand()%200, rand()%150);
     }
     while (window.isOpen())
     {
