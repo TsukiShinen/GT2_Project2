@@ -147,6 +147,7 @@
   <ItemGroup>
     <ClCompile Include="Animation.cpp" />
     <ClCompile Include="AnimationController.cpp" />
+    <ClCompile Include="Enemy.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="ParticleSystem.cpp" />
@@ -156,12 +157,14 @@
   <ItemGroup>
     <ClInclude Include="Animation.h" />
     <ClInclude Include="AnimationController.h" />
+    <ClInclude Include="Enemy.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="json.h" />
     <ClInclude Include="ParticleSystem.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="Point.h" />
     <ClInclude Include="TileMap.h" />
+    <ClInclude Include="Utils.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\Map\SandBox.json" />
@@ -170,6 +173,7 @@
   <ItemGroup>
     <Image Include="Assets\Map\Minifantasy_ForgottenPlainsProps.png" />
     <Image Include="Assets\Map\Minifantasy_ForgottenPlainsTiles.png" />
+    <Image Include="Assets\OrcAnimations.png" />
     <Image Include="Assets\PlayerAnimations.png" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

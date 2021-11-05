@@ -47,6 +47,9 @@
     <ClCompile Include="AnimationController.cpp">
       <Filter>Entity\Animation</Filter>
     </ClCompile>
+    <ClCompile Include="Enemy.cpp">
+      <Filter>Fichiers sources</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="TileMap.h">
@@ -73,6 +76,8 @@
     <ClInclude Include="AnimationController.h">
       <Filter>Entity\Animation</Filter>
     </ClInclude>
+    <ClInclude Include="Enemy.h" />
+    <ClInclude Include="Utils.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\Map\SandBox.json" />
@@ -86,6 +91,9 @@
       <Filter>Fichiers de ressources</Filter>
     </Image>
     <Image Include="Assets\PlayerAnimations.png">
+      <Filter>Fichiers de ressources</Filter>
+    </Image>
+    <Image Include="Assets\OrcAnimations.png">
       <Filter>Fichiers de ressources</Filter>
     </Image>
   </ItemGroup>

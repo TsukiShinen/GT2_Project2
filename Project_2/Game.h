@@ -4,6 +4,7 @@
 #include "Point.h"
 
 #include "Player.h"
+#include "Enemy.h"
 #include "TileMap.h"
 
 class Game
@@ -13,6 +14,7 @@ class Game
 	sf::View gameView;
 
 	Player m_player;
+	Enemy* m_orc;
 	sf::Texture pTexture;
 	TileMap m_map;
 	std::vector<sf::RectangleShape> listOfElement{ 10 };
