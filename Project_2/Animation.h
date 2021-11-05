@@ -12,7 +12,7 @@ class Animation
 	
 
 public:
-	Animation(float duration, std::vector<sf::IntRect> list) :
+	Animation(std::vector<sf::IntRect> list = std::vector<sf::IntRect>(), float duration = 0.f) :
 		m_list(list) {};
 	void play() { m_playing = true; };
 	void stop();
