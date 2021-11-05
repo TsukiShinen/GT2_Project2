@@ -15,5 +15,9 @@ struct Point
 		os << point.x << ", " << point.y;
 		return os;
 	}
+
+	Point operator/(int division) {
+		return Point(this->x / division, this->y / division);
+	}
 };
 

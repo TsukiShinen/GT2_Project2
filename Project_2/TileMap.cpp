@@ -74,7 +74,7 @@ void TileMap::loadMap(std::string fileName)
 
             // Set the Texture (sprite)
             newTile->sprite.setTexture(*m_tileSet.textures[idTexture]);
-            newTile->sprite.setScale(SCALE, SCALE);
+            newTile->sprite.setScale(m_scale, m_scale);
             size_t c = tileset["columns"];
             size_t x = tile["id"] % c;
             size_t y = 0;
@@ -105,6 +105,7 @@ void TileMap::loadMap(std::string fileName)
 
 TileMap::TileMap(std::string fileName)
 {
+    if (fileName == "") { return; }
 	loadMap(fileName);
 
     std::cout << "Succefully charged tileMap : " << m_name << std::endl;
@@ -112,6 +113,7 @@ TileMap::TileMap(std::string fileName)
 
 void TileMap::draw(sf::RenderWindow& window)
 {
+    if (m_name == "") { return; }
     for (auto& layer : m_layers)
     {
         if (layer.isVisible) {
@@ -120,7 +122,7 @@ void TileMap::draw(sf::RenderWindow& window)
                 for (size_t x = 0; x < layer.width; x++)
                 {
                     if (layer.data[y * layer.width + x] != 0) {
-                        m_tileSet.tiles[layer.data[y * layer.width + x]]->sprite.setPosition(x * 8 * SCALE, y * 8 * SCALE);
+                        m_tileSet.tiles[layer.data[y * layer.width + x]]->sprite.setPosition(x * 8 * m_scale, y * 8 * m_scale);
                         window.draw(m_tileSet.tiles[layer.data[y * layer.width + x]]->sprite);
                         m_tileSet.tiles[layer.data[y * layer.width + x]]->sprite.setColor(sf::Color::White);
                     }
@@ -132,6 +134,7 @@ void TileMap::draw(sf::RenderWindow& window)
 
 void TileMap::update(sf::Time deltaTime) 
 {
+    if (m_name == "") { return; }
     for (Tile* tile : m_animatedTile) 
     {
         tile->animation[tile->currentAnim].time += deltaTime.asMilliseconds();

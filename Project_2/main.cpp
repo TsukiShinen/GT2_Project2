@@ -1,11 +1,8 @@
 #include <SFML/Graphics.hpp>
 #include <iostream>
-
-#include "ParticleSystem.h"
+#include "Game.h"
 #include "Point.h"
 
-#include "Player.h"
-#include "TileMap.h"
 
 int main()
 {
@@ -13,22 +10,9 @@ int main()
     sf::Clock clock; 
     window.setKeyRepeatEnabled(false);
 
-    Player player;
-    sf::Texture pTexture;
-    pTexture.loadFromFile("./Assets/PlayerAnimations.png");
-    player.setTexture(pTexture);
-    player.setTextureRect(sf::IntRect(12, 364, 8, 8));
+    Game game(Point(800, 600));
+    game.load();
 
-    TileMap tileMap("SandBox2.json");
-    player.setPosition(tileMap.getStartingPosition().toVector2());
-    sf::View view(player.getPosition(), sf::Vector2f(200, 150));
-
-    std::vector<sf::RectangleShape> listOfElement(10);
-    for (sf::RectangleShape& rectangle : listOfElement) {
-        rectangle.setSize(sf::Vector2f(8, 8));
-        rectangle.setFillColor(sf::Color::Red);
-        rectangle.setPosition(rand()%200, rand()%150);
-    }
     while (window.isOpen())
     {
         sf::Event event;
@@ -37,32 +21,14 @@ int main()
             if (event.type == sf::Event::Closed)
                 window.close();
             if (event.type == sf::Event::KeyPressed) {
-                if (event.key.code == sf::Keyboard::C) {
-                    tileMap.changeShowDebug();
-                }
+                game.keypressed(event.key.code);
             }
         }
         sf::Time deltaTime = clock.restart();
-
-        player.update(deltaTime, listOfElement);
-        tileMap.update(deltaTime);
-
-        sf::Vector2f cameraPosition = player.getPosition();
-        if (cameraPosition.y < 75) {
-            cameraPosition.y = 75;
-        }
-        if (cameraPosition.x < 100) {
-            cameraPosition.x = 100;
-        }
-        view.setCenter(cameraPosition);
+        game.update(deltaTime);
 
         window.clear();
-        window.setView(view);
-        tileMap.draw(window);
-        window.draw(player);
-        for (sf::RectangleShape rectangle : listOfElement) {
-            window.draw(rectangle);
-        }
+        game.draw(window);
         window.display();
     }
 

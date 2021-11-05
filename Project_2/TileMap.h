@@ -37,9 +37,9 @@ class TileMap
 	};
 
 	const std::string PATH = "./Assets/Map/";
-	const size_t SCALE = 1;
+	size_t m_scale = 1;
 
-	std::string m_name;
+	std::string m_name = "";
 
 	size_t m_height = 0;
 	size_t m_width = 0;
@@ -54,7 +54,7 @@ class TileMap
 
 	void loadMap(std::string fileName);
 public:
-	TileMap(std::string fileName);
+	TileMap(std::string fileName = "");
 
 	Point getStartingPosition() { return m_startingPosition; }
 
@@ -63,4 +63,30 @@ public:
 	void update(sf::Time deltaTime);
 
 	void changeShowDebug();
+
+	// move assignment
+	TileMap& operator=(TileMap&& other) noexcept
+	{
+		if (this == &other) { return *this; }
+
+		m_scale = 1;
+
+		m_name = other.m_name;
+
+		m_height = other.m_height;
+		m_width = other.m_width;
+		m_tileHeight = other.m_tileHeight;
+		m_tileWidth = other.m_tileWidth;
+
+		m_layers = other.m_layers;
+		m_tileSet = other.m_tileSet;
+		for (Tile* tile : m_animatedTile) {
+			delete tile;
+		}
+		m_animatedTile = other.m_animatedTile;
+
+		m_startingPosition = other.m_startingPosition;
+
+		return *this;
+	}
 };
