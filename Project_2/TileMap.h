@@ -80,9 +80,6 @@ public:
 
 		m_layers = other.m_layers;
 		m_tileSet = other.m_tileSet;
-		for (Tile* tile : m_animatedTile) {
-			delete tile;
-		}
 		m_animatedTile = other.m_animatedTile;
 
 		m_startingPosition = other.m_startingPosition;

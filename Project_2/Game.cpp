@@ -54,4 +54,7 @@ void Game::keypressed(sf::Keyboard::Key keyCode)
     if (keyCode == sf::Keyboard::C) {
         m_map.changeShowDebug();
     }
+    if (keyCode == sf::Keyboard::R) {
+        m_map = TileMap("SandBox2.json");
+    }
 }
