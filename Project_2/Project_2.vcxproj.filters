@@ -21,6 +21,9 @@
     <Filter Include="Lib">
       <UniqueIdentifier>{83695535-60b6-469b-a78b-307be5f395cd}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Entity\Animation">
+      <UniqueIdentifier>{6fbe7c4f-bf50-429f-9a31-8a6db7ca2774}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -37,6 +40,12 @@
     </ClCompile>
     <ClCompile Include="Game.cpp">
       <Filter>Fichiers sources</Filter>
+    </ClCompile>
+    <ClCompile Include="Animation.cpp">
+      <Filter>Entity\Animation</Filter>
+    </ClCompile>
+    <ClCompile Include="AnimationController.cpp">
+      <Filter>Entity\Animation</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -57,6 +66,12 @@
     </ClInclude>
     <ClInclude Include="Game.h">
       <Filter>Fichiers sources</Filter>
+    </ClInclude>
+    <ClInclude Include="Animation.h">
+      <Filter>Entity\Animation</Filter>
+    </ClInclude>
+    <ClInclude Include="AnimationController.h">
+      <Filter>Entity\Animation</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
