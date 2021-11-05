@@ -38,7 +38,7 @@ void Player::update(sf::Time clock, std::vector<sf::RectangleShape>& listOfEleme
     }
     
     bool canMove = true;
-    for (sf::RectangleShape& thing : listOfElements) {
+    for (const sf::RectangleShape& thing : listOfElements) {
         if (collides(thing.getPosition())) {
             canMove = false;
         }
@@ -47,6 +47,8 @@ void Player::update(sf::Time clock, std::vector<sf::RectangleShape>& listOfEleme
         move(_direction.x, _direction.y);
     }
 }
+
+
 
 bool Player::collides(sf::Vector2f element) {
     sf::FloatRect boundings = this->getGlobalBounds();
