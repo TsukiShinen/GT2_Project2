@@ -2654,13 +2654,13 @@ namespace nlohmann
         @since version 2.0.0
         */
         inline void replace_substring(std::string& s, const std::string& f,
-            const std::string& t)
+            const std::string& m_textureLifeBar)
         {
             JSON_ASSERT(!f.empty());
             for (auto pos = s.find(f);                // find first occurrence of f
                 pos != std::string::npos;         // make sure f was found
-                s.replace(pos, f.size(), t),      // replace with t, and
-                pos = s.find(f, pos + t.size()))  // find next occurrence of f
+                s.replace(pos, f.size(), m_textureLifeBar),      // replace with t, and
+                pos = s.find(f, pos + m_textureLifeBar.size()))  // find next occurrence of f
             {
             }
         }
@@ -4242,9 +4242,9 @@ namespace nlohmann
             std::transform(
                 inner_object->begin(), inner_object->end(),
                 std::inserter(ret, ret.begin()),
-                [](typename BasicJsonType::object_t::value_type const& p)
+                [](typename BasicJsonType::object_t::value_type const& m_lifeBar)
                 {
-                    return value_type(p.first, p.second.template get<typename ConstructibleObjectType::mapped_type>());
+                    return value_type(m_lifeBar.first, m_lifeBar.second.template get<typename ConstructibleObjectType::mapped_type>());
                 });
             obj = std::move(ret);
         }
@@ -4311,9 +4311,9 @@ namespace nlohmann
         }
 
         template<typename BasicJsonType, typename A1, typename A2>
-        void from_json_tuple_impl(BasicJsonType&& j, std::pair<A1, A2>& p, priority_tag<1> /*unused*/)
+        void from_json_tuple_impl(BasicJsonType&& j, std::pair<A1, A2>& m_lifeBar, priority_tag<1> /*unused*/)
         {
-            p = from_json_tuple_impl(std::forward<BasicJsonType>(j), identity_tag<std::pair<A1, A2>> {}, priority_tag<0> {});
+            m_lifeBar = from_json_tuple_impl(std::forward<BasicJsonType>(j), identity_tag<std::pair<A1, A2>> {}, priority_tag<0> {});
         }
 
         template<typename BasicJsonType, typename... Args>
@@ -4323,21 +4323,21 @@ namespace nlohmann
         }
 
         template<typename BasicJsonType, typename... Args>
-        void from_json_tuple_impl(BasicJsonType&& j, std::tuple<Args...>& t, priority_tag<3> /*unused*/)
+        void from_json_tuple_impl(BasicJsonType&& j, std::tuple<Args...>& m_textureLifeBar, priority_tag<3> /*unused*/)
         {
-            t = from_json_tuple_impl_base<BasicJsonType, Args...>(std::forward<BasicJsonType>(j), index_sequence_for<Args...> {});
+            m_textureLifeBar = from_json_tuple_impl_base<BasicJsonType, Args...>(std::forward<BasicJsonType>(j), index_sequence_for<Args...> {});
         }
 
         template<typename BasicJsonType, typename TupleRelated>
-        auto from_json(BasicJsonType&& j, TupleRelated&& t)
-            -> decltype(from_json_tuple_impl(std::forward<BasicJsonType>(j), std::forward<TupleRelated>(t), priority_tag<3> {}))
+        auto from_json(BasicJsonType&& j, TupleRelated&& m_textureLifeBar)
+            -> decltype(from_json_tuple_impl(std::forward<BasicJsonType>(j), std::forward<TupleRelated>(m_textureLifeBar), priority_tag<3> {}))
         {
             if (JSON_HEDLEY_UNLIKELY(!j.is_array()))
             {
                 JSON_THROW(type_error::create(302, "type must be array, but is " + std::string(j.type_name()), j));
             }
 
-            return from_json_tuple_impl(std::forward<BasicJsonType>(j), std::forward<TupleRelated>(t), priority_tag<3> {});
+            return from_json_tuple_impl(std::forward<BasicJsonType>(j), std::forward<TupleRelated>(m_textureLifeBar), priority_tag<3> {});
         }
 
         template < typename BasicJsonType, typename Key, typename Value, typename Compare, typename Allocator,
@@ -4350,13 +4350,13 @@ namespace nlohmann
                 JSON_THROW(type_error::create(302, "type must be array, but is " + std::string(j.type_name()), j));
             }
             m.clear();
-            for (const auto& p : j)
+            for (const auto& m_lifeBar : j)
             {
-                if (JSON_HEDLEY_UNLIKELY(!p.is_array()))
+                if (JSON_HEDLEY_UNLIKELY(!m_lifeBar.is_array()))
                 {
-                    JSON_THROW(type_error::create(302, "type must be array, but is " + std::string(p.type_name()), j));
+                    JSON_THROW(type_error::create(302, "type must be array, but is " + std::string(m_lifeBar.type_name()), j));
                 }
-                m.emplace(p.at(0).template get<Key>(), p.at(1).template get<Value>());
+                m.emplace(m_lifeBar.at(0).template get<Key>(), m_lifeBar.at(1).template get<Value>());
             }
         }
 
@@ -4370,13 +4370,13 @@ namespace nlohmann
                 JSON_THROW(type_error::create(302, "type must be array, but is " + std::string(j.type_name()), j));
             }
             m.clear();
-            for (const auto& p : j)
+            for (const auto& m_lifeBar : j)
             {
-                if (JSON_HEDLEY_UNLIKELY(!p.is_array()))
+                if (JSON_HEDLEY_UNLIKELY(!m_lifeBar.is_array()))
                 {
-                    JSON_THROW(type_error::create(302, "type must be array, but is " + std::string(p.type_name()), j));
+                    JSON_THROW(type_error::create(302, "type must be array, but is " + std::string(m_lifeBar.type_name()), j));
                 }
-                m.emplace(p.at(0).template get<Key>(), p.at(1).template get<Value>());
+                m.emplace(m_lifeBar.at(0).template get<Key>(), m_lifeBar.at(1).template get<Value>());
             }
         }
 
@@ -4978,9 +4978,9 @@ namespace nlohmann
         }
 
         template < typename BasicJsonType, typename T1, typename T2, enable_if_t < std::is_constructible<BasicJsonType, T1>::value&& std::is_constructible<BasicJsonType, T2>::value, int > = 0 >
-        void to_json(BasicJsonType& j, const std::pair<T1, T2>& p)
+        void to_json(BasicJsonType& j, const std::pair<T1, T2>& m_lifeBar)
         {
-            j = { p.first, p.second };
+            j = { m_lifeBar.first, m_lifeBar.second };
         }
 
         // for https://github.com/nlohmann/json/pull/1134
@@ -4992,15 +4992,15 @@ namespace nlohmann
         }
 
         template<typename BasicJsonType, typename Tuple, std::size_t... Idx>
-        void to_json_tuple_impl(BasicJsonType& j, const Tuple& t, index_sequence<Idx...> /*unused*/)
+        void to_json_tuple_impl(BasicJsonType& j, const Tuple& m_textureLifeBar, index_sequence<Idx...> /*unused*/)
         {
-            j = { std::get<Idx>(t)... };
+            j = { std::get<Idx>(m_textureLifeBar)... };
         }
 
         template<typename BasicJsonType, typename T, enable_if_t<is_constructible_tuple<BasicJsonType, T>::value, int > = 0>
-        void to_json(BasicJsonType& j, const T& t)
+        void to_json(BasicJsonType& j, const T& m_textureLifeBar)
         {
-            to_json_tuple_impl(j, t, make_index_sequence<std::tuple_size<T>::value> {});
+            to_json_tuple_impl(j, m_textureLifeBar, make_index_sequence<std::tuple_size<T>::value> {});
         }
 
 #ifdef JSON_HAS_CPP_17
@@ -6680,9 +6680,9 @@ namespace nlohmann
             /// return name of values of type token_type (only used for errors)
             JSON_HEDLEY_RETURNS_NON_NULL
                 JSON_HEDLEY_CONST
-                static const char* token_type_name(const token_type t) noexcept
+                static const char* token_type_name(const token_type m_textureLifeBar) noexcept
             {
-                switch (t)
+                switch (m_textureLifeBar)
                 {
                 case token_type::uninitialized:
                     return "<uninitialized>";
@@ -17423,7 +17423,7 @@ namespace nlohmann
         ordered_map(std::initializer_list<T> init, const Allocator& alloc = Allocator())
             : Container{ init, alloc } {}
 
-        std::pair<iterator, bool> emplace(const key_type& key, T&& t)
+        std::pair<iterator, bool> emplace(const key_type& key, T&& m_textureLifeBar)
         {
             for (auto it = this->begin(); it != this->end(); ++it)
             {
@@ -17432,7 +17432,7 @@ namespace nlohmann
                     return { it, false };
                 }
             }
-            Container::emplace_back(key, t);
+            Container::emplace_back(key, m_textureLifeBar);
             return { --this->end(), true };
         }
 
@@ -18501,9 +18501,9 @@ namespace nlohmann
             /// constructor for numbers (floating-point)
             json_value(number_float_t v) noexcept : number_float(v) {}
             /// constructor for empty values of a given type
-            json_value(value_t t)
+            json_value(value_t m_textureLifeBar)
             {
-                switch (t)
+                switch (m_textureLifeBar)
                 {
                 case value_t::object:
                 {
@@ -18563,7 +18563,7 @@ namespace nlohmann
                 default:
                 {
                     object = nullptr;  // silence warning, see #821
-                    if (JSON_HEDLEY_UNLIKELY(t == value_t::null))
+                    if (JSON_HEDLEY_UNLIKELY(m_textureLifeBar == value_t::null))
                     {
                         JSON_THROW(other_error::create(500, "961c151d2e87f2686a955a9be24d316f1362bf21 3.10.4", basic_json())); // LCOV_EXCL_LINE
                     }
@@ -18602,15 +18602,15 @@ namespace nlohmann
             /// constructor for rvalue binary arrays (internal type)
             json_value(binary_t&& value) : binary(create<binary_t>(std::move(value))) {}
 
-            void destroy(value_t t)
+            void destroy(value_t m_textureLifeBar)
             {
-                if (t == value_t::array || t == value_t::object)
+                if (m_textureLifeBar == value_t::array || m_textureLifeBar == value_t::object)
                 {
                     // flatten the current json_value to a heap-allocated stack
                     std::vector<basic_json> stack;
 
                     // move the top-level items to stack
-                    if (t == value_t::array)
+                    if (m_textureLifeBar == value_t::array)
                     {
                         stack.reserve(array->size());
                         std::move(array->begin(), array->end(), std::back_inserter(stack));
@@ -18653,7 +18653,7 @@ namespace nlohmann
                     }
                 }
 
-                switch (t)
+                switch (m_textureLifeBar)
                 {
                 case value_t::object:
                 {

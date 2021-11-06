@@ -56,7 +56,7 @@ void Game::draw(sf::RenderWindow& window)
     m_map.draw(window);
     window.draw(m_player);
     for (Enemy* enemy : m_orc) {
-        window.draw(*enemy);
+        enemy->draw(window);
     }
     for (sf::RectangleShape rectangle : listOfElement) {
         window.draw(rectangle);
