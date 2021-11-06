@@ -1,5 +1,6 @@
 #pragma once
 #include <SFML/Graphics.hpp>
+#include <vector>
 
 #include "Point.h"
 
@@ -14,7 +15,7 @@ class Game
 	sf::View gameView;
 
 	Player m_player;
-	Enemy* m_orc;
+	std::vector<Enemy*> m_orc;
 	sf::Texture pTexture;
 	TileMap m_map;
 	std::vector<sf::RectangleShape> listOfElement{ 10 };

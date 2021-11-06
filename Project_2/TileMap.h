@@ -51,12 +51,14 @@ class TileMap
 	std::vector<Tile*> m_animatedTile;
 
 	Point m_startingPosition;
+	std::vector<sf::IntRect*> m_enemySpawn;
 
 	void loadMap(std::string fileName);
 public:
 	TileMap(std::string fileName = "");
 
 	Point getStartingPosition() { return m_startingPosition; }
+	std::vector<sf::IntRect*>& getEnemySpawn() { return m_enemySpawn; }
 
 	void draw(sf::RenderWindow& window);
 
@@ -83,6 +85,7 @@ public:
 		m_animatedTile = other.m_animatedTile;
 
 		m_startingPosition = other.m_startingPosition;
+		m_enemySpawn = other.m_enemySpawn;
 
 		return *this;
 	}

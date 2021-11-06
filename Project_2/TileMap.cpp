@@ -49,6 +49,9 @@ void TileMap::loadMap(std::string fileName)
                 if (obj["name"] == "Player") {
                     m_startingPosition = Point(obj["x"], obj["y"]);
                 }
+                if (obj["name"] == "Orc") {
+                    m_enemySpawn.push_back(new sf::IntRect(obj["x"], obj["y"], obj["width"], obj["height"]));
+                }
             }
         }
     }
@@ -107,7 +110,7 @@ TileMap::TileMap(std::string fileName)
 {
     if (fileName == "") { return; }
 	loadMap(fileName);
-
+    std::cout << m_enemySpawn[0];
     std::cout << "Succefully charged tileMap : " << m_name << std::endl;
 }
 

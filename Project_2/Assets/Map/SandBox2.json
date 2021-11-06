@@ -107,8 +107,8 @@
                  "type":"Spawn",
                  "visible":true,
                  "width":96,
-                 "x":114.333333333333,
-                 "y":208.666666666667
+                 "x":112,
+                 "y":208
                 }, 
                 {
                  "height":48,
@@ -118,7 +118,7 @@
                  "type":"Spawn",
                  "visible":true,
                  "width":96,
-                 "x":200,
+                 "x":184,
                  "y":64
                 }],
          "opacity":1,

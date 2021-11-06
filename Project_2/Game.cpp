@@ -22,9 +22,11 @@ void Game::load()
     m_map = TileMap("SandBox2.json");
     m_player.setPosition(m_map.getStartingPosition().toVector2());
 
-    m_orc = new Enemy();
-    m_orc->setPosition(m_map.getStartingPosition().toVector2() - sf::Vector2f(32, 0));
-    m_orc->randomAngle();
+    std::cout << m_map.getEnemySpawn().size() << std::endl;
+    for (sf::IntRect* enemyZone : m_map.getEnemySpawn()) {
+        std::cout << enemyZone->top << std::endl;
+        m_orc.push_back(new Enemy(enemyZone));
+    }
 
     gameView.setCenter(m_player.getPosition());
     gameView.setSize((m_screenSize/4).toVector2());
@@ -33,7 +35,9 @@ void Game::load()
 void Game::update(sf::Time& deltaTime)
 {
     m_player.update(deltaTime, listOfElement);
-    m_orc->update(deltaTime);
+    for (Enemy* enemy : m_orc) {
+        enemy->update(deltaTime);
+    }
     m_map.update(deltaTime);
 
     sf::Vector2f cameraPosition = m_player.getPosition();
@@ -51,7 +55,9 @@ void Game::draw(sf::RenderWindow& window)
     window.setView(gameView);
     m_map.draw(window);
     window.draw(m_player);
-    window.draw(*m_orc);
+    for (Enemy* enemy : m_orc) {
+        window.draw(*enemy);
+    }
     for (sf::RectangleShape rectangle : listOfElement) {
         window.draw(rectangle);
     }
