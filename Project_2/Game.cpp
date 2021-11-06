@@ -53,7 +53,7 @@ void Game::update(sf::Time& deltaTime)
 void Game::draw(sf::RenderWindow& window)
 {
     window.setView(gameView);
-    m_map.draw(window);
+    m_map.drawBeforePlayer(window, 0);
     window.draw(m_player);
     for (Enemy* enemy : m_orc) {
         enemy->draw(window);
@@ -61,6 +61,7 @@ void Game::draw(sf::RenderWindow& window)
     for (sf::RectangleShape rectangle : listOfElement) {
         window.draw(rectangle);
     }
+    m_map.drawAfterPlayer(window, 0);
 }
 
 void Game::keypressed(sf::Keyboard::Key keyCode)
