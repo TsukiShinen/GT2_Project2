@@ -86,6 +86,7 @@ void Enemy::ChangeDir(sf::Time& deltaTime)
 
 	if (m_chronoChangeDir >= m_timeIdle) {
 		m_chronoChangeDir = 0;
+		m_timeIdle = (rand() % 20 + 5) / 10.f;
 		double angle = Utils::angle(m_sprite.getPosition(), sf::Vector2f(rand() % m_zone->width + m_zone->left, rand() % m_zone->height + m_zone->top));
 		m_velocity.x = m_speed * cos(angle);
 		m_velocity.y = m_speed * sin(angle);
