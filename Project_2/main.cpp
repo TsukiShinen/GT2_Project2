@@ -2,6 +2,7 @@
 #include <iostream>
 #include "Game.h"
 #include "Point.h"
+#include "ProgressBar.h"
 
 
 int main()
@@ -13,6 +14,7 @@ int main()
 
     Game game(Point(800, 600));
     game.load();
+
 
     while (window.isOpen())
     {

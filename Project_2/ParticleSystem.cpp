@@ -35,20 +35,20 @@ void ParticleSystem::update(sf::Time deltaTime)
 	for (size_t i = 0; i < m_particles.size(); ++i)
 	{
 		// update particle liftime
-		Particle& p = m_particles[i];
-		p.lifetime -= deltaTime;
+		Particle& m_lifeBar = m_particles[i];
+		m_lifeBar.lifetime -= deltaTime;
 
 		// if the particle is dead, respawn it
-		if (p.lifetime <= sf::Time::Zero) 
+		if (m_lifeBar.lifetime <= sf::Time::Zero) 
 		{
 			resetParticle(i);
 		}
 
 		// update the position of the particle
-		m_vertices[i].position += p.velocity * deltaTime.asSeconds();
+		m_vertices[i].position += m_lifeBar.velocity * deltaTime.asSeconds();
 
 		// update the alpha of the particle according of it s lifetime
-		float ratio = p.lifetime.asSeconds() / m_lifetime.asSeconds();
+		float ratio = m_lifeBar.lifetime.asSeconds() / m_lifetime.asSeconds();
 		m_vertices[i].color.a = static_cast<sf::Uint8>(ratio * 255);
 	}
 }

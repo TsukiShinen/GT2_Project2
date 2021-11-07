@@ -53,11 +53,12 @@ void Game::update(sf::Time& deltaTime)
 void Game::draw(sf::RenderWindow& window)
 {
     window.setView(gameView);
-    m_map.draw(window);
+    m_map.drawBeforePlayer(window, 0);
+    
     m_player.draw(window);
     window.draw(m_player);
     for (Enemy* enemy : m_orc) {
-        window.draw(*enemy);
+        enemy->draw(window);
     }
     for (sf::RectangleShape rectangle : listOfElement) {
         window.draw(rectangle);

@@ -152,6 +152,7 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="ParticleSystem.cpp" />
     <ClCompile Include="Player.cpp" />
+    <ClCompile Include="ProgressBar.cpp" />
     <ClCompile Include="TileMap.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -163,6 +164,7 @@
     <ClInclude Include="ParticleSystem.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="Point.h" />
+    <ClInclude Include="ProgressBar.h" />
     <ClInclude Include="TileMap.h" />
     <ClInclude Include="Utils.h" />
   </ItemGroup>
@@ -171,6 +173,7 @@
     <None Include="Assets\Map\SandBox2.json" />
   </ItemGroup>
   <ItemGroup>
+    <Image Include="Assets\lifeBar.png" />
     <Image Include="Assets\Map\Minifantasy_ForgottenPlainsProps.png" />
     <Image Include="Assets\Map\Minifantasy_ForgottenPlainsTiles.png" />
     <Image Include="Assets\OrcAnimations.png" />

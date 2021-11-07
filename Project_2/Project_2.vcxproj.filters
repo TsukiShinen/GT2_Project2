@@ -24,6 +24,9 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Gui">
+      <UniqueIdentifier>{5016658d-e8a4-4e6d-82d3-6f3668c9cd4e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -47,8 +50,11 @@
     <ClCompile Include="AnimationController.cpp">
       <Filter>Entity\Animation</Filter>
     </ClCompile>
+    <ClCompile Include="ProgressBar.cpp">
+      <Filter>Gui</Filter>
+    </ClCompile>
     <ClCompile Include="Enemy.cpp">
-      <Filter>Fichiers sources</Filter>
+      <Filter>Entity</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -76,8 +82,13 @@
     <ClInclude Include="AnimationController.h">
       <Filter>Entity\Animation</Filter>
     </ClInclude>
-    <ClInclude Include="Enemy.h" />
     <ClInclude Include="Utils.h" />
+    <ClInclude Include="ProgressBar.h">
+      <Filter>Gui</Filter>
+    </ClInclude>
+    <ClInclude Include="Enemy.h">
+      <Filter>Entity</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\Map\SandBox.json" />
@@ -94,6 +105,9 @@
       <Filter>Fichiers de ressources</Filter>
     </Image>
     <Image Include="Assets\OrcAnimations.png">
+      <Filter>Fichiers de ressources</Filter>
+    </Image>
+    <Image Include="Assets\lifeBar.png">
       <Filter>Fichiers de ressources</Filter>
     </Image>
   </ItemGroup>

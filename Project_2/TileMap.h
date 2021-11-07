@@ -13,6 +13,8 @@ class TileMap
 		std::vector<size_t> data;
 		size_t width;
 		size_t height;
+		int level = 0;
+		bool drawBeforePlayer = true;
 
 		bool isVisible;
 	};
@@ -60,7 +62,8 @@ public:
 	Point getStartingPosition() { return m_startingPosition; }
 	std::vector<sf::IntRect*>& getEnemySpawn() { return m_enemySpawn; }
 
-	void draw(sf::RenderWindow& window);
+	void drawBeforePlayer(sf::RenderWindow& window, int level);
+	void drawAfterPlayer(sf::RenderWindow& window, int level);
 
 	void update(sf::Time deltaTime);
 
