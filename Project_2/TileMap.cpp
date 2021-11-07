@@ -95,7 +95,8 @@ void TileMap::loadMap(std::string fileName)
             newTile->sprite.setTexture(*m_tileSet.textures[idTexture]);
             newTile->sprite.setScale(m_scale, m_scale);
             size_t c = tileset["columns"];
-            Point pos = getPosFromList(c, newTile->id);
+            size_t id = tile["id"];
+            Point pos = getPosFromList(c, id);
             newTile->sprite.setTextureRect(sf::IntRect(pos.x * m_tileWidth, pos.y * m_tileHeight, m_tileWidth, m_tileHeight));
 
             if (tile["animation"] > 0) { // Verify if something in it
