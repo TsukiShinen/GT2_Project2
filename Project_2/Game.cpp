@@ -34,12 +34,12 @@ void Game::load()
 
 void Game::update(sf::Time& deltaTime)
 {
-    m_player.update(deltaTime, listOfElement);
+    
     for (Enemy* enemy : m_orc) {
         enemy->update(deltaTime);
     }
     m_map.update(deltaTime);
-
+    m_player.update(deltaTime, listOfElement);
     sf::Vector2f cameraPosition = m_player.getPosition();
     if (cameraPosition.y < 75) {
         cameraPosition.y = 75;
@@ -54,6 +54,7 @@ void Game::draw(sf::RenderWindow& window)
 {
     window.setView(gameView);
     m_map.draw(window);
+    m_player.draw(window);
     window.draw(m_player);
     for (Enemy* enemy : m_orc) {
         window.draw(*enemy);
@@ -61,12 +62,14 @@ void Game::draw(sf::RenderWindow& window)
     for (sf::RectangleShape rectangle : listOfElement) {
         window.draw(rectangle);
     }
+    
 }
 
 void Game::keypressed(sf::Keyboard::Key keyCode)
 {
     if (keyCode == sf::Keyboard::C) {
         m_map.changeShowDebug();
+        m_player.changeShowDebug();
     }
     if (keyCode == sf::Keyboard::R) {
         m_map = TileMap("SandBox2.json");
