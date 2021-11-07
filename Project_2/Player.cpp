@@ -13,12 +13,12 @@ void Player::draw(sf::RenderWindow& window) {
     if (_debug) {
         _hitbox.setFillColor(sf::Color::Red);
         _movebox.setFillColor(sf::Color::Green);
-        window.draw(_hitbox);
+        //window.draw(_hitbox);
         window.draw(_movebox);
     }
 }
 
-void Player::update(sf::Time clock, std::vector<sf::RectangleShape>& listOfElements) {
+void Player::update(sf::Time clock, std::vector<sf::FloatRect>& listOfElements) {
     _direction = { 0.f, 0.f };
     float speed = _speed * clock.asSeconds();
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Z)) {
@@ -60,9 +60,8 @@ void Player::update(sf::Time clock, std::vector<sf::RectangleShape>& listOfEleme
     sf::Vector2f initial(_direction.x, _direction.y);
   
 
-    for (const sf::RectangleShape& thing : listOfElements) {
-        sf::FloatRect bound = thing.getGlobalBounds();
-        
+    for (const sf::FloatRect& bound : listOfElements) {
+        //std::cout << bound.width << std::endl;
         if (_direction.x != 0.f) {
             futurePos.left += _direction.x;
             if (futurePos.intersects(bound)) {

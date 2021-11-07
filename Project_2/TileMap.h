@@ -15,6 +15,7 @@ class TileMap
 		size_t height;
 		int level = 0;
 		bool drawBeforePlayer = true;
+		bool collision = false;
 
 		bool isVisible;
 	};
@@ -51,16 +52,19 @@ class TileMap
 	std::vector<Layer> m_layers;
 	TileSets m_tileSet;
 	std::vector<Tile*> m_animatedTile;
+	std::vector<sf::FloatRect> m_collision;
 
 	Point m_startingPosition;
 	std::vector<sf::IntRect*> m_enemySpawn;
 
 	void loadMap(std::string fileName);
+	Point getPosFromList(size_t columns, size_t id);
 public:
 	TileMap(std::string fileName = "");
 
 	Point getStartingPosition() { return m_startingPosition; }
 	std::vector<sf::IntRect*>& getEnemySpawn() { return m_enemySpawn; }
+	std::vector<sf::FloatRect>& getRectCollision() { return m_collision; }
 
 	void drawBeforePlayer(sf::RenderWindow& window, int level);
 	void drawAfterPlayer(sf::RenderWindow& window, int level);
@@ -89,6 +93,8 @@ public:
 
 		m_startingPosition = other.m_startingPosition;
 		m_enemySpawn = other.m_enemySpawn;
+		m_collision = other.m_collision;
+
 
 		return *this;
 	}

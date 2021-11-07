@@ -39,7 +39,7 @@ void Game::update(sf::Time& deltaTime)
         enemy->update(deltaTime);
     }
     m_map.update(deltaTime);
-    m_player.update(deltaTime, listOfElement);
+    m_player.update(deltaTime, m_map.getRectCollision());
     sf::Vector2f cameraPosition = m_player.getPosition();
     if (cameraPosition.y < 75) {
         cameraPosition.y = 75;
@@ -54,15 +54,14 @@ void Game::draw(sf::RenderWindow& window)
 {
     window.setView(gameView);
     m_map.drawBeforePlayer(window, 0);
-    
-    m_player.draw(window);
+
     window.draw(m_player);
+    m_player.draw(window);
     for (Enemy* enemy : m_orc) {
         enemy->draw(window);
     }
-    for (sf::RectangleShape rectangle : listOfElement) {
-        window.draw(rectangle);
-    }
+
+    m_map.drawAfterPlayer(window, 0);
     
 }
 

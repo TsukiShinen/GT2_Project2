@@ -36,9 +36,6 @@ void TileMap::loadMap(std::string fileName)
             newLayer.width = layer["width"];
             newLayer.height = layer["height"];
             newLayer.isVisible = layer["visible"];
-            for (auto& id : layer["data"]) {
-                newLayer.data.push_back(id);
-            }
             for (auto& property : layer["properties"]) {
                 if (property["name"] == "Level") {
                     newLayer.level = property["value"];
@@ -46,6 +43,17 @@ void TileMap::loadMap(std::string fileName)
                 if (property["name"] == "playerBehind") {
                     newLayer.drawBeforePlayer = !property["value"];
                 }
+                if (property["name"] == "Collision") {
+                    newLayer.collision = property["value"];
+                }
+            }
+            for (size_t i = 0; i < layer["data"].size(); ++i)
+            {
+                if (newLayer.collision && layer["data"][i] != 0) {
+                    Point pos = getPosFromList(newLayer.width, i);
+                    m_collision.push_back(sf::FloatRect(pos.x * m_tileWidth, pos.y * m_tileWidth, m_tileWidth, m_tileHeight));
+                }
+                newLayer.data.push_back(layer["data"][i]);
             }
 
             // Add the new layer
@@ -87,21 +95,15 @@ void TileMap::loadMap(std::string fileName)
             newTile->sprite.setTexture(*m_tileSet.textures[idTexture]);
             newTile->sprite.setScale(m_scale, m_scale);
             size_t c = tileset["columns"];
-            size_t x = tile["id"] % c;
-            size_t y = 0;
-            if (x != 0) 
-            {
-                y = tile["id"] / c;
-            }
-            newTile->sprite.setTextureRect(sf::IntRect(x * m_tileWidth, y * m_tileHeight, m_tileWidth, m_tileHeight));
+            Point pos = getPosFromList(c, newTile->id);
+            newTile->sprite.setTextureRect(sf::IntRect(pos.x * m_tileWidth, pos.y * m_tileHeight, m_tileWidth, m_tileHeight));
 
             if (tile["animation"] > 0) { // Verify if something in it
                 for (auto& anim : tile["animation"])
                 {
                     TileAnimation newTileAnim;
-                    size_t animX = anim["tileid"] % c;
-                    size_t animY = anim["tileid"] / c;
-                    newTileAnim.rect = sf::IntRect(animX * m_tileWidth, animY * m_tileHeight, m_tileWidth, m_tileHeight);
+                    Point animPos = getPosFromList(tileset["columns"], anim["tileid"]);
+                    newTileAnim.rect = sf::IntRect(animPos.x * m_tileWidth, animPos.y * m_tileHeight, m_tileWidth, m_tileHeight);
                     newTileAnim.duration = anim["duration"];
                     newTile->animation.push_back(newTileAnim);
                     m_animatedTile.push_back(newTile);
@@ -118,19 +120,16 @@ TileMap::TileMap(std::string fileName)
 {
     if (fileName == "") { return; }
 	loadMap(fileName);
-    std::cout << m_enemySpawn[0];
     std::cout << "Succefully charged tileMap : " << m_name << std::endl;
 }
 
 void TileMap::drawBeforePlayer(sf::RenderWindow& window, int level)
 {
-    std::cout << "Before :" << std::endl;
     if (m_name == "") { return; }
     for (auto& layer : m_layers)
     {
         if (layer.isVisible) {
             if (layer.drawBeforePlayer) {
-                std::cout << layer.name << " : " << layer.drawBeforePlayer << std::endl;
                 for (size_t y = 0; y < layer.height; y++)
                 {
                     for (size_t x = 0; x < layer.width; x++)
@@ -149,13 +148,11 @@ void TileMap::drawBeforePlayer(sf::RenderWindow& window, int level)
 
 void TileMap::drawAfterPlayer(sf::RenderWindow& window, int level)
 {
-    std::cout << "After :" << std::endl;
     if (m_name == "") { return; }
     for (auto& layer : m_layers)
     {
         if (layer.isVisible) {
             if (!layer.drawBeforePlayer) {
-                std::cout << layer.name << " : " << layer.drawBeforePlayer << std::endl;
                 for (size_t y = 0; y < layer.height; y++)
                 {
                     for (size_t x = 0; x < layer.width; x++)
@@ -193,8 +190,15 @@ void TileMap::changeShowDebug()
 {
     for (auto& layer : m_layers)
     {
-        if (layer.name == "Collision") {
+        if (layer.collision) {
             layer.isVisible = !layer.isVisible;
         }
     }
+}
+
+Point TileMap::getPosFromList(size_t columns, size_t id) {
+    Point pos(id % columns, 0);
+    if (pos.x != 0)
+        pos.y = id / columns;
+    return pos;
 }

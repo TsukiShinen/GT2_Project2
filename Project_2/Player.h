@@ -12,7 +12,7 @@ private:
 	sf::RectangleShape _hitbox;
 	sf::RectangleShape _movebox;
 public:
-	void update(sf::Time, std::vector<sf::RectangleShape>&);
+	void update(sf::Time, std::vector<sf::FloatRect>&);
 	void draw(sf::RenderWindow&);
 	bool collides(sf::FloatRect);
 	void changeShowDebug() { _debug = !_debug; }
