@@ -2,6 +2,7 @@
 #include <SFML/Graphics.hpp>
 #include "Point.h"
 #include "ProgressBar.h"
+#include "AnimationController.h"
 
 class Enemy
 {
@@ -21,6 +22,8 @@ class Enemy
 
 	float m_chronoChangeDir = 0;
 	float m_timeIdle = 2;
+
+	AnimationController m_animationController;
 
 	void Walk(sf::Time& deltaTime);
 	void Follow(sf::Time& deltaTime);
