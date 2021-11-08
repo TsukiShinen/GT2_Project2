@@ -22,6 +22,7 @@ public:
 	}
 
 	void setCurrentAnim(std::string anim) { m_animationName; }
+	std::string getCurrentAnim() { return m_animationName; }
 	void update(sf::Time deltaTime);
 	void changeCurrentAnim(std::string name);
 	sf::IntRect getCurrentRect() { return m_animations[m_animationName].getRect(); }
