@@ -8,7 +8,7 @@
 class Player 
 {
 private:
-	float _speed = 60.f;
+	float _speed = 30.f;
 	sf::Vector2f _direction {0.f, 0.f};
 	bool _debug = false;
 	//std::vector<sf::IntRect> _anim;

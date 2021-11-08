@@ -13,12 +13,14 @@ Player::Player() {
     _sprite.setTexture(_texture);
     _sprite.setTextureRect(sf::IntRect(0, 352, 32, 32));
     // column starts with 0 as line
-    _animCtrl.adAnimation("WalkR", Animation(_animCtrl.getAllRect(21, 0, 32, 4, 1), 0.3));
-    _animCtrl.adAnimation("WalkL", Animation(_animCtrl.getAllRect(22, 0, 32, 4, 1), 0.3));
-    _animCtrl.adAnimation("WalkTR", Animation(_animCtrl.getAllRect(23, 0, 32, 4, 1), 0.3));
-    _animCtrl.adAnimation("WalkTL", Animation(_animCtrl.getAllRect(24, 0, 32, 4, 1), 0.3));
-    _animCtrl.adAnimation("Default", Animation(_animCtrl.getAllRect(11, 0, 32, 16, 4), 0.1));
+    _animCtrl.addAnimation("WalkR", Animation(_animCtrl.getAllRect(21, 0, 32, 4, 1), 0.1));
+    _animCtrl.addAnimation("WalkL", Animation(_animCtrl.getAllRect(22, 0, 32, 4, 1), 0.1));
 
+
+    _animCtrl.addAnimation("WalkTR", Animation(_animCtrl.getAllRect(23, 0, 32, 4, 1), 0.1));
+    _animCtrl.addAnimation("WalkTL", Animation(_animCtrl.getAllRect(24, 0, 32, 4, 1), 0.1));
+    _animCtrl.addAnimation("Idle", Animation(_animCtrl.getAllRect(11, 0, 32, 16, 4), 0.3));
+    _animCtrl.changeCurrentAnim("Idle");
 }
 
 void Player::draw(sf::RenderWindow& window) {
@@ -36,47 +38,74 @@ void Player::changeSprite() {
     {
         if (_direction.y < 0) 
         {
-            _animCtrl.changeCurrentAnim("WalkTL");
+            if (_animCtrl.getCurrentAnim() != "WalkTL") {
+                _animCtrl.changeCurrentAnim("WalkTL");
+            }
+                
         }
         else if (_direction.y > 0) 
         {
-            _animCtrl.changeCurrentAnim("Default");
+            if (_animCtrl.getCurrentAnim() != "Idle") {
+                _animCtrl.changeCurrentAnim("Idle");
+            }
+            
         }
         else {
-            _animCtrl.changeCurrentAnim("WalkL");
+            if (_animCtrl.getCurrentAnim() != "WalkL") {
+                _animCtrl.changeCurrentAnim("WalkL");
+            }
+            
         }
     }
     else if (0 < _direction.x)
     {
         if (_direction.y < 0)
         {
-            _animCtrl.changeCurrentAnim("WalkTR");
+            if (_animCtrl.getCurrentAnim() != "WalkTR") {
+                _animCtrl.changeCurrentAnim("WalkTR");
+            }
+            
         }
         else if (0 < _direction.y)
         {
-            _animCtrl.changeCurrentAnim("WalkTR");
+            if (_animCtrl.getCurrentAnim() != "WalkTR") {
+                _animCtrl.changeCurrentAnim("WalkTR");
+            }
+            
         }
         else {
-
+            if (_animCtrl.getCurrentAnim() != "WalkR") {
+                _animCtrl.changeCurrentAnim("WalkR");
+            }
         }
     }
     else
     {
         if (_direction.y < 0)
         {
-
+            if (_animCtrl.getCurrentAnim() != "Idle") {
+                _animCtrl.changeCurrentAnim("Idle");
+            }
+            
         }
         else if (_direction.y > 0)
         {
-
+            if (_animCtrl.getCurrentAnim() != "Idle") {
+                _animCtrl.changeCurrentAnim("Idle");
+            }
+            
         }
         else {
-
+            if (_animCtrl.getCurrentAnim() != "Idle") {
+                _animCtrl.changeCurrentAnim("Idle");
+            }
+            
         }
     }
 }
 
 void Player::update(sf::Time clock, std::vector<sf::FloatRect>& listOfElements) {
+    
     _direction = { 0.f, 0.f };
     float speed = _speed * clock.asSeconds();
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Z)) {
@@ -158,7 +187,7 @@ void Player::update(sf::Time clock, std::vector<sf::FloatRect>& listOfElements) 
        
 
     }
-    
+    changeSprite();
     // adding after verification
     futurePos.left += _direction.x;
     futurePos.top += _direction.y;

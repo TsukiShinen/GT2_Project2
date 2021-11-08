@@ -16,6 +16,7 @@ std::vector < sf::IntRect > AnimationController::getAllRect(int lineNumber, int 
 	std::vector < sf::IntRect > vectorList;
 	for (int e = 0; e < numberOfLineOfSprite; e++) {
 		for (int i = 0; i < numberOfCollumnOfSprite; i++) {
+			
 			vectorList.push_back(sf::IntRect(x + (i * size), y + (e * size), size, size));
 		}
 	}
