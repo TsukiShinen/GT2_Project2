@@ -2,6 +2,7 @@
 #include "Point.h"
 
 void AnimationController::changeCurrentAnim(std::string name) {
+	if (m_animationName == name) { return; }
 	m_animations[m_animationName].stop();
 	m_animationName = name;
 	m_animations[m_animationName].play();
@@ -24,10 +25,10 @@ std::vector<sf::IntRect> AnimationController::getAllRect(std::vector<size_t> lst
 	return lstRect;
 }
 
-std::vector<sf::IntRect> AnimationController::getAllRect(size_t idBegin, size_t idEnd)
+std::vector<sf::IntRect> AnimationController::getAllRect(size_t idBegin, size_t nbr)
 {
 	std::vector<size_t> range;
-	for (size_t i = idBegin; i < idEnd; ++i)
+	for (size_t i = idBegin; i < idBegin + nbr; ++i)
 	{
 		range.push_back(i);
 	}

@@ -16,6 +16,17 @@ Enemy::Enemy(sf::IntRect* zone)
 	m_textureLifeBar.loadFromFile("./Assets/lifeBar.png");
 	m_lifeBar = ProgressBar(5.f, sf::Sprite(m_textureLifeBar));
 	m_lifeBar.setValue(5.f);
+
+	// Animation
+	m_animationController.addAnimation("Idle_UL", Animation(m_animationController.getAllRect(224, 16), 0.3f));
+	m_animationController.addAnimation("Idle_UR", Animation(m_animationController.getAllRect(208, 16), 0.3f));
+	m_animationController.addAnimation("Idle_DR", Animation(m_animationController.getAllRect(176, 16), 0.3f));
+	m_animationController.addAnimation("Idle_DL", Animation(m_animationController.getAllRect(192, 16), 0.3f));
+	m_animationController.addAnimation("Walk_UL", Animation(m_animationController.getAllRect(368, 4), 0.3f));
+	m_animationController.addAnimation("Walk_UR", Animation(m_animationController.getAllRect(352, 4), 0.3f));
+	m_animationController.addAnimation("Walk_DR", Animation(m_animationController.getAllRect(320, 4), 0.3f));
+	m_animationController.addAnimation("Walk_DL", Animation(m_animationController.getAllRect(336, 4), 0.3f));
+	m_animationController.changeCurrentAnim("Idle_DL");
 }
 
 void Enemy::update(sf::Time& deltaTime)
@@ -44,6 +55,28 @@ void Enemy::update(sf::Time& deltaTime)
 	default:
 		break;
 	}
+
+	// Animation
+	std::string base = "";
+	if (m_velocity.x != 0 || m_velocity.y != 0)
+		base = "Walk";
+	else
+		base = "Idle";
+
+	std::string dir = "";
+	if (m_direction.up)
+		dir += "U";
+	else if (m_direction.down)
+		dir += "D";
+	if (m_direction.right)
+		dir += "R";
+	else if (m_direction.left)
+		dir += "L";
+
+	std::string name = base + "_" + dir;
+	m_animationController.changeCurrentAnim(name);
+	m_animationController.update(deltaTime);
+	m_sprite.setTextureRect(m_animationController.getCurrentRect());
 
 }
 
@@ -82,6 +115,8 @@ void Enemy::Attack(sf::Time& deltaTime)
 
 void Enemy::ChangeDir(sf::Time& deltaTime)
 {
+	m_velocity.x = 0;
+	m_velocity.y = 0;
 	m_chronoChangeDir += deltaTime.asSeconds();
 
 	if (m_chronoChangeDir >= m_timeIdle) {
@@ -91,5 +126,16 @@ void Enemy::ChangeDir(sf::Time& deltaTime)
 		m_velocity.x = m_speed * cos(angle);
 		m_velocity.y = m_speed * sin(angle);
 		m_currentState = State::WALK;
+
+		// Get the direction
+		m_direction.reset();
+		if (m_velocity.y < 0)
+			m_direction.up = true;
+		if (m_velocity.x > 0)
+			m_direction.right = true;
+		if (m_velocity.y > 0)
+			m_direction.down = true;
+		if (m_velocity.x < 0)
+			m_direction.left = true;
 	}
 }

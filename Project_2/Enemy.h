@@ -6,6 +6,20 @@
 
 class Enemy
 {
+	struct Direction {
+		bool up = false;
+		bool right = true;
+		bool down = true;
+		bool left = false;
+
+		void reset() {
+			up = false;
+			right = false;
+			down = false;
+			left = false;
+		}
+	};
+
 	const enum class State { NONE, WALK, FOLLOW, ATTACK, CHANGEDIR };
 
 	sf::Texture m_texture;
@@ -14,6 +28,7 @@ class Enemy
 	sf::IntRect* m_zone;
 	sf::Vector2f m_velocity{ 0.f, 0.f };
 	float m_speed{ 20.f };
+	Direction m_direction;
 
 	State m_currentState = State::NONE;
 
