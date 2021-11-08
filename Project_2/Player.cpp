@@ -16,7 +16,7 @@ Player::Player() {
     _animCtrl.addAnimation("WalkL", Animation(_animCtrl.getAllRect({ 160, 161, 162, 163 }), 0.3));
     _animCtrl.addAnimation("WalkTR", Animation(_animCtrl.getAllRect({ 160, 161, 162, 163 }), 0.3));
     _animCtrl.addAnimation("WalkTL", Animation(_animCtrl.getAllRect({ 160, 161, 162, 163 }), 0.3));
-    _animCtrl.addAnimation("Default", Animation(_animCtrl.getAllRect({176, 177, 178, 179}), 0.5f));
+    _animCtrl.addAnimation("Default", Animation(_animCtrl.getAllRect(176, 192), 0.5f));
     _animCtrl.changeCurrentAnim("Default");
 
 }

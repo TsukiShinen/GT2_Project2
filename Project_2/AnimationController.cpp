@@ -11,25 +11,26 @@ void AnimationController::update(sf::Time deltaTime) {
 	m_animations[m_animationName].update(deltaTime);
 }
 
-std::vector<sf::IntRect> AnimationController::getAllRect(std::vector<int> lstId) 
+std::vector<sf::IntRect> AnimationController::getAllRect(std::vector<size_t> lstId)
 {
 	std::vector<sf::IntRect> lstRect;
 
-	for (int& id : lstId) {
+	for (size_t& id : lstId) {
 		Point pos(id % m_columns, id / m_columns);
 
 		lstRect.push_back(sf::IntRect(pos.x * m_tileSizeX, pos.y * m_tileSizeY, m_tileSizeX, m_tileSizeY));
 	}
 
 	return lstRect;
+}
 
-	//int x = columnNumber * size;
-	//int y = lineNumber * size;
-	//std::vector < sf::IntRect > vectorList;
-	//for (int e = 0; e < numberOfLineOfSprite; e++) {
-	//	for (int i = 0; i < numberOfCollumnOfSprite; i++) {
-	//		vectorList.push_back(sf::IntRect(x + (i * size), y + (e * size), size, size));
-	//	}
-	//}
-	//return vectorList;
+std::vector<sf::IntRect> AnimationController::getAllRect(size_t idBegin, size_t idEnd)
+{
+	std::vector<size_t> range;
+	for (size_t i = idBegin; i < idEnd; ++i)
+	{
+		range.push_back(i);
+	}
+
+	return getAllRect(range);
 }

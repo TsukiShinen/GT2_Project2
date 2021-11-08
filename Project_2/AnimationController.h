@@ -26,6 +26,7 @@ public:
 	void changeCurrentAnim(std::string name);
 	sf::IntRect getCurrentRect() { return m_animations[m_animationName].getRect(); }
 	void addAnimation(std::string name, Animation anim) { m_animations[name] = anim; }
-	std::vector<sf::IntRect> getAllRect(std::vector<int> lstId);
+	std::vector<sf::IntRect> getAllRect(std::vector<size_t> lstId);
+	std::vector<sf::IntRect> getAllRect(size_t idBegin, size_t idEnd);
 };
 
