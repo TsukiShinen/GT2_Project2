@@ -17,7 +17,7 @@ private:
 	sf::Sprite _sprite;
 	sf::RectangleShape _hitbox;
 	sf::RectangleShape _movebox;
-	std::string _directionAnim = "WalkTL";
+	std::string _directionAnim = "WalkBL";
 public:
 	Player();
 	void update(sf::Time, std::vector<sf::FloatRect>&);

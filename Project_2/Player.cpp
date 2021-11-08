@@ -28,7 +28,7 @@ Player::Player() {
     for (const auto& Idle : IdleMap) {
         std::vector <sf::IntRect> tempRectList = _animCtrl.getAllRect(Idle.second.first, Idle.second.second);
         tempRectList.insert(tempRectList.end(), allIdle.begin(), allIdle.end());
-        _animCtrl.addAnimation(Idle.first, Animation(tempRectList, 0.33f));
+        _animCtrl.addAnimation(Idle.first, Animation(tempRectList, 0.31111f));
     }
     
     _animCtrl.changeCurrentAnim("IdleBL");
