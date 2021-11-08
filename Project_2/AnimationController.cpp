@@ -24,10 +24,10 @@ std::vector<sf::IntRect> AnimationController::getAllRect(std::vector<size_t> lst
 	return lstRect;
 }
 
-std::vector<sf::IntRect> AnimationController::getAllRect(size_t idBegin, size_t idEnd)
+std::vector<sf::IntRect> AnimationController::getAllRect(size_t idBegin, size_t nbr)
 {
 	std::vector<size_t> range;
-	for (size_t i = idBegin; i < idEnd; ++i)
+	for (size_t i = idBegin; i < idBegin + nbr; ++i)
 	{
 		range.push_back(i);
 	}
