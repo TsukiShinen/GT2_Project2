@@ -12,12 +12,26 @@ Player::Player() {
     _sprite.setTexture(_texture);
     _sprite.setTextureRect(sf::IntRect(0, 352, 32, 32));
     // column starts with 0 as line
-    _animCtrl.addAnimation("WalkR", Animation(_animCtrl.getAllRect(336, 4), 0.1f));
-    _animCtrl.addAnimation("WalkL", Animation(_animCtrl.getAllRect({ 160, 161, 162, 163 }), 0.3));
-    _animCtrl.addAnimation("WalkTR", Animation(_animCtrl.getAllRect({ 160, 161, 162, 163 }), 0.3));
-    _animCtrl.addAnimation("WalkTL", Animation(_animCtrl.getAllRect({ 160, 161, 162, 163 }), 0.3));
-    _animCtrl.addAnimation("Idle", Animation(_animCtrl.getAllRect(176, 16), 0.5f));
-    _animCtrl.changeCurrentAnim("Idle");
+    _animCtrl.addAnimation("WalkBR", Animation(_animCtrl.getAllRect(336, 4), 0.13f));
+    _animCtrl.addAnimation("WalkBL", Animation(_animCtrl.getAllRect(352, 4), 0.13f));
+    _animCtrl.addAnimation("WalkTR", Animation(_animCtrl.getAllRect(368, 4), 0.13f));
+    _animCtrl.addAnimation("WalkTL", Animation(_animCtrl.getAllRect(384, 4), 0.13f));
+
+    std::vector <sf::IntRect> allIdle = _animCtrl.getAllRect(176, 16);
+    std::map<std::string, std::pair<size_t, size_t>> IdleMap{ 
+        {"IdleBR", {176, 16}}, 
+        {"IdleBL", {192,8}}, 
+        {"IdleTR", {208,16}}, 
+        {"IdleTL", {224,16}}
+    };
+    
+    for (const auto& Idle : IdleMap) {
+        std::vector <sf::IntRect> tempRectList = _animCtrl.getAllRect(Idle.second.first, Idle.second.second);
+        tempRectList.insert(tempRectList.end(), allIdle.begin(), allIdle.end());
+        _animCtrl.addAnimation(Idle.first, Animation(tempRectList, 0.33f));
+    }
+    
+    _animCtrl.changeCurrentAnim("IdleBL");
 }
 
 void Player::draw(sf::RenderWindow& window) {
@@ -33,72 +47,35 @@ void Player::draw(sf::RenderWindow& window) {
 void Player::changeSprite() {
     if (_direction.x < 0) 
     {
-        if (_direction.y < 0) 
-        {
-            if (_animCtrl.getCurrentAnim() != "WalkTL") {
-                _animCtrl.changeCurrentAnim("WalkTL");
-            }
-                
-        }
-        else if (_direction.y > 0) 
-        {
-            if (_animCtrl.getCurrentAnim() != "Idle") {
-                _animCtrl.changeCurrentAnim("Idle");
-            }
-            
-        }
-        else {
-            if (_animCtrl.getCurrentAnim() != "WalkL") {
-                _animCtrl.changeCurrentAnim("WalkL");
-            }
-            
-        }
+        _directionAnim = _directionAnim.replace(5, 1, "L");
     }
     else if (0 < _direction.x)
     {
-        if (_direction.y < 0)
-        {
-            if (_animCtrl.getCurrentAnim() != "WalkTR") {
-                _animCtrl.changeCurrentAnim("WalkTR");
-            }
-            
-        }
-        else if (0 < _direction.y)
-        {
-            if (_animCtrl.getCurrentAnim() != "WalkTR") {
-                _animCtrl.changeCurrentAnim("WalkTR");
-            }
-            
-        }
-        else {
-            if (_animCtrl.getCurrentAnim() != "WalkR") {
-                _animCtrl.changeCurrentAnim("WalkR");
-            }
-        }
+        _directionAnim = _directionAnim.replace(5, 1, "R");
     }
-    else
+    if (_direction.y < 0)
     {
-        if (_direction.y < 0)
-        {
-            if (_animCtrl.getCurrentAnim() != "Idle") {
-                _animCtrl.changeCurrentAnim("Idle");
-            }
-            
-        }
-        else if (_direction.y > 0)
-        {
-            if (_animCtrl.getCurrentAnim() != "Idle") {
-                _animCtrl.changeCurrentAnim("Idle");
-            }
-            
-        }
-        else {
-            if (_animCtrl.getCurrentAnim() != "Idle") {
-                _animCtrl.changeCurrentAnim("Idle");
-            }
-            
+        _directionAnim = _directionAnim.replace(4, 1, "T");
+    }
+    else if (_direction.y > 0)
+    {
+        _directionAnim = _directionAnim.replace(4, 1, "B");
+    }
+
+
+    if (_direction.x == 0.f && _direction.y == 0.f) {
+        std::string test = "Idle";
+        test.append(_directionAnim.substr(4, 6));
+        if (_animCtrl.getCurrentAnim() != test) {
+            _animCtrl.changeCurrentAnim(test);
+        }       
+    }
+    else {
+        if (_animCtrl.getCurrentAnim() != _directionAnim) {
+            _animCtrl.changeCurrentAnim(_directionAnim);
         }
     }
+    
 }
 
 void Player::update(sf::Time clock, std::vector<sf::FloatRect>& listOfElements) {
@@ -184,7 +161,9 @@ void Player::update(sf::Time clock, std::vector<sf::FloatRect>& listOfElements) 
        
 
     }
+    
     changeSprite();
+
     // adding after verification
     futurePos.left += _direction.x;
     futurePos.top += _direction.y;
