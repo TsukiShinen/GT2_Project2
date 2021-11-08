@@ -1,6 +1,5 @@
 #include "Player.h"
-#include <iostream>
-#include <cmath>
+
 
 //
 //Player::Player(std::pair<int, int> size) {
@@ -9,12 +8,71 @@
 //    _sprite._rect.setPosition(_position);
 //}
 
+Player::Player() {
+    _texture.loadFromFile("./Assets/PlayerAnimations.png");
+    _sprite.setTexture(_texture);
+    _sprite.setTextureRect(sf::IntRect(0, 352, 32, 32));
+    // column starts with 0 as line
+    _animCtrl.adAnimation("WalkR", Animation(_animCtrl.getAllRect(21, 0, 32, 4, 1), 0.3));
+    _animCtrl.adAnimation("WalkL", Animation(_animCtrl.getAllRect(22, 0, 32, 4, 1), 0.3));
+    _animCtrl.adAnimation("WalkTR", Animation(_animCtrl.getAllRect(23, 0, 32, 4, 1), 0.3));
+    _animCtrl.adAnimation("WalkTL", Animation(_animCtrl.getAllRect(24, 0, 32, 4, 1), 0.3));
+    _animCtrl.adAnimation("Default", Animation(_animCtrl.getAllRect(11, 0, 32, 16, 4), 0.1));
+
+}
+
 void Player::draw(sf::RenderWindow& window) {
     if (_debug) {
         _hitbox.setFillColor(sf::Color::Red);
         _movebox.setFillColor(sf::Color::Green);
-        //window.draw(_hitbox);
+        window.draw(_hitbox);
         window.draw(_movebox);
+    }
+    window.draw(_sprite);
+}
+
+void Player::changeSprite() {
+    if (_direction.x < 0) 
+    {
+        if (_direction.y < 0) 
+        {
+            _animCtrl.changeCurrentAnim("WalkTL");
+        }
+        else if (_direction.y > 0) 
+        {
+            _animCtrl.changeCurrentAnim("Default");
+        }
+        else {
+            _animCtrl.changeCurrentAnim("WalkL");
+        }
+    }
+    else if (0 < _direction.x)
+    {
+        if (_direction.y < 0)
+        {
+            _animCtrl.changeCurrentAnim("WalkTR");
+        }
+        else if (0 < _direction.y)
+        {
+            _animCtrl.changeCurrentAnim("WalkTR");
+        }
+        else {
+
+        }
+    }
+    else
+    {
+        if (_direction.y < 0)
+        {
+
+        }
+        else if (_direction.y > 0)
+        {
+
+        }
+        else {
+
+        }
     }
 }
 
@@ -36,6 +94,7 @@ void Player::update(sf::Time clock, std::vector<sf::FloatRect>& listOfElements) 
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Q)) {
         // move(-_speed*clock.asSeconds(), 0);
         _direction.x = -speed;
+        
     }
 
     if (_direction.x != 0.f && _direction.y != 0.f) {
@@ -43,9 +102,11 @@ void Player::update(sf::Time clock, std::vector<sf::FloatRect>& listOfElements) 
         _direction.x *= ratio/speed;
         _direction.y *= ratio / speed;
     }
-    sf::FloatRect playerPos = this->getGlobalBounds();
+    sf::FloatRect playerPos = _sprite.getGlobalBounds();
     sf::FloatRect futurePos = playerPos;
+    _animCtrl.update(clock);
     
+    _sprite.setTextureRect(_animCtrl.getCurrentRect());
     
 
    
@@ -61,13 +122,14 @@ void Player::update(sf::Time clock, std::vector<sf::FloatRect>& listOfElements) 
   
 
     for (const sf::FloatRect& bound : listOfElements) {
-        //std::cout << bound.width << std::endl;
+        /*sf::FloatRect bound = thing.getGlobalBounds();*/
+        
         if (_direction.x != 0.f) {
             futurePos.left += _direction.x;
             if (futurePos.intersects(bound)) {
                 
                 _direction.x = 0.f;
-                std::cout << "reset x \n";
+                // reset x
             }
             futurePos.left -= initial.x;
         }
@@ -77,7 +139,7 @@ void Player::update(sf::Time clock, std::vector<sf::FloatRect>& listOfElements) 
             if (futurePos.intersects(bound)) {
                 
                 _direction.y = 0.f;
-                std::cout << "reset y \n";
+                // reset y
             }
             futurePos.top -= initial.y;
         }
@@ -88,7 +150,7 @@ void Player::update(sf::Time clock, std::vector<sf::FloatRect>& listOfElements) 
             if (futurePos.intersects(bound)) {
                 _direction.x = 0.f;
                 _direction.y = 0.f;
-                std::cout << "reset both \n";
+                // reset both 
             }
             futurePos.left -= initial.x;
             futurePos.top -= initial.y;
@@ -105,13 +167,13 @@ void Player::update(sf::Time clock, std::vector<sf::FloatRect>& listOfElements) 
     _hitbox.setPosition(futurePos.left -1, futurePos.top -5);
     _movebox.setSize(sf::Vector2f(futurePos.width, futurePos.height));
     _movebox.setPosition(futurePos.left, futurePos.top);
-    move(_direction);
+    _sprite.move(_direction);
 }
 
 
 
 bool Player::collides(sf::FloatRect element) {
-    sf::FloatRect boundings = this->getGlobalBounds();
+    sf::FloatRect boundings = _sprite.getGlobalBounds();
     if (boundings.intersects(element)) {
         return true;
     }

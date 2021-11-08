@@ -8,10 +8,7 @@ Game::Game(Point screenSize)
 
 void Game::load()
 {
-    pTexture;
-    pTexture.loadFromFile("./Assets/PlayerAnimations.png");
-    m_player.setTexture(pTexture);
-    m_player.setTextureRect(sf::IntRect(0, 352, 32, 32));
+   
 
     for (sf::RectangleShape& rectangle : listOfElement) {
         rectangle.setSize(sf::Vector2f(8, 8));
@@ -55,7 +52,7 @@ void Game::draw(sf::RenderWindow& window)
     window.setView(gameView);
     m_map.drawBeforePlayer(window, 0);
 
-    window.draw(m_player);
+    
     m_player.draw(window);
     for (Enemy* enemy : m_orc) {
         enemy->draw(window);
