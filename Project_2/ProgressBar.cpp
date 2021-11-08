@@ -14,7 +14,7 @@ void ProgressBar::setValue(float value)
 {
 	m_value = value;
 
-	float m_pourcentage = m_maxValue / m_value;
+	float m_pourcentage = m_value / m_maxValue;
 	m_front.setTextureRect(sf::IntRect(0, 0, m_front.getTexture()->getSize().x * m_pourcentage, m_front.getTexture()->getSize().y));
 }
 

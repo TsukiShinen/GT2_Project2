@@ -28,6 +28,7 @@ class Enemy
 	sf::IntRect* m_zone;
 	sf::Vector2f m_velocity{ 0.f, 0.f };
 	float m_speed{ 20.f };
+	float m_range{ 30.f };
 	Direction m_direction;
 
 	State m_currentState = State::NONE;
@@ -40,14 +41,14 @@ class Enemy
 
 	AnimationController m_animationController;
 
-	void Walk(sf::Time& deltaTime);
-	void Follow(sf::Time& deltaTime);
+	void Walk(sf::Time& deltaTime, sf::Vector2f playerPos);
+	void Follow(sf::Time& deltaTime, sf::Vector2f playerPos);
 	void Attack(sf::Time& deltaTime);
 	void ChangeDir(sf::Time& deltaTime);
 public:
 	Enemy(sf::IntRect* zone);
 
-	void update(sf::Time& deltaTime);
+	void update(sf::Time& deltaTime, sf::Vector2f playerPos);
 	void draw(sf::RenderWindow& window);
 };
 

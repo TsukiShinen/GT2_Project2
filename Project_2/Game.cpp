@@ -33,7 +33,7 @@ void Game::update(sf::Time& deltaTime)
 {
     
     for (Enemy* enemy : m_orc) {
-        enemy->update(deltaTime);
+        enemy->update(deltaTime, m_player.getPosition());
     }
     m_map.update(deltaTime);
     m_player.update(deltaTime, m_map.getRectCollision());

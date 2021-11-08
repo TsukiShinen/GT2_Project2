@@ -29,7 +29,7 @@ Enemy::Enemy(sf::IntRect* zone)
 	m_animationController.changeCurrentAnim("Idle_DL");
 }
 
-void Enemy::update(sf::Time& deltaTime)
+void Enemy::update(sf::Time& deltaTime, sf::Vector2f playerPos)
 {
 	// Life bar
 	sf::Vector2f position = m_sprite.getPosition();
@@ -41,10 +41,10 @@ void Enemy::update(sf::Time& deltaTime)
 		m_currentState = State::CHANGEDIR;
 		break;
 	case Enemy::State::WALK:
-		Walk(deltaTime);
+		Walk(deltaTime, playerPos);
 		break;
 	case Enemy::State::FOLLOW:
-		Follow(deltaTime);
+		Follow(deltaTime, playerPos);
 		break;
 	case Enemy::State::ATTACK:
 		Attack(deltaTime);
@@ -77,7 +77,6 @@ void Enemy::update(sf::Time& deltaTime)
 	m_animationController.changeCurrentAnim(name);
 	m_animationController.update(deltaTime);
 	m_sprite.setTextureRect(m_animationController.getCurrentRect());
-
 }
 
 void Enemy::draw(sf::RenderWindow& window)
@@ -86,8 +85,9 @@ void Enemy::draw(sf::RenderWindow& window)
 	window.draw(m_lifeBar);
 }
 
-void Enemy::Walk(sf::Time& deltaTime)
+void Enemy::Walk(sf::Time& deltaTime, sf::Vector2f playerPos)
 {
+	// Move
 	sf::Vector2f movement = m_velocity;
 	movement.x *= deltaTime.asSeconds();
 	movement.y *= deltaTime.asSeconds();
@@ -103,10 +103,30 @@ void Enemy::Walk(sf::Time& deltaTime)
 		changeDir < 1) {
 		m_currentState = State::CHANGEDIR;
 	}
+
+	// Look player
+	float distance = Utils::dist(m_sprite.getPosition(), playerPos);
+	if (distance < m_range) {
+		m_currentState = State::FOLLOW;
+	}
 }
 
-void Enemy::Follow(sf::Time& deltaTime)
+void Enemy::Follow(sf::Time& deltaTime, sf::Vector2f playerPos)
 {
+	double angle = Utils::angle(m_sprite.getPosition(), playerPos);
+	m_velocity.x = m_speed * cos(angle);
+	m_velocity.y = m_speed * sin(angle);
+
+	// Move
+	sf::Vector2f movement = m_velocity;
+	movement.x *= deltaTime.asSeconds();
+	movement.y *= deltaTime.asSeconds();
+	m_sprite.move(movement);
+
+	float distance = Utils::dist(m_sprite.getPosition(), playerPos);
+	if (distance > m_range) {
+		m_currentState = State::CHANGEDIR;
+	}
 }
 
 void Enemy::Attack(sf::Time& deltaTime)
