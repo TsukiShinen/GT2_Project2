@@ -1,6 +1,5 @@
 #include "Player.h"
 
-
 //
 //Player::Player(std::pair<int, int> size) {
 //    _sprite._size = size;
@@ -13,8 +12,12 @@ Player::Player() {
     _sprite.setTexture(_texture);
     _sprite.setTextureRect(sf::IntRect(0, 352, 32, 32));
     // column starts with 0 as line
-    _animCtrl.addAnimation("WalkR", Animation(_animCtrl.getAllRect(21, 0, 32, 4, 1), 0.1));
-    _animCtrl.addAnimation("WalkL", Animation(_animCtrl.getAllRect(22, 0, 32, 4, 1), 0.1));
+    _animCtrl.addAnimation("WalkR", Animation(_animCtrl.getAllRect({ 160, 161, 162, 163 }), 0.3));
+    _animCtrl.addAnimation("WalkL", Animation(_animCtrl.getAllRect({ 160, 161, 162, 163 }), 0.3));
+    _animCtrl.addAnimation("WalkTR", Animation(_animCtrl.getAllRect({ 160, 161, 162, 163 }), 0.3));
+    _animCtrl.addAnimation("WalkTL", Animation(_animCtrl.getAllRect({ 160, 161, 162, 163 }), 0.3));
+    _animCtrl.addAnimation("Default", Animation(_animCtrl.getAllRect(176, 192), 0.5f));
+    _animCtrl.changeCurrentAnim("Default");
 
 
     _animCtrl.addAnimation("WalkTR", Animation(_animCtrl.getAllRect(23, 0, 32, 4, 1), 0.1));

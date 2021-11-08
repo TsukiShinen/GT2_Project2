@@ -198,8 +198,5 @@ void TileMap::changeShowDebug()
 }
 
 Point TileMap::getPosFromList(size_t columns, size_t id) {
-    Point pos(id % columns, 0);
-    if (pos.x != 0)
-        pos.y = id / columns;
-    return pos;
+    return Point(id % columns, id / columns);
 }
