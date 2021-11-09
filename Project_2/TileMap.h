@@ -39,6 +39,11 @@ class TileMap
 		std::vector<sf::Texture*> textures;
 	};
 
+	struct RectLevel {
+		sf::FloatRect rect;
+		int toLevel;
+	};
+
 	const std::string PATH = "./Assets/Map/";
 	size_t m_scale = 1;
 
@@ -52,7 +57,8 @@ class TileMap
 	std::vector<Layer> m_layers;
 	TileSets m_tileSet;
 	std::vector<Tile*> m_animatedTile;
-	std::vector<sf::FloatRect> m_collision;
+	std::vector<std::vector<sf::FloatRect>> m_collision;
+	std::vector<RectLevel> m_rectsChangeLevel;
 
 	Point m_startingPosition;
 	std::vector<sf::IntRect*> m_enemySpawn;
@@ -64,7 +70,8 @@ public:
 
 	Point getStartingPosition() { return m_startingPosition; }
 	std::vector<sf::IntRect*>& getEnemySpawn() { return m_enemySpawn; }
-	std::vector<sf::FloatRect>& getRectCollision() { return m_collision; }
+	std::vector<sf::FloatRect>& getRectCollision(int level) { return m_collision[level]; }
+	std::vector<RectLevel>& getRectLevel() { return m_rectsChangeLevel; }
 
 	void drawBeforePlayer(sf::RenderWindow& window, int level);
 	void drawAfterPlayer(sf::RenderWindow& window, int level);
@@ -94,6 +101,7 @@ public:
 		m_startingPosition = other.m_startingPosition;
 		m_enemySpawn = other.m_enemySpawn;
 		m_collision = other.m_collision;
+		m_rectsChangeLevel = other.m_rectsChangeLevel;
 
 
 		return *this;

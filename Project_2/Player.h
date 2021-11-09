@@ -18,10 +18,15 @@ private:
 	sf::RectangleShape _hitbox;
 	sf::RectangleShape _movebox;
 	std::string _directionAnim = "WalkBL";
+	int m_mapLevel = 0;
 public:
 	Player();
 	void update(sf::Time, std::vector<sf::FloatRect>&);
 	void draw(sf::RenderWindow&);
+
+	int getMapLevel() { return m_mapLevel; }
+	void setMapLevel(int level) { m_mapLevel = level; std::cout << "Player level : " << m_mapLevel << std::endl; }
+
 	bool collides(sf::FloatRect);
 	void changeShowDebug() { _debug = !_debug; }
 	void setPosition(sf::Vector2f position) { _sprite.setPosition(position); }

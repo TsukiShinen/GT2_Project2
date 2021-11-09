@@ -36,7 +36,7 @@ void Game::update(sf::Time& deltaTime)
         enemy->update(deltaTime, m_player.getPosition());
     }
     m_map.update(deltaTime);
-    m_player.update(deltaTime, m_map.getRectCollision());
+    m_player.update(deltaTime, m_map.getRectCollision(m_player.getMapLevel()));
     sf::Vector2f cameraPosition = m_player.getPosition();
     if (cameraPosition.y < 75) {
         cameraPosition.y = 75;
@@ -45,12 +45,18 @@ void Game::update(sf::Time& deltaTime)
         cameraPosition.x = 100;
     }
     gameView.setCenter(cameraPosition);
+
+    for (auto& rect : m_map.getRectLevel()) {
+        if (m_player.collides(rect.rect)) {
+            m_player.setMapLevel(rect.toLevel);
+        }
+    }
 }
 
 void Game::draw(sf::RenderWindow& window)
 {
     window.setView(gameView);
-    m_map.drawBeforePlayer(window, 0);
+    m_map.drawBeforePlayer(window, m_player.getMapLevel());
 
     
     m_player.draw(window);
@@ -58,7 +64,7 @@ void Game::draw(sf::RenderWindow& window)
         enemy->draw(window);
     }
 
-    m_map.drawAfterPlayer(window, 0);
+    m_map.drawAfterPlayer(window, m_player.getMapLevel());
     
 }
 

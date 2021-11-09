@@ -37,7 +37,7 @@ void TileMap::loadMap(std::string fileName)
             newLayer.height = layer["height"];
             newLayer.isVisible = layer["visible"];
             for (auto& property : layer["properties"]) {
-                if (property["name"] == "Level") {
+                if (property["name"] == "level") {
                     newLayer.level = property["value"];
                 }
                 if (property["name"] == "playerBehind") {
@@ -47,14 +47,16 @@ void TileMap::loadMap(std::string fileName)
                     newLayer.collision = property["value"];
                 }
             }
+            m_collision.emplace_back();
             for (size_t i = 0; i < layer["data"].size(); ++i)
             {
                 if (newLayer.collision && layer["data"][i] != 0) {
                     Point pos = getPosFromList(newLayer.width, i);
-                    m_collision.push_back(sf::FloatRect(pos.x * m_tileWidth, pos.y * m_tileWidth, m_tileWidth, m_tileHeight));
+                    m_collision[newLayer.level].push_back(sf::FloatRect(pos.x * m_tileWidth, pos.y * m_tileWidth, m_tileWidth, m_tileHeight));
                 }
                 newLayer.data.push_back(layer["data"][i]);
             }
+            std::cout << newLayer.name << " : " << newLayer.level << " : " << m_collision[newLayer.level].size() << std::endl;
 
             // Add the new layer
             m_layers.push_back(newLayer);
@@ -67,6 +69,12 @@ void TileMap::loadMap(std::string fileName)
                 }
                 if (obj["name"] == "Orc") {
                     m_enemySpawn.push_back(new sf::IntRect(obj["x"], obj["y"], obj["width"], obj["height"]));
+                }
+                if (obj["type"] == "Level") {
+                    RectLevel newRectLevel;
+                    newRectLevel.rect = sf::FloatRect(obj["x"], obj["y"], obj["width"], obj["height"]);
+                    newRectLevel.toLevel = obj["properties"][0]["value"];
+                    m_rectsChangeLevel.push_back(newRectLevel);
                 }
             }
         }
@@ -130,7 +138,7 @@ void TileMap::drawBeforePlayer(sf::RenderWindow& window, int level)
     for (auto& layer : m_layers)
     {
         if (layer.isVisible) {
-            if (layer.drawBeforePlayer) {
+            if (layer.drawBeforePlayer && layer.level <= level) {
                 for (size_t y = 0; y < layer.height; y++)
                 {
                     for (size_t x = 0; x < layer.width; x++)
@@ -153,7 +161,7 @@ void TileMap::drawAfterPlayer(sf::RenderWindow& window, int level)
     for (auto& layer : m_layers)
     {
         if (layer.isVisible) {
-            if (!layer.drawBeforePlayer) {
+            if (!layer.drawBeforePlayer || layer.level > level) {
                 for (size_t y = 0; y < layer.height; y++)
                 {
                     for (size_t x = 0; x < layer.width; x++)
