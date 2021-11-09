@@ -1,10 +1,9 @@
 #pragma once
 #include <SFML/Graphics.hpp>
-#include "Point.h"
 #include "ProgressBar.h"
-#include "AnimationController.h"
+#include "Entity.h"
 
-class Enemy
+class Enemy : public Entity
 {
 	struct Direction {
 		bool up = false;
@@ -22,12 +21,7 @@ class Enemy
 
 	const enum class State { NONE, WALK, FOLLOW, ATTACK, CHANGEDIR };
 
-	sf::Texture m_texture;
-	sf::Sprite m_sprite;
-
 	sf::IntRect* m_zone;
-	sf::Vector2f m_velocity{ 0.f, 0.f };
-	float m_speed{ 20.f };
 	float m_range{ 30.f };
 	Direction m_direction;
 
@@ -39,16 +33,18 @@ class Enemy
 	float m_chronoChangeDir = 0;
 	float m_timeIdle = 2;
 
-	AnimationController m_animationController;
-
 	void Walk(sf::Time& deltaTime, sf::Vector2f playerPos);
 	void Follow(sf::Time& deltaTime, sf::Vector2f playerPos);
 	void Attack(sf::Time& deltaTime);
 	void ChangeDir(sf::Time& deltaTime);
+
+	void setAnimations();
 public:
 	Enemy(sf::IntRect* zone);
 
 	void update(sf::Time& deltaTime, sf::Vector2f playerPos);
-	void draw(sf::RenderWindow& window);
+	void draw(sf::RenderWindow& window, bool debugMode);
+
+	sf::FloatRect getBoundingBox() override;
 };
 

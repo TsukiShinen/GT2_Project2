@@ -2,31 +2,36 @@
 #include "Point.h"
 #include "Utils.h"
 
-Enemy::Enemy(sf::IntRect* zone)
+Enemy::Enemy(sf::IntRect* zone) :
+	Entity("Orc", 5, "./Assets/OrcAnimations.png")
 {
 	m_zone = zone;
 	m_sprite.setOrigin(sf::Vector2f(12, 12));
 	m_sprite.setPosition(sf::Vector2f(rand() % m_zone->width + m_zone->left, rand() % m_zone->height + m_zone->top));
-
-	m_texture.loadFromFile("./Assets/OrcAnimations.png");
-	m_sprite.setTexture(m_texture);
-	m_sprite.setTextureRect(sf::IntRect(0, 352, 32, 32));
-
+	m_speed = 20.f;
 
 	m_textureLifeBar.loadFromFile("./Assets/lifeBar.png");
 	m_lifeBar = ProgressBar(5.f, sf::Sprite(m_textureLifeBar));
 	m_lifeBar.setValue(5.f);
 
-	// Animation
-	m_animationController.addAnimation("Idle_UL", Animation(m_animationController.getAllRect(224, 16), 0.3f));
-	m_animationController.addAnimation("Idle_UR", Animation(m_animationController.getAllRect(208, 16), 0.3f));
-	m_animationController.addAnimation("Idle_DR", Animation(m_animationController.getAllRect(176, 16), 0.3f));
-	m_animationController.addAnimation("Idle_DL", Animation(m_animationController.getAllRect(192, 16), 0.3f));
-	m_animationController.addAnimation("Walk_UL", Animation(m_animationController.getAllRect(368, 4), 0.3f));
-	m_animationController.addAnimation("Walk_UR", Animation(m_animationController.getAllRect(352, 4), 0.3f));
-	m_animationController.addAnimation("Walk_DR", Animation(m_animationController.getAllRect(320, 4), 0.3f));
-	m_animationController.addAnimation("Walk_DL", Animation(m_animationController.getAllRect(336, 4), 0.3f));
+	setAnimations();
+}
+
+void Enemy::setAnimations() {
+	m_animationController.addAnimation("Idle_UL", 224, 16, 0.3f);
+	m_animationController.addAnimation("Idle_UR", 208, 16, 0.3f);
+	m_animationController.addAnimation("Idle_DR", 176, 16, 0.3f);
+	m_animationController.addAnimation("Idle_DL", 192, 16, 0.3f);
+	m_animationController.addAnimation("Walk_UL", 368, 4, 0.3f);
+	m_animationController.addAnimation("Walk_UR", 352, 4, 0.3f);
+	m_animationController.addAnimation("Walk_DR", 320, 4, 0.3f);
+	m_animationController.addAnimation("Walk_DL", 336, 4, 0.3f);
 	m_animationController.changeCurrentAnim("Idle_DL");
+}
+
+sf::FloatRect Enemy::getBoundingBox()
+{
+	return sf::FloatRect(getPosition().x, getPosition().y, 8, 8);
 }
 
 void Enemy::update(sf::Time& deltaTime, sf::Vector2f playerPos)
@@ -75,24 +80,29 @@ void Enemy::update(sf::Time& deltaTime, sf::Vector2f playerPos)
 
 	std::string name = base + "_" + dir;
 	m_animationController.changeCurrentAnim(name);
-	m_animationController.update(deltaTime);
-	m_sprite.setTextureRect(m_animationController.getCurrentRect());
+	
+	Entity::update(deltaTime);
 }
 
-void Enemy::draw(sf::RenderWindow& window)
+void Enemy::draw(sf::RenderWindow& window, bool debugMode)
 {
-	window.draw(m_sprite);
+	Entity::draw(window, debugMode);
 	window.draw(m_lifeBar);
+
+
+	// Draw range
+	if (debugMode) {
+		float r2 = m_range / 2;
+		sf::RectangleShape rectBoundingBox;
+		rectBoundingBox.setPosition(sf::Vector2f(getPosition().x - r2, getPosition().y - r2));
+		rectBoundingBox.setSize(sf::Vector2f(m_range, m_range));
+		rectBoundingBox.setFillColor(sf::Color(0, 255, 0, 50));
+		window.draw(rectBoundingBox);
+	}
 }
 
 void Enemy::Walk(sf::Time& deltaTime, sf::Vector2f playerPos)
 {
-	// Move
-	sf::Vector2f movement = m_velocity;
-	movement.x *= deltaTime.asSeconds();
-	movement.y *= deltaTime.asSeconds();
-	m_sprite.move(movement);
-
 	int changeDir = rand() % 100;
 
 	sf::Vector2f position = m_sprite.getPosition();
@@ -117,12 +127,6 @@ void Enemy::Follow(sf::Time& deltaTime, sf::Vector2f playerPos)
 	m_velocity.x = m_speed * cos(angle);
 	m_velocity.y = m_speed * sin(angle);
 
-	// Move
-	sf::Vector2f movement = m_velocity;
-	movement.x *= deltaTime.asSeconds();
-	movement.y *= deltaTime.asSeconds();
-	m_sprite.move(movement);
-
 	float distance = Utils::dist(m_sprite.getPosition(), playerPos);
 	if (distance > m_range) {
 		m_currentState = State::CHANGEDIR;
@@ -146,6 +150,13 @@ void Enemy::ChangeDir(sf::Time& deltaTime)
 		m_velocity.x = m_speed * cos(angle);
 		m_velocity.y = m_speed * sin(angle);
 		m_currentState = State::WALK;
+		// Guatd 0
+		if (m_velocity.x == 0) {
+			m_velocity.x = DBL_EPSILON;
+		}
+		if (m_velocity.y == 0) {
+			m_velocity.y = DBL_EPSILON;
+		}
 
 		// Get the direction
 		m_direction.reset();

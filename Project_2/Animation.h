@@ -9,8 +9,6 @@ class Animation
 	int m_currentIndex = 0;
 	float m_time = 0;
 	float m_duration = 0;
-	
-
 public:
 	Animation(std::vector<sf::IntRect> list = std::vector<sf::IntRect>(), float duration = 0.f) :
 		m_list(list), m_duration(duration) {};

@@ -26,7 +26,8 @@ public:
 	void update(sf::Time deltaTime);
 	void changeCurrentAnim(std::string name);
 	sf::IntRect getCurrentRect() { return m_animations[m_animationName].getRect(); }
-	void addAnimation(std::string name, Animation anim) { m_animations[name] = anim; }
+	void addAnimation(std::string name, std::vector<size_t> lstId, float duration) { m_animations[name] = Animation(getAllRect(lstId), duration); }
+	void addAnimation(std::string name, size_t idBegin, size_t nbr, float duration) { m_animations[name] = Animation(getAllRect(idBegin, nbr), duration); }
 	std::vector<sf::IntRect> getAllRect(std::vector<size_t> lstId);
 	std::vector<sf::IntRect> getAllRect(size_t idBegin, size_t nbr);
 };

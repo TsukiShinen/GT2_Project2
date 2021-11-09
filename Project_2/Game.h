@@ -7,6 +7,7 @@
 #include "Player.h"
 #include "Enemy.h"
 #include "TileMap.h"
+#include "Entity.h"
 
 class Game
 {

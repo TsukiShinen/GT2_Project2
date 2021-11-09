@@ -19,9 +19,7 @@ void Game::load()
     m_map = TileMap("SandBox2.json");
     m_player.setPosition(m_map.getStartingPosition().toVector2());
 
-    std::cout << m_map.getEnemySpawn().size() << std::endl;
     for (sf::IntRect* enemyZone : m_map.getEnemySpawn()) {
-        std::cout << enemyZone->top << std::endl;
         m_orc.push_back(new Enemy(enemyZone));
     }
 
@@ -61,7 +59,7 @@ void Game::draw(sf::RenderWindow& window)
     
     m_player.draw(window);
     for (Enemy* enemy : m_orc) {
-        enemy->draw(window);
+        enemy->draw(window, true);
     }
 
     m_map.drawAfterPlayer(window, m_player.getMapLevel());

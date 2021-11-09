@@ -148,6 +148,7 @@
     <ClCompile Include="Animation.cpp" />
     <ClCompile Include="AnimationController.cpp" />
     <ClCompile Include="Enemy.cpp" />
+    <ClCompile Include="Entity.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="ParticleSystem.cpp" />
@@ -159,12 +160,14 @@
     <ClInclude Include="Animation.h" />
     <ClInclude Include="AnimationController.h" />
     <ClInclude Include="Enemy.h" />
+    <ClInclude Include="Entity.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="json.h" />
     <ClInclude Include="ParticleSystem.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="Point.h" />
     <ClInclude Include="ProgressBar.h" />
+    <ClInclude Include="resource.h" />
     <ClInclude Include="TileMap.h" />
     <ClInclude Include="Utils.h" />
   </ItemGroup>
@@ -178,6 +181,9 @@
     <Image Include="Assets\Map\Minifantasy_ForgottenPlainsTiles.png" />
     <Image Include="Assets\OrcAnimations.png" />
     <Image Include="Assets\PlayerAnimations.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="Project_2.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

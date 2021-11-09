@@ -35,9 +35,6 @@
     <ClCompile Include="Player.cpp">
       <Filter>Entity</Filter>
     </ClCompile>
-    <ClCompile Include="ParticleSystem.cpp">
-      <Filter>Utils</Filter>
-    </ClCompile>
     <ClCompile Include="Game.cpp">
       <Filter>Fichiers sources</Filter>
     </ClCompile>
@@ -49,6 +46,15 @@
     </ClCompile>
     <ClCompile Include="Enemy.cpp">
       <Filter>Entity</Filter>
+    </ClCompile>
+    <ClCompile Include="Entity.cpp">
+      <Filter>Entity</Filter>
+    </ClCompile>
+    <ClCompile Include="ProgressBar.cpp">
+      <Filter>Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="ParticleSystem.cpp">
+      <Filter>Utils</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -76,9 +82,18 @@
     <ClInclude Include="AnimationController.h">
       <Filter>Entity\Animation</Filter>
     </ClInclude>
-    <ClInclude Include="Utils.h" />
     <ClInclude Include="Enemy.h">
       <Filter>Entity</Filter>
+    </ClInclude>
+    <ClInclude Include="resource.h" />
+    <ClInclude Include="Entity.h">
+      <Filter>Entity</Filter>
+    </ClInclude>
+    <ClInclude Include="ProgressBar.h">
+      <Filter>Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="Utils.h">
+      <Filter>Utils</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -98,5 +113,13 @@
     <Image Include="Assets\OrcAnimations.png">
       <Filter>Fichiers de ressources</Filter>
     </Image>
+    <Image Include="Assets\lifeBar.png">
+      <Filter>Fichiers de ressources</Filter>
+    </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="Project_2.rc">
+      <Filter>Fichiers de ressources</Filter>
+    </ResourceCompile>
   </ItemGroup>
 </Project>

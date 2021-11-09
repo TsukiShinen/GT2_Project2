@@ -56,7 +56,6 @@ void TileMap::loadMap(std::string fileName)
                 }
                 newLayer.data.push_back(layer["data"][i]);
             }
-            std::cout << newLayer.name << " : " << newLayer.level << " : " << m_collision[newLayer.level].size() << std::endl;
 
             // Add the new layer
             m_layers.push_back(newLayer);

@@ -25,12 +25,12 @@ public:
 	void draw(sf::RenderWindow&);
 
 	int getMapLevel() { return m_mapLevel; }
-	void setMapLevel(int level) { m_mapLevel = level; std::cout << "Player level : " << m_mapLevel << std::endl; }
+	void setMapLevel(int level) { m_mapLevel = level; }
 
 	bool collides(sf::FloatRect);
 	void changeShowDebug() { _debug = !_debug; }
 	void setPosition(sf::Vector2f position) { _sprite.setPosition(position); }
-	sf::Vector2f getPosition() { return _sprite.getPosition(); }
+	const sf::Vector2f& getPosition() { return _sprite.getPosition(); }
 	void changeSprite();
 };
 

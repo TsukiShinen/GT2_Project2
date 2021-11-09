@@ -12,10 +12,10 @@ Player::Player() {
     _sprite.setTexture(_texture);
     _sprite.setTextureRect(sf::IntRect(0, 352, 32, 32));
     // column starts with 0 as line
-    _animCtrl.addAnimation("WalkBR", Animation(_animCtrl.getAllRect(336, 4), 0.13f));
-    _animCtrl.addAnimation("WalkBL", Animation(_animCtrl.getAllRect(352, 4), 0.13f));
-    _animCtrl.addAnimation("WalkTR", Animation(_animCtrl.getAllRect(368, 4), 0.13f));
-    _animCtrl.addAnimation("WalkTL", Animation(_animCtrl.getAllRect(384, 4), 0.13f));
+    _animCtrl.addAnimation("WalkBR", 336, 4, 0.13f);
+    _animCtrl.addAnimation("WalkBL", 352, 4, 0.13f);
+    _animCtrl.addAnimation("WalkTR", 368, 4, 0.13f);
+    _animCtrl.addAnimation("WalkTL", 384, 4, 0.13f);
 
     std::vector <sf::IntRect> allIdle = _animCtrl.getAllRect(176, 16);
     std::map<std::string, std::pair<size_t, size_t>> IdleMap{ 
@@ -26,9 +26,7 @@ Player::Player() {
     };
     
     for (const auto& Idle : IdleMap) {
-        std::vector <sf::IntRect> tempRectList = _animCtrl.getAllRect(Idle.second.first, Idle.second.second);
-        tempRectList.insert(tempRectList.end(), allIdle.begin(), allIdle.end());
-        _animCtrl.addAnimation(Idle.first, Animation(tempRectList, 0.31111f));
+        _animCtrl.addAnimation(Idle.first, Idle.second.first, Idle.second.second, 0.31111f);
     }
     
     _animCtrl.changeCurrentAnim("IdleBL");
