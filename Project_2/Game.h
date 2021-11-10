@@ -8,12 +8,14 @@
 #include "Enemy.h"
 #include "TileMap.h"
 #include "Entity.h"
+#include "Ressources.h"
 
 class Game
 {
 	Point m_screenSize;
 
 	sf::View gameView;
+	Ressource m_ressource;
 
 	Player m_player;
 	std::vector<Enemy*> m_orc;

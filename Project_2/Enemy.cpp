@@ -2,16 +2,17 @@
 #include "Point.h"
 #include "Utils.h"
 
-Enemy::Enemy(sf::IntRect* zone) :
-	Entity("Orc", 5, "./Assets/OrcAnimations.png")
+Enemy::Enemy(sf::IntRect* zone, const sf::Texture* texture, const sf::Texture* lifebarTexture) :
+	Entity("Orc", 5, texture)
 {
+	m_size = sf::Vector2f(8, 8);
+
 	m_zone = zone;
 	m_sprite.setOrigin(sf::Vector2f(12, 12));
 	m_sprite.setPosition(sf::Vector2f(rand() % m_zone->width + m_zone->left, rand() % m_zone->height + m_zone->top));
 	m_speed = 20.f;
 
-	m_textureLifeBar.loadFromFile("./Assets/lifeBar.png");
-	m_lifeBar = ProgressBar(5.f, sf::Sprite(m_textureLifeBar));
+	m_lifeBar = ProgressBar(5.f, sf::Sprite(*lifebarTexture));
 	m_lifeBar.setValue(5.f);
 
 	setAnimations();
@@ -31,10 +32,10 @@ void Enemy::setAnimations() {
 
 sf::FloatRect Enemy::getBoundingBox()
 {
-	return sf::FloatRect(getPosition().x, getPosition().y, 8, 8);
+	return sf::FloatRect(getPosition().x, getPosition().y, m_size.x, m_size.y);
 }
 
-void Enemy::update(sf::Time& deltaTime, sf::Vector2f playerPos)
+void Enemy::update(sf::Time& deltaTime, const sf::Vector2f& playerPos)
 {
 	// Life bar
 	sf::Vector2f position = m_sprite.getPosition();
@@ -55,31 +56,14 @@ void Enemy::update(sf::Time& deltaTime, sf::Vector2f playerPos)
 		Attack(deltaTime);
 		break;
 	case Enemy::State::CHANGEDIR:
-		ChangeDir(deltaTime);
+		ChangeDir(deltaTime, playerPos);
 		break;
 	default:
 		break;
 	}
 
 	// Animation
-	std::string base = "";
-	if (m_velocity.x != 0 || m_velocity.y != 0)
-		base = "Walk";
-	else
-		base = "Idle";
-
-	std::string dir = "";
-	if (m_direction.up)
-		dir += "U";
-	else if (m_direction.down)
-		dir += "D";
-	if (m_direction.right)
-		dir += "R";
-	else if (m_direction.left)
-		dir += "L";
-
-	std::string name = base + "_" + dir;
-	m_animationController.changeCurrentAnim(name);
+	updateAnimation(deltaTime);
 	
 	Entity::update(deltaTime);
 }
@@ -94,14 +78,14 @@ void Enemy::draw(sf::RenderWindow& window, bool debugMode)
 	if (debugMode) {
 		float r2 = m_range / 2;
 		sf::RectangleShape rectBoundingBox;
-		rectBoundingBox.setPosition(sf::Vector2f(getPosition().x - r2, getPosition().y - r2));
+		rectBoundingBox.setPosition(sf::Vector2f(getCenter().x - r2, getCenter().y - r2));
 		rectBoundingBox.setSize(sf::Vector2f(m_range, m_range));
 		rectBoundingBox.setFillColor(sf::Color(0, 255, 0, 50));
 		window.draw(rectBoundingBox);
 	}
 }
 
-void Enemy::Walk(sf::Time& deltaTime, sf::Vector2f playerPos)
+void Enemy::Walk(sf::Time& deltaTime, const sf::Vector2f& playerPos)
 {
 	int changeDir = rand() % 100;
 
@@ -115,13 +99,10 @@ void Enemy::Walk(sf::Time& deltaTime, sf::Vector2f playerPos)
 	}
 
 	// Look player
-	float distance = Utils::dist(m_sprite.getPosition(), playerPos);
-	if (distance < m_range) {
-		m_currentState = State::FOLLOW;
-	}
+	triggerFollow(playerPos);
 }
 
-void Enemy::Follow(sf::Time& deltaTime, sf::Vector2f playerPos)
+void Enemy::Follow(sf::Time& deltaTime, const sf::Vector2f& playerPos)
 {
 	double angle = Utils::angle(m_sprite.getPosition(), playerPos);
 	m_velocity.x = m_speed * cos(angle);
@@ -137,7 +118,7 @@ void Enemy::Attack(sf::Time& deltaTime)
 {
 }
 
-void Enemy::ChangeDir(sf::Time& deltaTime)
+void Enemy::ChangeDir(sf::Time& deltaTime, const sf::Vector2f& playerPos)
 {
 	m_velocity.x = 0;
 	m_velocity.y = 0;
@@ -169,4 +150,35 @@ void Enemy::ChangeDir(sf::Time& deltaTime)
 		if (m_velocity.x < 0)
 			m_direction.left = true;
 	}
+
+	triggerFollow(playerPos);
+}
+
+
+void Enemy::triggerFollow(const sf::Vector2f& playerPos) {
+	float distance = Utils::dist(m_sprite.getPosition(), playerPos);
+	if (distance < m_range) {
+		m_currentState = State::FOLLOW;
+	}
+}
+
+void Enemy::updateAnimation(sf::Time& deltaTime) {
+	std::string base = "";
+	if (m_velocity.x != 0 || m_velocity.y != 0)
+		base = "Walk";
+	else
+		base = "Idle";
+
+	std::string dir = "";
+	if (m_direction.up)
+		dir += "U";
+	else if (m_direction.down)
+		dir += "D";
+	if (m_direction.right)
+		dir += "R";
+	else if (m_direction.left)
+		dir += "L";
+
+	std::string name = base + "_" + dir;
+	m_animationController.changeCurrentAnim(name);
 }

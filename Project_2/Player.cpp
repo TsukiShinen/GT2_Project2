@@ -176,9 +176,5 @@ void Player::update(sf::Time clock, std::vector<sf::FloatRect>& listOfElements) 
 
 
 bool Player::collides(sf::FloatRect element) {
-    sf::FloatRect boundings = _sprite.getGlobalBounds();
-    if (boundings.intersects(element)) {
-        return true;
-    }
-    return false;
+    return _sprite.getGlobalBounds().intersects(element);
 };

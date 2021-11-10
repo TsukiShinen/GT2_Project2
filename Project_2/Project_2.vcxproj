@@ -168,6 +168,7 @@
     <ClInclude Include="Point.h" />
     <ClInclude Include="ProgressBar.h" />
     <ClInclude Include="resource.h" />
+    <ClInclude Include="Ressources.h" />
     <ClInclude Include="TileMap.h" />
     <ClInclude Include="Utils.h" />
   </ItemGroup>

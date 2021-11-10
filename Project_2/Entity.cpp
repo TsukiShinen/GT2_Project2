@@ -1,4 +1,13 @@
 #include "Entity.h"
+#include<iostream>
+
+Entity::Entity(std::string name, size_t life, const sf::Texture* texture) :
+	m_name(name),
+	m_life(life),
+	m_sprite(*texture)
+{
+
+}
 
 void Entity::update(sf::Time& deltaTime)
 {
@@ -26,7 +35,37 @@ void Entity::draw(sf::RenderWindow& window, bool debugMode)
 	}
 }
 
-sf::Vector2f Entity::getPosition()
+const sf::Vector2f& Entity::getPosition()
 {
 	return m_sprite.getPosition();
+}
+
+const sf::Vector2f& Entity::getCenter()
+{
+	return (getPosition() + sf::Vector2f(m_size.x / 2, m_size.y / 2));
+}
+
+int Entity::getMapLevel()
+{
+	return m_mapLevel;
+}
+
+void Entity::setMapLevel(int level)
+{
+	m_mapLevel = level;
+}
+
+bool Entity::collides(sf::FloatRect rect)
+{
+	return getBoundingBox().intersects(rect);
+}
+
+void Entity::setPosition(sf::Vector2f position)
+{
+	m_sprite.setPosition(position);
+}
+
+const sf::Vector2f& Entity::getSize()
+{
+	return m_size;
 }

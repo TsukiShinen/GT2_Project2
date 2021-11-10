@@ -8,7 +8,7 @@ Game::Game(Point screenSize)
 
 void Game::load()
 {
-   
+    m_ressource.loadTexture();
 
     for (sf::RectangleShape& rectangle : listOfElement) {
         rectangle.setSize(sf::Vector2f(8, 8));
@@ -20,7 +20,7 @@ void Game::load()
     m_player.setPosition(m_map.getStartingPosition().toVector2());
 
     for (sf::IntRect* enemyZone : m_map.getEnemySpawn()) {
-        m_orc.push_back(new Enemy(enemyZone));
+        m_orc.push_back(new Enemy(enemyZone, m_ressource.getOrcTexture(), m_ressource.getlifeBarTexture()));
     }
 
     gameView.setCenter(m_player.getPosition());

@@ -2,47 +2,37 @@
 #include <SFML/Graphics.hpp>
 #include "ProgressBar.h"
 #include "Entity.h"
+#include "Utils.h"
 
 class Enemy : public Entity
 {
-	struct Direction {
-		bool up = false;
-		bool right = true;
-		bool down = true;
-		bool left = false;
-
-		void reset() {
-			up = false;
-			right = false;
-			down = false;
-			left = false;
-		}
-	};
-
-	const enum class State { NONE, WALK, FOLLOW, ATTACK, CHANGEDIR };
+	enum class State { NONE, WALK, FOLLOW, ATTACK, CHANGEDIR };
 
 	sf::IntRect* m_zone;
 	float m_range{ 30.f };
-	Direction m_direction;
 
 	State m_currentState = State::NONE;
+	Utils::Direction m_direction;
+	float m_chronoChangeDir = 0;
+	float m_timeIdle = 2;
 
 	sf::Texture m_textureLifeBar;
 	ProgressBar m_lifeBar;
 
-	float m_chronoChangeDir = 0;
-	float m_timeIdle = 2;
-
-	void Walk(sf::Time& deltaTime, sf::Vector2f playerPos);
-	void Follow(sf::Time& deltaTime, sf::Vector2f playerPos);
+	void Walk(sf::Time& deltaTime, const sf::Vector2f& playerPos);
+	void Follow(sf::Time& deltaTime, const sf::Vector2f& playerPos);
 	void Attack(sf::Time& deltaTime);
-	void ChangeDir(sf::Time& deltaTime);
+	void ChangeDir(sf::Time& deltaTime, const sf::Vector2f& playerPos);
+
+	void triggerFollow(const sf::Vector2f& playerPos);
 
 	void setAnimations();
-public:
-	Enemy(sf::IntRect* zone);
 
-	void update(sf::Time& deltaTime, sf::Vector2f playerPos);
+	void updateAnimation(sf::Time& deltaTime);
+public:
+	Enemy(sf::IntRect* zone, const sf::Texture* texture, const sf::Texture* lifebarTexture);
+
+	void update(sf::Time& deltaTime, const sf::Vector2f& playerPos);
 	void draw(sf::RenderWindow& window, bool debugMode);
 
 	sf::FloatRect getBoundingBox() override;
