@@ -65,6 +65,8 @@ class TileMap
 
 	void loadMap(std::string fileName);
 	Point getPosFromList(size_t columns, size_t id);
+
+	void drawLayer(sf::RenderWindow& window, Layer& layer);
 public:
 	TileMap(std::string fileName = "");
 
@@ -73,8 +75,8 @@ public:
 	std::vector<sf::FloatRect>& getRectCollision(int level) { return m_collision[level]; }
 	std::vector<RectLevel>& getRectLevel() { return m_rectsChangeLevel; }
 
-	void drawBeforePlayer(sf::RenderWindow& window, int level);
-	void drawAfterPlayer(sf::RenderWindow& window, int level);
+	void drawBeforePlayer(sf::RenderWindow& window, int level, bool debugMode);
+	void drawAfterPlayer(sf::RenderWindow& window, int level, bool debugMode);
 
 	void update(sf::Time deltaTime);
 

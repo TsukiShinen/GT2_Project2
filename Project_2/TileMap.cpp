@@ -131,48 +131,46 @@ TileMap::TileMap(std::string fileName)
     std::cout << "Succefully charged tileMap : " << m_name << std::endl;
 }
 
-void TileMap::drawBeforePlayer(sf::RenderWindow& window, int level)
+void TileMap::drawLayer(sf::RenderWindow& window, Layer& layer)
+{
+    for (size_t y = 0; y < layer.height; y++)
+    {
+        for (size_t x = 0; x < layer.width; x++)
+        {
+            if (layer.data[y * layer.width + x] != 0) {
+                m_tileSet.tiles[layer.data[y * layer.width + x]]->sprite.setPosition(x * 8 * m_scale, y * 8 * m_scale);
+                window.draw(m_tileSet.tiles[layer.data[y * layer.width + x]]->sprite);
+                m_tileSet.tiles[layer.data[y * layer.width + x]]->sprite.setColor(sf::Color::White);
+            }
+        }
+    }
+}
+
+void TileMap::drawBeforePlayer(sf::RenderWindow& window, int level, bool debugMode)
 {
     if (m_name == "") { return; }
     for (auto& layer : m_layers)
     {
         if (layer.isVisible) {
             if (layer.drawBeforePlayer && layer.level <= level) {
-                for (size_t y = 0; y < layer.height; y++)
-                {
-                    for (size_t x = 0; x < layer.width; x++)
-                    {
-                        if (layer.data[y * layer.width + x] != 0) {
-                            m_tileSet.tiles[layer.data[y * layer.width + x]]->sprite.setPosition(x * 8 * m_scale, y * 8 * m_scale);
-                            window.draw(m_tileSet.tiles[layer.data[y * layer.width + x]]->sprite);
-                            m_tileSet.tiles[layer.data[y * layer.width + x]]->sprite.setColor(sf::Color::White);
-                        }
-                    }
-                }
+                drawLayer(window, layer);
             }
         }
     }
 }
 
-void TileMap::drawAfterPlayer(sf::RenderWindow& window, int level)
+void TileMap::drawAfterPlayer(sf::RenderWindow& window, int level, bool debugMode)
 {
     if (m_name == "") { return; }
     for (auto& layer : m_layers)
     {
         if (layer.isVisible) {
             if (!layer.drawBeforePlayer || layer.level > level) {
-                for (size_t y = 0; y < layer.height; y++)
-                {
-                    for (size_t x = 0; x < layer.width; x++)
-                    {
-                        if (layer.data[y * layer.width + x] != 0) {
-                            m_tileSet.tiles[layer.data[y * layer.width + x]]->sprite.setPosition(x * 8 * m_scale, y * 8 * m_scale);
-                            window.draw(m_tileSet.tiles[layer.data[y * layer.width + x]]->sprite);
-                            m_tileSet.tiles[layer.data[y * layer.width + x]]->sprite.setColor(sf::Color::White);
-                        }
-                    }
-                }
+                drawLayer(window, layer);
             }
+        }
+        else if (debugMode && level == layer.level) {
+            drawLayer(window, layer);
         }
     }
 }

@@ -19,9 +19,9 @@ class Game
 
 	Player m_player;
 	std::vector<Enemy*> m_orc;
-	sf::Texture pTexture;
 	TileMap m_map;
-	std::vector<sf::RectangleShape> listOfElement{ 10 };
+
+	bool m_debugMode = false;
 
 public:
 	Game(Point screenSize = Point(0, 0));

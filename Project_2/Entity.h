@@ -34,5 +34,5 @@ public:
 	int getMapLevel();
 	void setMapLevel(int level);
 
-	virtual bool collides(const sf::FloatRect&);
+	virtual bool collides(const sf::FloatRect& rect);
 };
