@@ -30,7 +30,7 @@ public:
 		return pow(((point2.x - point1.x, 2) * (point2.x - point1.x, 2) + (point2.y - point1.y, 2) * (point2.y - point1.y, 2)), 0.5f);
 	}
 	static double dist(const sf::Vector2f& point1, const sf::Vector2f& point2) {
-		return pow(((point2.x - point1.x, 2) * (point2.x - point1.x, 2) + (point2.y - point1.y, 2) * (point2.y - point1.y, 2)), 0.5f);
+		return pow(((point2.x - point1.x) * (point2.x - point1.x) + (point2.y - point1.y) * (point2.y - point1.y)), 0.5f);
 	}
 };
 

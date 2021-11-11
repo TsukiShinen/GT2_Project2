@@ -61,6 +61,7 @@ void Enemy::update(sf::Time& deltaTime, const sf::Vector2f& playerPos)
 	default:
 		break;
 	}
+	triggerFollow(playerPos);
 
 	// Animation
 	updateAnimation(deltaTime);
@@ -97,9 +98,6 @@ void Enemy::Walk(sf::Time& deltaTime, const sf::Vector2f& playerPos)
 		changeDir < 1) {
 		m_currentState = State::CHANGEDIR;
 	}
-
-	// Look player
-	triggerFollow(playerPos);
 }
 
 void Enemy::Follow(sf::Time& deltaTime, const sf::Vector2f& playerPos)
@@ -151,11 +149,11 @@ void Enemy::ChangeDir(sf::Time& deltaTime, const sf::Vector2f& playerPos)
 			m_direction.left = true;
 	}
 
-	triggerFollow(playerPos);
 }
 
 
 void Enemy::triggerFollow(const sf::Vector2f& playerPos) {
+	if (m_currentState == State::FOLLOW) { return; }
 	float distance = Utils::dist(m_sprite.getPosition(), playerPos);
 	if (distance < m_range) {
 		m_currentState = State::FOLLOW;
