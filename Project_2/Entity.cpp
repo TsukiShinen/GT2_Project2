@@ -60,6 +60,24 @@ bool Entity::collides(const sf::FloatRect& rect)
 	return getBoundingBox().intersects(rect);
 }
 
+void Entity::takeDamage(float damage)
+{
+	m_life -= damage;
+	if (m_life <= 0) {
+		m_life = 0;
+	}
+}
+
+bool Entity::toRemove()
+{
+	return m_toRemove;
+}
+
+bool Entity::isAlive()
+{
+	return m_life > 0;
+}
+
 void Entity::setPosition(sf::Vector2f position)
 {
 	m_sprite.setPosition(position);

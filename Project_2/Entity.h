@@ -8,7 +8,7 @@ class Entity
 {
 protected:
 	std::string m_name{ "Entity" };
-	size_t m_life{ 0 };
+	float m_life{ 0 };
 
 	sf::Texture m_texture;
 	sf::Sprite m_sprite;
@@ -20,6 +20,7 @@ protected:
 
 	int m_mapLevel = 0;
 
+	bool m_toRemove = false;
 public:
 	Entity(std::string name, size_t life, const sf::Texture* texture);
 
@@ -35,4 +36,8 @@ public:
 	void setMapLevel(int level);
 
 	virtual bool collides(const sf::FloatRect& rect);
+	virtual void takeDamage(float damage);
+
+	bool toRemove();
+	bool isAlive();
 };

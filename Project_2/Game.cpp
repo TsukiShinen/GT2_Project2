@@ -8,7 +8,7 @@ Game::Game(Point screenSize)
 
 void Game::load()
 {
-    m_ressource.loadTexture();
+    m_ressource.load();
 
     m_map = TileMap("SandBox2.json");
     m_player.setPosition(m_map.getStartingPosition().toVector2());
@@ -19,6 +19,7 @@ void Game::load()
 
     gameView.setCenter(m_player.getPosition());
     gameView.setSize((m_screenSize/4).toVector2());
+
 }
 
 void Game::update(sf::Time& deltaTime)
@@ -43,6 +44,13 @@ void Game::update(sf::Time& deltaTime)
             m_player.setMapLevel(rect.toLevel);
         }
     }
+
+    // Remove dead people
+    for (int i = m_orc.size() - 1; i >= 0; --i) {
+        if (m_orc[i]->toRemove()) {
+            m_orc.erase(m_orc.begin() + i);
+        }
+    }
 }
 
 void Game::draw(sf::RenderWindow& window)
@@ -57,7 +65,6 @@ void Game::draw(sf::RenderWindow& window)
     }
 
     m_map.drawAfterPlayer(window, m_player.getMapLevel(), m_debugMode);
-    
 }
 
 void Game::keypressed(sf::Keyboard::Key keyCode)
@@ -67,5 +74,10 @@ void Game::keypressed(sf::Keyboard::Key keyCode)
     }
     if (keyCode == sf::Keyboard::R) {
         m_map = TileMap("SandBox2.json");
+    }
+    if (keyCode == sf::Keyboard::P) {
+        for (Enemy* enemy : m_orc) {
+            enemy->takeDamage(2);
+        }
     }
 }
