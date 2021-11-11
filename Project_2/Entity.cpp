@@ -55,7 +55,7 @@ void Entity::setMapLevel(int level)
 	m_mapLevel = level;
 }
 
-bool Entity::collides(sf::FloatRect rect)
+bool Entity::collides(const sf::FloatRect& rect)
 {
 	return getBoundingBox().intersects(rect);
 }
