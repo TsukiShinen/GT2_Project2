@@ -1,17 +1,11 @@
 #include "Player.h"
 
-//
-//Player::Player(std::pair<int, int> size) {
-//    _sprite._size = size;
-//    _sprite._rect.setFillColor(sf::Color::White);
-//    _sprite._rect.setPosition(_position);
-//}
 
 Player::Player(const sf::Texture* texture) :
     Entity("Player", 100, texture) 
 {  
     m_speed = 30.f;
-
+    m_sword = Sword(texture);
     setAnimation();
     m_size = sf::Vector2f(8, 8);
     m_sprite.setOrigin(sf::Vector2f(12, 12));
@@ -43,6 +37,7 @@ void Player::draw(sf::RenderWindow& window, bool debugMode) {
         window.draw(m_movebox);
     }
     Entity::draw(window, debugMode);
+    m_sword.draw(window, debugMode);
 }
 
 void Player::changeSprite() {
@@ -81,6 +76,10 @@ void Player::changeSprite() {
 
 void Player::update(sf::Time deltaTime, std::vector<sf::FloatRect>& listOfElements) {
     
+    if (m_attack) {
+        m_attack = false;
+    }
+    
     m_direction = { 0.f, 0.f };
 
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Z)) {
@@ -101,7 +100,7 @@ void Player::update(sf::Time deltaTime, std::vector<sf::FloatRect>& listOfElemen
         
     }
     
-
+    
 
     sf::FloatRect playerPos = getBoundingBox();
     sf::FloatRect futurePos = playerPos;
@@ -165,6 +164,8 @@ void Player::update(sf::Time deltaTime, std::vector<sf::FloatRect>& listOfElemen
     m_movebox.setSize(sf::Vector2f(futurePos.width, futurePos.height));
     m_movebox.setPosition(futurePos.left, futurePos.top);
 
+    m_sword.update();
+
     Entity::update(deltaTime);
 }
 
@@ -172,3 +173,22 @@ sf::FloatRect Player::getBoundingBox() {
         return sf::FloatRect(getPosition().x, getPosition().y, m_size.x, m_size.y);
 }
 
+
+
+bool Player::isAttacking(sf::Vector2f Enemy) {
+    if (!m_attack) { return false; }
+    double distance = Utils::dist(m_sprite.getPosition(), Enemy);
+    int angleE = Utils::angle(Enemy, m_sprite.getPosition()) * (180.0 / 3.141592653589793238463);
+    int angleP = Utils::angle(m_sprite.getPosition() + m_direction, m_sprite.getPosition()) * (180.0 / 3.141592653589793238463);
+    angleP = (angleP + 360) % 360;
+    angleE = (angleE + 360) % 360;
+    
+    int angle = angleP - angleE;
+    if (distance < m_sword.getRange() && angle<45 && angle>-45) {
+        std::cout << "enemy : " << angleE << " player " << angleP << "\n";
+        std::cout << "angle : " << angle << "\n\n"; 
+        return true;
+
+    }
+    return false;
+};

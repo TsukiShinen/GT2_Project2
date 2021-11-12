@@ -28,6 +28,10 @@ void Game::update(sf::Time& deltaTime)
     
     for (Enemy* enemy : m_orc) {
         enemy->update(deltaTime, m_player.getPosition());
+        if (m_player.isAttacking(enemy->getPosition())) 
+        {
+            enemy->takeDamage(m_player.getDamage());
+        }
     }
     m_map.update(deltaTime);
     m_player.update(deltaTime, m_map.getRectCollision(m_player.getMapLevel()));
@@ -82,5 +86,8 @@ void Game::keypressed(sf::Keyboard::Key keyCode)
         for (Enemy* enemy : m_orc) {
             enemy->takeDamage(2);
         }
+    }
+    if (keyCode == sf::Keyboard::Space) {
+        m_player.attack();
     }
 }

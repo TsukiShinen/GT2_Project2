@@ -88,3 +88,4 @@ const sf::Vector2f& Entity::getSize()
 {
 	return m_size;
 }
+

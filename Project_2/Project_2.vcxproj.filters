@@ -56,6 +56,9 @@
     <ClCompile Include="ParticleSystem.cpp">
       <Filter>Utils</Filter>
     </ClCompile>
+    <ClCompile Include="Sword.cpp">
+      <Filter>Entity</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="TileMap.h">
@@ -97,6 +100,9 @@
     </ClInclude>
     <ClInclude Include="Ressources.h">
       <Filter>Fichiers sources</Filter>
+    </ClInclude>
+    <ClInclude Include="Sword.h">
+      <Filter>Entity</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
