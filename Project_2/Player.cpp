@@ -7,14 +7,21 @@
 //    _sprite._rect.setPosition(_position);
 //}
 
-Player::Player(const sf::Texture* texture) :
-    Entity("Player", 100, texture) 
+Player::Player(const sf::Texture* texture, const sf::Texture* inventoryTexture, const sf::Texture* itemSelectedTexture) :
+    Entity("Player", 10, texture),
+    m_inventaire(10, inventoryTexture, itemSelectedTexture)
 {  
     m_speed = 30.f;
 
     setAnimation();
     m_size = sf::Vector2f(8, 8);
     m_sprite.setOrigin(sf::Vector2f(12, 12));
+
+    heal = [&](int value) {
+        m_life += value;
+    };
+
+    heal(3);
 }
 
 void Player::setAnimation() {
@@ -38,11 +45,19 @@ void Player::setAnimation() {
 }
 
 void Player::draw(sf::RenderWindow& window, bool debugMode) {
+    std::cout << m_life << std::endl;
     if (debugMode) {
         m_movebox.setFillColor(sf::Color::Green);
         window.draw(m_movebox);
     }
     Entity::draw(window, debugMode);
+}
+
+void Player::drawUI(sf::RenderWindow& window, bool debugMode)
+{
+    if (m_isInventoryOpen) {
+        m_inventaire.draw(window, debugMode);
+    }
 }
 
 void Player::changeSprite() {
@@ -80,90 +95,93 @@ void Player::changeSprite() {
 }
 
 void Player::update(sf::Time deltaTime, std::vector<sf::FloatRect>& listOfElements) {
-    
-    m_direction = { 0.f, 0.f };
 
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Z)) {
-        // move(0, -_speed*clock.asSeconds());
-        m_direction.y = -1;
-    }
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::D)) {
-        // move(_speed * clock.asSeconds(), 0);
-        m_direction.x = 1;
-    }
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::S)) {
-        // move(0, _speed*clock.asSeconds());
-        m_direction.y = 1;
-    }
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Q)) {
-        // move(-_speed*clock.asSeconds(), 0);
-        m_direction.x = -1;
-        
-    }
-    
+    if (!m_isInventoryOpen) {
 
+        m_direction = { 0.f, 0.f };
 
-    sf::FloatRect playerPos = getBoundingBox();
-    sf::FloatRect futurePos = playerPos;
-
-
-    futurePos.left += 1;
-    futurePos.top += 6;
-    futurePos.width = 6;
-    futurePos.height = 2;
-
-    
-    sf::Vector2f initial(m_direction.x, m_direction.y);
-  
-
-    for (const sf::FloatRect& bound : listOfElements) {
-        /*sf::FloatRect bound = thing.getGlobalBounds();*/
-        
-        if (m_direction.x != 0.f) {
-            futurePos.left += m_direction.x;
-            if (futurePos.intersects(bound)) {
-                
-                m_direction.x = 0.f;
-                // reset x
-            }
-            futurePos.left -= initial.x;
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Z)) {
+            // move(0, -_speed*clock.asSeconds());
+            m_direction.y = -1;
         }
-        
-        if (m_direction.y != 0.f) {
-            futurePos.top += m_direction.y;
-            if (futurePos.intersects(bound)) {
-                
-                m_direction.y = 0.f;
-                // reset y
-            }
-            futurePos.top -= initial.y;
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::D)) {
+            // move(_speed * clock.asSeconds(), 0);
+            m_direction.x = 1;
+        }
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::S)) {
+            // move(0, _speed*clock.asSeconds());
+            m_direction.y = 1;
+        }
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Q)) {
+            // move(-_speed*clock.asSeconds(), 0);
+            m_direction.x = -1;
+
         }
 
-        if (m_direction.x != 0.f && m_direction.y != 0.f) {
-            futurePos.left += m_direction.x;
-            futurePos.top += m_direction.y;
-            if (futurePos.intersects(bound)) {
-                m_direction.x = 0.f;
-                m_direction.y = 0.f;
-                // reset both 
+
+
+        sf::FloatRect playerPos = getBoundingBox();
+        sf::FloatRect futurePos = playerPos;
+
+
+        futurePos.left += 1;
+        futurePos.top += 6;
+        futurePos.width = 6;
+        futurePos.height = 2;
+
+
+        sf::Vector2f initial(m_direction.x, m_direction.y);
+
+
+        for (const sf::FloatRect& bound : listOfElements) {
+            /*sf::FloatRect bound = thing.getGlobalBounds();*/
+
+            if (m_direction.x != 0.f) {
+                futurePos.left += m_direction.x;
+                if (futurePos.intersects(bound)) {
+
+                    m_direction.x = 0.f;
+                    // reset x
+                }
+                futurePos.left -= initial.x;
             }
-            futurePos.left -= initial.x;
-            futurePos.top -= initial.y;
+
+            if (m_direction.y != 0.f) {
+                futurePos.top += m_direction.y;
+                if (futurePos.intersects(bound)) {
+
+                    m_direction.y = 0.f;
+                    // reset y
+                }
+                futurePos.top -= initial.y;
+            }
+
+            if (m_direction.x != 0.f && m_direction.y != 0.f) {
+                futurePos.left += m_direction.x;
+                futurePos.top += m_direction.y;
+                if (futurePos.intersects(bound)) {
+                    m_direction.x = 0.f;
+                    m_direction.y = 0.f;
+                    // reset both 
+                }
+                futurePos.left -= initial.x;
+                futurePos.top -= initial.y;
+            }
+
+
         }
-       
 
+        changeSprite();
+
+        // adding after verification
+        futurePos.left += m_direction.x;
+        futurePos.top += m_direction.y;
+
+        m_velocity = m_direction;
+
+        m_movebox.setSize(sf::Vector2f(futurePos.width, futurePos.height));
+        m_movebox.setPosition(futurePos.left, futurePos.top);
     }
-    
-    changeSprite();
-
-    // adding after verification
-    futurePos.left += m_direction.x;
-    futurePos.top += m_direction.y;
-
-    m_velocity = m_direction;
-
-    m_movebox.setSize(sf::Vector2f(futurePos.width, futurePos.height));
-    m_movebox.setPosition(futurePos.left, futurePos.top);
 
     Entity::update(deltaTime);
 }
@@ -172,3 +190,19 @@ sf::FloatRect Player::getBoundingBox() {
         return sf::FloatRect(getPosition().x, getPosition().y, m_size.x, m_size.y);
 }
 
+bool Player::pickItem(Item* item)
+{
+    return m_inventaire.addItem(item);
+}
+void Player::keypressed(sf::Keyboard::Key keyCode)
+{
+    if (keyCode == sf::Keyboard::E) {
+        m_isInventoryOpen = !m_isInventoryOpen;
+        m_velocity.x = 0;
+        m_velocity.y = 0;
+        m_animationController.changeCurrentAnim("IdleBR");
+    }
+    if (m_isInventoryOpen) {
+        m_inventaire.keypressed(keyCode);
+    }
+}

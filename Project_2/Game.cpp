@@ -1,5 +1,7 @@
 #include "Game.h"
 #include "TileMap.h"
+#include <SFML/Graphics.hpp>
+#include <functional>
 
 Game::Game(Point screenSize)
 {
@@ -11,15 +13,21 @@ void Game::load()
     m_ressource.load();
 
     m_map = TileMap("SandBox2.json");
-    m_player = Player(m_ressource.getPlayerTexture());
+    m_player.pickItem(new Item("Meat", m_ressource.getMeat(), Item::Type::Potion, m_player.heal));
+    m_player.pickItem(new Item("Meat", m_ressource.getMeat(), Item::Type::Potion, m_player.heal));
+    m_player.pickItem(new Item("Meat", m_ressource.getMeat(), Item::Type::Potion, m_player.heal));
+    m_player.pickItem(new Item("Meat", m_ressource.getMeat(), Item::Type::Potion, m_player.heal));
+    m_player.pickItem(new Item("Meat", m_ressource.getMeat(), Item::Type::Potion, m_player.heal));
     m_player.setPosition(m_map.getStartingPosition().toVector2());
 
     for (sf::IntRect* enemyZone : m_map.getEnemySpawn()) {
         m_orc.push_back(new Enemy(enemyZone, m_ressource.getOrcTexture(), m_ressource.getlifeBarTexture()));
     }
 
+    guiView.setCenter(100, 75);
+    guiView.setSize((m_screenSize / 4).toVector2());
     gameView.setCenter(m_player.getPosition());
-    gameView.setSize((m_screenSize/4).toVector2());
+    gameView.setSize((m_screenSize / 4).toVector2());
 
 }
 
@@ -58,6 +66,7 @@ void Game::update(sf::Time& deltaTime)
 
 void Game::draw(sf::RenderWindow& window)
 {
+    // Game
     window.setView(gameView);
     m_map.drawBeforePlayer(window, m_player.getMapLevel(), m_debugMode);
 
@@ -68,6 +77,10 @@ void Game::draw(sf::RenderWindow& window)
     }
 
     m_map.drawAfterPlayer(window, m_player.getMapLevel(), m_debugMode);
+
+    // GUI
+    window.setView(guiView);
+    m_player.drawUI(window, m_debugMode);
 }
 
 void Game::keypressed(sf::Keyboard::Key keyCode)
@@ -83,4 +96,5 @@ void Game::keypressed(sf::Keyboard::Key keyCode)
             enemy->takeDamage(2);
         }
     }
+    m_player.keypressed(keyCode);
 }
