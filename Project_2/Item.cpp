@@ -18,6 +18,11 @@ void Item::setPosition(const sf::Vector2f& position)
 	m_icon.setPosition(position);
 }
 
+sf::FloatRect Item::getBoundingBox()
+{
+	return m_icon.getGlobalBounds();
+}
+
 Item::Type Item::getType()
 {
 	return m_type;

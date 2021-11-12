@@ -14,10 +14,6 @@ void Game::load()
 
     m_map = TileMap("SandBox2.json");
     m_player.pickItem(new Item("Meat", m_ressource.getMeat(), Item::Type::Potion, m_player.heal));
-    m_player.pickItem(new Item("Meat", m_ressource.getMeat(), Item::Type::Potion, m_player.heal));
-    m_player.pickItem(new Item("Meat", m_ressource.getMeat(), Item::Type::Potion, m_player.heal));
-    m_player.pickItem(new Item("Meat", m_ressource.getMeat(), Item::Type::Potion, m_player.heal));
-    m_player.pickItem(new Item("Meat", m_ressource.getMeat(), Item::Type::Potion, m_player.heal));
     m_player.setPosition(m_map.getStartingPosition().toVector2());
 
     for (sf::IntRect* enemyZone : m_map.getEnemySpawn()) {
@@ -54,10 +50,23 @@ void Game::update(sf::Time& deltaTime)
         }
     }
 
+    // Pick Item
+    for (int i = m_groundItems.size() - 1; i >= 0; --i) {
+        if (m_player.collides(m_groundItems[i]->getBoundingBox())) {
+            m_player.pickItem(m_groundItems[i]);
+            m_groundItems.erase(m_groundItems.begin() + i);
+        }
+    }
+
+
     // Remove dead people
     for (int i = m_orc.size() - 1; i >= 0; --i) {
         if (m_orc[i]->toRemove()) {
             Enemy* enemy = m_orc[i];
+
+            m_groundItems.push_back(new Item("Meat", m_ressource.getMeat(), Item::Type::Potion, m_player.heal));
+            m_groundItems[m_groundItems.size() - 1]->setPosition(enemy->getPosition());
+
             m_orc.erase(m_orc.begin() + i);
             delete enemy;
         }
@@ -74,6 +83,10 @@ void Game::draw(sf::RenderWindow& window)
     m_player.draw(window, m_debugMode);
     for (Enemy* enemy : m_orc) {
         enemy->draw(window, m_debugMode);
+    }
+
+    for (Item* item : m_groundItems) {
+        item->drawIcon(window, m_debugMode);
     }
 
     m_map.drawAfterPlayer(window, m_player.getMapLevel(), m_debugMode);

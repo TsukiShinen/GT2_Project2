@@ -11,6 +11,7 @@ public:
 
 	void drawIcon(sf::RenderWindow& window, bool debugMode);
 	void setPosition(const sf::Vector2f& position);
+	sf::FloatRect getBoundingBox();
 	Type getType();
 	std::function<void(int)> use;
 private:
