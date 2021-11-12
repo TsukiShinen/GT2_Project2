@@ -124,7 +124,5 @@ void Game::keypressed(sf::Keyboard::Key keyCode)
         }
     }
     m_player.keypressed(keyCode);
-    if (keyCode == sf::Keyboard::Space) {
-        m_player.attack();
-    }
+    
 }

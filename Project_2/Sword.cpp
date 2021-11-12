@@ -9,34 +9,46 @@ Sword::Sword(const sf::Texture* texture) :
 }
 
 void Sword::setAnimation() {
-	m_animationController.addAnimation("Normal", 384, 4, 0.23f);
-	m_animationController.addAnimation("Start", 384, 15, 0.23f);
-	m_animationController.addAnimation("Fire", 388, 11, 0.23f);
-	m_animationController.changeCurrentAnim("Fire");
+	m_animationController.addAnimation("Normal", 400, 4, 0.23f);
+	m_animationController.addAnimation("Start", 400, 15, 0.13f);
+	m_animationController.addAnimation("Fire", 404, 11, 0.10f);
+	m_animationController.changeCurrentAnim("Start");
 }
 
-void Sword::attack(int angle) {
-	m_ratio = 180 / m_attackSpeed;
-	m_startAngle = (angle - 180 + 360) % 360;
-	if (angle <= 180) {
+void Sword::attack(float angle) {
+	angle = fmod((angle + 360), 360);
+	m_ratio = 1; // ceil(180/ m_attackSpeed);
+	
+	if (angle <= 90 || angle >= 270) {
 		m_ratio *= (-1);
+		m_startAngle = fmod((angle + 90 + 360), 360);
 	}
+	else {
+		
+		m_startAngle = fmod((angle - 90 + 360), 360);
+	}
+	m_hitting = true;
 	m_sprite.setRotation(m_startAngle);
+	std::cout << "Original angle : " << angle << std::endl;
+	std::cout << "Start angle : " << m_startAngle << std::endl;
 }
 
-void Sword::update(sf::Time deltaTime, sf::Vector2f position, bool isAttacking, sf::Vector2f direction) {
-	int rotation = m_sprite.getRotation();
-	if(m_elapsedTime != 0) {
-		if (m_elapsedTime > m_attackSpeed) {
-			m_sprite.setRotation(0);
-			m_elapsedTime = 0;
-		}
-		else {
-			int tempAngle = (rotation + int(m_ratio) + 360)%360;
+void Sword::update(sf::Time deltaTime, sf::Vector2f position, bool isAttacking) {
+		if (m_hitting) {
+			int actualRotation = m_sprite.getRotation();
+			m_elapsedTime += deltaTime.asSeconds();
+			
+			float tempAngle = fmod(ceil(m_startAngle + (180 * (m_elapsedTime/m_attackSpeed) * m_ratio) + 360), 360);
+			// std::cout << "temp angle " << tempAngle << std::endl;
 			m_sprite.setRotation(tempAngle);
+			if (m_elapsedTime > m_attackSpeed) {
+				m_sprite.setRotation(0);
 
+				m_hitting = false;
+				m_elapsedTime = 0;
+			}
 		}
-	}
-
+			
 	setPosition(position);
+	Entity::update(deltaTime);
 }

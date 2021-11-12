@@ -15,7 +15,7 @@ public:
 	Player(const sf::Texture* texture, const sf::Texture* inventoryTexture, const sf::Texture* itemSelectedTexture);
 	void setAnimation();
 
-	void attack() { if (!m_attack) { m_attack = true; } };
+	void attack();
 	bool isAttacking(sf::Vector2f);
 	void update(sf::Time, std::vector<sf::FloatRect>&);
 	void draw(sf::RenderWindow&, bool);
@@ -38,6 +38,7 @@ private:
 	sf::RectangleShape m_movebox;
 	Inventaire m_inventaire;
 
+	int angle = 0;
 	bool m_isInventoryOpen = false;
 	float m_duration = 1.f;
 	float m_time = 0.f;

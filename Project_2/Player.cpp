@@ -3,10 +3,11 @@
 
 Player::Player(const sf::Texture* texture, const sf::Texture* inventoryTexture, const sf::Texture* itemSelectedTexture) :
     Entity("Player", 10, texture),
-    m_inventaire(10, inventoryTexture, itemSelectedTexture)
+    m_inventaire(10, inventoryTexture, itemSelectedTexture),
+    m_sword(texture)
 {  
     m_speed = 30.f;
-    m_sword = Sword(texture);
+    
     setAnimation();
     m_size = sf::Vector2f(8, 8);
     m_sprite.setOrigin(sf::Vector2f(12, 12));
@@ -39,7 +40,7 @@ void Player::setAnimation() {
 }
 
 void Player::draw(sf::RenderWindow& window, bool debugMode) {
-    std::cout << m_life << std::endl;
+   /* std::cout << m_life << std::endl;*/
     if (debugMode) {
         m_movebox.setFillColor(sf::Color::Green);
         window.draw(m_movebox);
@@ -90,7 +91,6 @@ void Player::changeSprite() {
 }
 
 void Player::update(sf::Time deltaTime, std::vector<sf::FloatRect>& listOfElements) {
-
     if (!m_isInventoryOpen) {
 
         m_direction = { 0.f, 0.f };
@@ -184,7 +184,7 @@ void Player::update(sf::Time deltaTime, std::vector<sf::FloatRect>& listOfElemen
         m_movebox.setPosition(futurePos.left, futurePos.top);
     }
 
-    m_sword.update();
+    m_sword.update(deltaTime, getCenter(), m_attack);
 
     Entity::update(deltaTime);
 }
@@ -194,6 +194,12 @@ sf::FloatRect Player::getBoundingBox() {
 }
 
 
+void Player::attack() { 
+    if (!m_attack && !m_sword.isHitting()) { 
+        m_attack = true; 
+        m_sword.attack(Utils::angle(m_sprite.getPosition() + m_direction, m_sprite.getPosition()) * (180.0 / 3.141592653589793238463));
+    } 
+};
 
 bool Player::isAttacking(sf::Vector2f Enemy) {
     if (!m_attack) { return false; }
@@ -212,10 +218,12 @@ bool Player::isAttacking(sf::Vector2f Enemy) {
     }
     return false;
 };
+
 bool Player::pickItem(Item* item)
 {
     return m_inventaire.addItem(item);
 }
+
 void Player::keypressed(sf::Keyboard::Key keyCode)
 {
     if (keyCode == sf::Keyboard::E) {
@@ -226,5 +234,8 @@ void Player::keypressed(sf::Keyboard::Key keyCode)
     }
     if (m_isInventoryOpen) {
         m_inventaire.keypressed(keyCode);
+    }
+    if (keyCode == sf::Keyboard::Space) {
+        attack();
     }
 }

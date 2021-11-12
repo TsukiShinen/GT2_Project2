@@ -28,7 +28,7 @@ public:
 	sf::IntRect getCurrentRect() { return m_animations[m_animationName].getRect(); }
 	void addAnimation(std::string name, std::vector<size_t> lstId, float duration) { m_animations[name] = Animation(getAllRect(lstId), duration); }
 	void addAnimation(std::string name, size_t idBegin, size_t nbr, float duration) { m_animations[name] = Animation(getAllRect(idBegin, nbr), duration); }
-	void addAnimation(std::string name, std::vector<size_t> lstId, float duration, std::string nextAnim) { m_animations[name] = Animation(getAllRect(lstId), duration, nextAnim); }
+	// void addAnimation(std::string name, std::vector<size_t> lstId, float duration, std::string nextAnim) { m_animations[name] = Animation(getAllRect(lstId), duration, nextAnim); }
 	std::vector<sf::IntRect> getAllRect(std::vector<size_t> lstId);
 	std::vector<sf::IntRect> getAllRect(size_t idBegin, size_t nbr);
 	int getAnimCountdown() { return m_animations[m_animationName].getEndIndex(); }
