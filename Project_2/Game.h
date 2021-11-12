@@ -16,8 +16,7 @@ class Game
 
 	sf::View gameView;
 	Ressource m_ressource;
-
-	Player m_player;
+	Player m_player = Player(m_ressource.getPlayerTexture());
 	std::vector<Enemy*> m_orc;
 	TileMap m_map;
 

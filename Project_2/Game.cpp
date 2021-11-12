@@ -59,7 +59,7 @@ void Game::draw(sf::RenderWindow& window)
     m_map.drawBeforePlayer(window, m_player.getMapLevel(), m_debugMode);
 
     
-    m_player.draw(window);
+    m_player.draw(window, true);
     for (Enemy* enemy : m_orc) {
         enemy->draw(window, m_debugMode);
     }
