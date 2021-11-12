@@ -125,4 +125,7 @@
       <Filter>Fichiers de ressources</Filter>
     </ResourceCompile>
   </ItemGroup>
+  <ItemGroup>
+    <Font Include="Assets\Fonts\mainFont.TTF" />
+  </ItemGroup>
 </Project>

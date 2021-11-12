@@ -13,7 +13,7 @@ Enemy::Enemy(sf::IntRect* zone, const sf::Texture* texture, const sf::Texture* l
 	m_speed = 20.f;
 
 	m_lifeBar = ProgressBar(5.f, sf::Sprite(*lifebarTexture));
-	m_lifeBar.setValue(5.f);
+	m_lifeBar.setValue(m_life);
 
 	setAnimations();
 }
@@ -27,6 +27,10 @@ void Enemy::setAnimations() {
 	m_animationController.addAnimation("Walk_UR", 352, 4, 0.3f);
 	m_animationController.addAnimation("Walk_DR", 320, 4, 0.3f);
 	m_animationController.addAnimation("Walk_DL", 336, 4, 0.3f);
+	int nbrFrameDie = 12;
+	float timeFrameDie = 0.15f;
+	m_animationController.addAnimation("Die", 304, nbrFrameDie, timeFrameDie);
+	m_timeDie = nbrFrameDie * timeFrameDie;
 	m_animationController.changeCurrentAnim("Idle_DL");
 }
 
@@ -58,13 +62,18 @@ void Enemy::update(sf::Time& deltaTime, const sf::Vector2f& playerPos)
 	case Enemy::State::CHANGEDIR:
 		ChangeDir(deltaTime, playerPos);
 		break;
+	case Enemy::State::DIE:
+		Die(deltaTime);
+		break;
 	default:
 		break;
 	}
+	if (m_currentState != State::DIE) {
+		triggerFollow(playerPos);
+		// Animation
+		updateAnimation(deltaTime);
+	}
 
-	// Animation
-	updateAnimation(deltaTime);
-	
 	Entity::update(deltaTime);
 }
 
@@ -97,9 +106,6 @@ void Enemy::Walk(sf::Time& deltaTime, const sf::Vector2f& playerPos)
 		changeDir < 1) {
 		m_currentState = State::CHANGEDIR;
 	}
-
-	// Look player
-	triggerFollow(playerPos);
 }
 
 void Enemy::Follow(sf::Time& deltaTime, const sf::Vector2f& playerPos)
@@ -151,11 +157,20 @@ void Enemy::ChangeDir(sf::Time& deltaTime, const sf::Vector2f& playerPos)
 			m_direction.left = true;
 	}
 
-	triggerFollow(playerPos);
+}
+
+
+void Enemy::Die(sf::Time& deltaTime) {
+	m_animationController.changeCurrentAnim("Die");
+	m_chronoDie += deltaTime.asSeconds();
+	if (m_chronoDie >= m_timeDie) {
+		m_toRemove = true;
+	}
 }
 
 
 void Enemy::triggerFollow(const sf::Vector2f& playerPos) {
+	if (m_currentState == State::FOLLOW) { return; }
 	float distance = Utils::dist(m_sprite.getPosition(), playerPos);
 	if (distance < m_range) {
 		m_currentState = State::FOLLOW;
@@ -181,4 +196,15 @@ void Enemy::updateAnimation(sf::Time& deltaTime) {
 
 	std::string name = base + "_" + dir;
 	m_animationController.changeCurrentAnim(name);
+}
+
+
+void Enemy::takeDamage(float damage) {
+	Entity::takeDamage(damage);
+	m_lifeBar.setValue(m_life);
+	if (m_life == 0) {
+		m_velocity.x = 0;
+		m_velocity.y = 0;
+		m_currentState = State::DIE;
+	}
 }
