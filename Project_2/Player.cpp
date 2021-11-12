@@ -10,6 +10,8 @@
 Player::Player(const sf::Texture* texture) :
     Entity("Player", 100, texture) 
 {  
+    m_speed = 30.f;
+
     setAnimation();
     m_size = sf::Vector2f(8, 8);
     m_sprite.setOrigin(sf::Vector2f(12, 12));
@@ -77,7 +79,7 @@ void Player::changeSprite() {
     
 }
 
-void Player::update(sf::Time clock, std::vector<sf::FloatRect>& listOfElements) {
+void Player::update(sf::Time deltaTime, std::vector<sf::FloatRect>& listOfElements) {
     
     m_direction = { 0.f, 0.f };
 
@@ -105,10 +107,10 @@ void Player::update(sf::Time clock, std::vector<sf::FloatRect>& listOfElements) 
     sf::FloatRect futurePos = playerPos;
 
 
-    futurePos.left += 13;
-    futurePos.top += 17;
+    futurePos.left += 1;
+    futurePos.top += 6;
     futurePos.width = 6;
-    futurePos.height = 3;
+    futurePos.height = 2;
 
     
     sf::Vector2f initial(m_direction.x, m_direction.y);
@@ -158,9 +160,12 @@ void Player::update(sf::Time clock, std::vector<sf::FloatRect>& listOfElements) 
     futurePos.left += m_direction.x;
     futurePos.top += m_direction.y;
 
+    m_velocity = m_direction;
+
     m_movebox.setSize(sf::Vector2f(futurePos.width, futurePos.height));
     m_movebox.setPosition(futurePos.left, futurePos.top);
-    m_sprite.move(m_direction);
+
+    Entity::update(deltaTime);
 }
 
 sf::FloatRect Player::getBoundingBox() {

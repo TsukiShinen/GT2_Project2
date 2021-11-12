@@ -11,6 +11,7 @@ void Game::load()
     m_ressource.load();
 
     m_map = TileMap("SandBox2.json");
+    m_player = Player(m_ressource.getPlayerTexture());
     m_player.setPosition(m_map.getStartingPosition().toVector2());
 
     for (sf::IntRect* enemyZone : m_map.getEnemySpawn()) {
@@ -48,7 +49,9 @@ void Game::update(sf::Time& deltaTime)
     // Remove dead people
     for (int i = m_orc.size() - 1; i >= 0; --i) {
         if (m_orc[i]->toRemove()) {
+            Enemy* enemy = m_orc[i];
             m_orc.erase(m_orc.begin() + i);
+            delete enemy;
         }
     }
 }
@@ -59,7 +62,7 @@ void Game::draw(sf::RenderWindow& window)
     m_map.drawBeforePlayer(window, m_player.getMapLevel(), m_debugMode);
 
     
-    m_player.draw(window, true);
+    m_player.draw(window, m_debugMode);
     for (Enemy* enemy : m_orc) {
         enemy->draw(window, m_debugMode);
     }
