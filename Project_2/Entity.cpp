@@ -1,5 +1,6 @@
 #include "Entity.h"
-#include<iostream>
+#include <iostream>
+#include "Utils.h"
 
 Entity::Entity(std::string name, size_t life, const sf::Texture* texture) :
 	m_name(name),
@@ -12,7 +13,7 @@ Entity::Entity(std::string name, size_t life, const sf::Texture* texture) :
 void Entity::update(sf::Time& deltaTime)
 {
 	// Move the sprite
-	m_sprite.move(m_velocity * deltaTime.asSeconds());
+	m_sprite.move(Utils::normalize(m_velocity) * m_speed * deltaTime.asSeconds());
 
 	// Animate
 	m_animationController.update(deltaTime);

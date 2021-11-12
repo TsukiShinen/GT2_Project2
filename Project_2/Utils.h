@@ -32,5 +32,17 @@ public:
 	static double dist(const sf::Vector2f& point1, const sf::Vector2f& point2) {
 		return pow(((point2.x - point1.x) * (point2.x - point1.x) + (point2.y - point1.y) * (point2.y - point1.y)), 0.5f);
 	}
+
+	static float norme(const sf::Vector2f& vector) {
+		return sqrt(vector.x * vector.x + vector.y * vector.y);
+	}
+
+	static sf::Vector2f normalize(const sf::Vector2f& vector) {
+		float n = norme(vector);
+		if (n != 0) {
+			return vector / n;
+		}
+		return sf::Vector2f(0, 0);
+	}
 };
 
