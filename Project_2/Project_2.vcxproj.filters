@@ -24,6 +24,9 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Items">
+      <UniqueIdentifier>{b4b5e627-22fa-4dcb-8832-41770741dc75}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -55,6 +58,12 @@
     </ClCompile>
     <ClCompile Include="ParticleSystem.cpp">
       <Filter>Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="Inventaire.cpp">
+      <Filter>Items</Filter>
+    </ClCompile>
+    <ClCompile Include="Item.cpp">
+      <Filter>Items</Filter>
     </ClCompile>
     <ClCompile Include="Sword.cpp">
       <Filter>Entity</Filter>
@@ -101,6 +110,12 @@
     <ClInclude Include="Ressources.h">
       <Filter>Fichiers sources</Filter>
     </ClInclude>
+    <ClInclude Include="Inventaire.h">
+      <Filter>Items</Filter>
+    </ClInclude>
+    <ClInclude Include="Item.h">
+      <Filter>Items</Filter>
+    </ClInclude>
     <ClInclude Include="Sword.h">
       <Filter>Entity</Filter>
     </ClInclude>
@@ -123,6 +138,15 @@
       <Filter>Fichiers de ressources</Filter>
     </Image>
     <Image Include="Assets\lifeBar.png">
+      <Filter>Fichiers de ressources</Filter>
+    </Image>
+    <Image Include="Assets\Inventaire.png">
+      <Filter>Fichiers de ressources</Filter>
+    </Image>
+    <Image Include="Assets\Items.png">
+      <Filter>Fichiers de ressources</Filter>
+    </Image>
+    <Image Include="Assets\itemSelected.png">
       <Filter>Fichiers de ressources</Filter>
     </Image>
   </ItemGroup>

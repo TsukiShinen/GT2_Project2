@@ -15,10 +15,12 @@ class Game
 	Point m_screenSize;
 
 	sf::View gameView;
+	sf::View guiView;
 	Ressource m_ressource;
-	Player m_player = Player(m_ressource.getPlayerTexture());
+	Player m_player = Player(m_ressource.getPlayerTexture(), m_ressource.getInventoryTexture(), m_ressource.getItemSelected());
 	std::vector<Enemy*> m_orc;
 	TileMap m_map;
+	std::vector<Item*> m_groundItems;
 
 	bool m_debugMode = false;
 
