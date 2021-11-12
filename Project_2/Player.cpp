@@ -7,70 +7,71 @@
 //    _sprite._rect.setPosition(_position);
 //}
 
-Player::Player() {
-    _texture.loadFromFile("./Assets/PlayerAnimations.png");
-    _sprite.setTexture(_texture);
-    _sprite.setTextureRect(sf::IntRect(0, 352, 32, 32));
-    // column starts with 0 as line
-    _animCtrl.addAnimation("WalkBR", 336, 4, 0.13f);
-    _animCtrl.addAnimation("WalkBL", 352, 4, 0.13f);
-    _animCtrl.addAnimation("WalkTR", 368, 4, 0.13f);
-    _animCtrl.addAnimation("WalkTL", 384, 4, 0.13f);
-
-    std::vector <sf::IntRect> allIdle = _animCtrl.getAllRect(176, 16);
-    std::map<std::string, std::pair<size_t, size_t>> IdleMap{ 
-        {"IdleBR", {176, 16}}, 
-        {"IdleBL", {192,8}}, 
-        {"IdleTR", {208,16}}, 
-        {"IdleTL", {224,16}}
-    };
-    
-    for (const auto& Idle : IdleMap) {
-        _animCtrl.addAnimation(Idle.first, Idle.second.first, Idle.second.second, 0.31111f);
-    }
-    
-    _animCtrl.changeCurrentAnim("IdleBL");
+Player::Player(const sf::Texture* texture) :
+    Entity("Player", 100, texture) 
+{  
+    setAnimation();
+    m_size = sf::Vector2f(8, 8);
+    m_sprite.setOrigin(sf::Vector2f(12, 12));
 }
 
-void Player::draw(sf::RenderWindow& window) {
-    if (_debug) {
-        _hitbox.setFillColor(sf::Color::Red);
-        _movebox.setFillColor(sf::Color::Green);
-        window.draw(_hitbox);
-        window.draw(_movebox);
+void Player::setAnimation() {
+    m_animationController.addAnimation("WalkBR", 336, 4, 0.13f);
+    m_animationController.addAnimation("WalkBL", 352, 4, 0.13f);
+    m_animationController.addAnimation("WalkTR", 368, 4, 0.13f);
+    m_animationController.addAnimation("WalkTL", 384, 4, 0.13f);
+    std::vector <sf::IntRect> allIdle = m_animationController.getAllRect(176, 16);
+    std::map<std::string, std::pair<size_t, size_t>> IdleMap{
+        {"IdleBR", {176, 16}},
+        {"IdleBL", {192,8}},
+        {"IdleTR", {208,16}},
+        {"IdleTL", {224,16}}
+    };
+
+    for (const auto& Idle : IdleMap) {
+        m_animationController.addAnimation(Idle.first, Idle.second.first, Idle.second.second, 0.31111f);
     }
-    window.draw(_sprite);
+
+    m_animationController.changeCurrentAnim("IdleBL");
+}
+
+void Player::draw(sf::RenderWindow& window, bool debugMode) {
+    if (debugMode) {
+        m_movebox.setFillColor(sf::Color::Green);
+        window.draw(m_movebox);
+    }
+    Entity::draw(window, debugMode);
 }
 
 void Player::changeSprite() {
-    if (_direction.x < 0) 
+    if (m_direction.x < 0) 
     {
-        _directionAnim = _directionAnim.replace(5, 1, "L");
+        m_directionAnim = m_directionAnim.replace(5, 1, "L");
     }
-    else if (0 < _direction.x)
+    else if (0 < m_direction.x)
     {
-        _directionAnim = _directionAnim.replace(5, 1, "R");
+        m_directionAnim = m_directionAnim.replace(5, 1, "R");
     }
-    if (_direction.y < 0)
+    if (m_direction.y < 0)
     {
-        _directionAnim = _directionAnim.replace(4, 1, "T");
+        m_directionAnim = m_directionAnim.replace(4, 1, "T");
     }
-    else if (_direction.y > 0)
+    else if (m_direction.y > 0)
     {
-        _directionAnim = _directionAnim.replace(4, 1, "B");
+        m_directionAnim = m_directionAnim.replace(4, 1, "B");
     }
 
 
-    if (_direction.x == 0.f && _direction.y == 0.f) {
+    if (m_direction.x == 0.f && m_direction.y == 0.f) {
         std::string test = "Idle";
-        test.append(_directionAnim.substr(4, 6));
-        if (_animCtrl.getCurrentAnim() != test) {
-            _animCtrl.changeCurrentAnim(test);
+        test.append(m_directionAnim.substr(4, 6));
+        if (m_animationController.getCurrentAnim() != test) {
+            m_animationController.changeCurrentAnim(test);
         }       
     }
     else {
-        if (_animCtrl.getCurrentAnim() != _directionAnim) {
-            _animCtrl.changeCurrentAnim(_directionAnim);
+        if (m_animationController.getCurrentAnim() != m_directionAnim) {
+            m_animationController.changeCurrentAnim(m_directionAnim);
         }
     }
     
@@ -78,40 +79,31 @@ void Player::changeSprite() {
 
 void Player::update(sf::Time clock, std::vector<sf::FloatRect>& listOfElements) {
     
-    _direction = { 0.f, 0.f };
-    float speed = _speed * clock.asSeconds();
+    m_direction = { 0.f, 0.f };
+
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Z)) {
         // move(0, -_speed*clock.asSeconds());
-        _direction.y = -speed;
+        m_direction.y = -1;
     }
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::D)) {
         // move(_speed * clock.asSeconds(), 0);
-        _direction.x = speed;
+        m_direction.x = 1;
     }
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::S)) {
         // move(0, _speed*clock.asSeconds());
-        _direction.y = speed;
+        m_direction.y = 1;
     }
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Q)) {
         // move(-_speed*clock.asSeconds(), 0);
-        _direction.x = -speed;
+        m_direction.x = -1;
         
     }
+    
 
-    if (_direction.x != 0.f && _direction.y != 0.f) {
-        float ratio = speed / std::sqrtf(2);
-        _direction.x *= ratio/speed;
-        _direction.y *= ratio / speed;
-    }
-    sf::FloatRect playerPos = _sprite.getGlobalBounds();
+
+    sf::FloatRect playerPos = getBoundingBox();
     sf::FloatRect futurePos = playerPos;
-    _animCtrl.update(clock);
-    
-    _sprite.setTextureRect(_animCtrl.getCurrentRect());
-    
 
-   
-    
 
     futurePos.left += 13;
     futurePos.top += 17;
@@ -119,38 +111,38 @@ void Player::update(sf::Time clock, std::vector<sf::FloatRect>& listOfElements) 
     futurePos.height = 3;
 
     
-    sf::Vector2f initial(_direction.x, _direction.y);
+    sf::Vector2f initial(m_direction.x, m_direction.y);
   
 
     for (const sf::FloatRect& bound : listOfElements) {
         /*sf::FloatRect bound = thing.getGlobalBounds();*/
         
-        if (_direction.x != 0.f) {
-            futurePos.left += _direction.x;
+        if (m_direction.x != 0.f) {
+            futurePos.left += m_direction.x;
             if (futurePos.intersects(bound)) {
                 
-                _direction.x = 0.f;
+                m_direction.x = 0.f;
                 // reset x
             }
             futurePos.left -= initial.x;
         }
         
-        if (_direction.y != 0.f) {
-            futurePos.top += _direction.y;
+        if (m_direction.y != 0.f) {
+            futurePos.top += m_direction.y;
             if (futurePos.intersects(bound)) {
                 
-                _direction.y = 0.f;
+                m_direction.y = 0.f;
                 // reset y
             }
             futurePos.top -= initial.y;
         }
 
-        if (_direction.x != 0.f && _direction.y != 0.f) {
-            futurePos.left += _direction.x;
-            futurePos.top += _direction.y;
+        if (m_direction.x != 0.f && m_direction.y != 0.f) {
+            futurePos.left += m_direction.x;
+            futurePos.top += m_direction.y;
             if (futurePos.intersects(bound)) {
-                _direction.x = 0.f;
-                _direction.y = 0.f;
+                m_direction.x = 0.f;
+                m_direction.y = 0.f;
                 // reset both 
             }
             futurePos.left -= initial.x;
@@ -163,18 +155,15 @@ void Player::update(sf::Time clock, std::vector<sf::FloatRect>& listOfElements) 
     changeSprite();
 
     // adding after verification
-    futurePos.left += _direction.x;
-    futurePos.top += _direction.y;
-    //fixing 32 by 32 hitbox to 8 by 8 texture
-    _hitbox.setSize(sf::Vector2f(8, 8));
-    _hitbox.setPosition(futurePos.left -1, futurePos.top -5);
-    _movebox.setSize(sf::Vector2f(futurePos.width, futurePos.height));
-    _movebox.setPosition(futurePos.left, futurePos.top);
-    _sprite.move(_direction);
+    futurePos.left += m_direction.x;
+    futurePos.top += m_direction.y;
+
+    m_movebox.setSize(sf::Vector2f(futurePos.width, futurePos.height));
+    m_movebox.setPosition(futurePos.left, futurePos.top);
+    m_sprite.move(m_direction);
 }
 
+sf::FloatRect Player::getBoundingBox() {
+        return sf::FloatRect(getPosition().x, getPosition().y, m_size.x, m_size.y);
+}
 
-
-bool Player::collides(sf::FloatRect element) {
-    return _sprite.getGlobalBounds().intersects(element);
-};

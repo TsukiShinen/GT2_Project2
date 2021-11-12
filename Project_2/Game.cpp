@@ -57,7 +57,7 @@ void Game::draw(sf::RenderWindow& window)
     m_map.drawBeforePlayer(window, m_player.getMapLevel());
 
     
-    m_player.draw(window);
+    m_player.draw(window, true);
     for (Enemy* enemy : m_orc) {
         enemy->draw(window, true);
     }
@@ -70,7 +70,6 @@ void Game::keypressed(sf::Keyboard::Key keyCode)
 {
     if (keyCode == sf::Keyboard::C) {
         m_map.changeShowDebug();
-        m_player.changeShowDebug();
     }
     if (keyCode == sf::Keyboard::R) {
         m_map = TileMap("SandBox2.json");

@@ -2,35 +2,25 @@
 #include <SFML/Graphics.hpp>
 #include <iostream>
 #include <cmath>
-
+#include "Entity.h"
 #include "AnimationController.h"
 
-class Player 
+class Player : public Entity
 {
 private:
-	float _speed = 30.f;
-	sf::Vector2f _direction {0.f, 0.f};
-	bool _debug = false;
-	//std::vector<sf::IntRect> _anim;
-	sf::Texture _texture;
-	AnimationController _animCtrl;
-	sf::Sprite _sprite;
-	sf::RectangleShape _hitbox;
-	sf::RectangleShape _movebox;
-	std::string _directionAnim = "WalkBL";
-	int m_mapLevel = 0;
+	std::string m_directionAnim = "WalkBL";
+	sf::Vector2f m_direction {0.f, 0.f};
+
+	sf::RectangleShape m_movebox;
 public:
-	Player();
+	Player(const sf::Texture* texture);
+	void setAnimation();
+
 	void update(sf::Time, std::vector<sf::FloatRect>&);
-	void draw(sf::RenderWindow&);
+	void draw(sf::RenderWindow&, bool);
 
-	int getMapLevel() { return m_mapLevel; }
-	void setMapLevel(int level) { m_mapLevel = level; }
-
-	bool collides(sf::FloatRect);
-	void changeShowDebug() { _debug = !_debug; }
-	void setPosition(sf::Vector2f position) { _sprite.setPosition(position); }
-	const sf::Vector2f& getPosition() { return _sprite.getPosition(); }
 	void changeSprite();
+
+	sf::FloatRect getBoundingBox() override;
 };
 
