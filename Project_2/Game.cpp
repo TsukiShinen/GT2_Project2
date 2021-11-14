@@ -22,9 +22,9 @@ void Game::load()
     m_player.pickItem(new Item("Meat", m_ressource.getMeat(), Item::Type::Potion, m_player.heal));
     m_player.pickItem(new Item("Meat", m_ressource.getMeat(), Item::Type::Potion, m_player.heal));
     m_player.pickItem(new Item("Meat", m_ressource.getMeat(), Item::Type::Potion, m_player.heal));
-    m_player.setPosition(m_map.getStartingPosition().toVector2());
+    m_player.setPosition(m_map.getStartingPosition());
 
-    for (sf::IntRect* enemyZone : m_map.getEnemySpawn()) {
+    for (sf::IntRect& enemyZone : m_map.getEnemyZone()) {
         m_orc.push_back(new Enemy(enemyZone, m_ressource.getOrcTexture(), m_ressource.getlifeBarTexture()));
     }
 
@@ -46,7 +46,7 @@ void Game::update(sf::Time& deltaTime)
         }
     }
     m_map.update(deltaTime);
-    m_player.update(deltaTime, m_map.getRectCollision(m_player.getMapLevel()));
+    m_player.update(deltaTime, m_map.getCollisionColliders(m_player.getMapLevel()));
     sf::Vector2f cameraPosition = m_player.getPosition();
     if (cameraPosition.y < 75) {
         cameraPosition.y = 75;
@@ -56,7 +56,7 @@ void Game::update(sf::Time& deltaTime)
     }
     gameView.setCenter(cameraPosition);
 
-    for (auto& rect : m_map.getRectLevel()) {
+    for (auto& rect : m_map.getHeightLevelColliders()) {
         if (m_player.collides(rect.rect)) {
             m_player.setMapLevel(rect.toLevel);
         }
