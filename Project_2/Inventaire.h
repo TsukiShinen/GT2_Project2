@@ -7,6 +7,7 @@
 class Inventaire
 {
 	size_t m_size;
+	int m_sizeRow;
 
 	std::vector<Item*> m_lstItem{ 9 };
 

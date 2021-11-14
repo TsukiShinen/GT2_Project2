@@ -1,6 +1,6 @@
 #include "Item.h"
 
-Item::Item(std::string name, sf::Sprite* icon, Type type, std::function<void(int)>& function):
+Item::Item(std::string name, sf::Sprite* icon, Type type, std::function<void(int)>& function, int value):
 	m_name(name),
 	m_icon(*icon),
 	m_type(type)
@@ -26,4 +26,9 @@ sf::FloatRect Item::getBoundingBox()
 Item::Type Item::getType()
 {
 	return m_type;
+}
+
+void Item::activate()
+{
+	use(m_value);
 }
