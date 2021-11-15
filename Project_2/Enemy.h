@@ -8,7 +8,7 @@ class Enemy : public Entity
 {
 	enum class State { NONE, WALK, FOLLOW, ATTACK, CHANGEDIR, DIE };
 
-	sf::IntRect* m_zone;
+	sf::IntRect m_zone;
 	float m_range{ 30.f };
 
 	State m_currentState = State::NONE;
@@ -33,7 +33,7 @@ class Enemy : public Entity
 
 	void updateAnimation(sf::Time& deltaTime);
 public:
-	Enemy(sf::IntRect* zone, const sf::Texture* texture, const sf::Texture* lifebarTexture);
+	Enemy(sf::IntRect& zone, const sf::Texture* texture, const sf::Texture* lifebarTexture);
 
 	void update(sf::Time& deltaTime, const sf::Vector2f& playerPos);
 	void draw(sf::RenderWindow& window, bool debugMode) override;

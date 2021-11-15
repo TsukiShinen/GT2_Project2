@@ -3,27 +3,26 @@
 #include <vector>
 #include <SFML/Graphics.hpp>
 
-struct Point;
-
 class TileMap
 {
+	const std::string PATH = "./Assets/Map/";
+
 	struct Layer {
-		size_t id;
 		std::string name;
 		std::vector<size_t> data;
 		size_t width;
 		size_t height;
-		int level = 0;
+		int heightLevel = 0;
 		bool drawBeforePlayer = true;
-		bool collision = false;
+		bool isCollisionLayer = false;
 
 		bool isVisible;
 	};
 
 	struct TileAnimation {
-		sf::IntRect rect;
+		sf::IntRect textureRect;
 		size_t duration;
-		float time = 0;
+		float chrono = 0;
 	};
 
 	struct Tile {
@@ -34,60 +33,32 @@ class TileMap
 		std::vector<TileAnimation> animation;
 	};
 
-	struct TileSets {
+	struct TileSet {
 		std::vector<Tile*> tiles;
 		std::vector<sf::Texture*> textures;
 	};
 
-	struct RectLevel {
+	struct HeightLevelCollider {
 		sf::FloatRect rect;
 		int toLevel;
 	};
-
-	const std::string PATH = "./Assets/Map/";
-	size_t m_scale = 1;
-
-	std::string m_name = "";
-
-	size_t m_height = 0;
-	size_t m_width = 0;
-	size_t m_tileHeight = 0;
-	size_t m_tileWidth = 0;
-
-	std::vector<Layer> m_layers;
-	TileSets m_tileSet;
-	std::vector<Tile*> m_animatedTile;
-	std::vector<std::vector<sf::FloatRect>> m_collision;
-	std::vector<RectLevel> m_rectsChangeLevel;
-
-	Point m_startingPosition;
-	std::vector<sf::IntRect*> m_enemySpawn;
-
-	void loadMap(std::string fileName);
-	Point getPosFromList(size_t columns, size_t id);
-
-	void drawLayer(sf::RenderWindow& window, Layer& layer);
 public:
 	TileMap(std::string fileName = "");
 
-	Point getStartingPosition() { return m_startingPosition; }
-	std::vector<sf::IntRect*>& getEnemySpawn() { return m_enemySpawn; }
-	std::vector<sf::FloatRect>& getRectCollision(int level) { return m_collision[level]; }
-	std::vector<RectLevel>& getRectLevel() { return m_rectsChangeLevel; }
+	sf::Vector2f getStartingPosition() { return m_startingPosition; }
+	std::vector<sf::IntRect>& getEnemyZone() { return m_lstZoneEnemy; }
+	std::vector<sf::FloatRect>& getCollisionColliders(int level) { return m_lstCollisionCollider[level]; }
+	std::vector<HeightLevelCollider>& getHeightLevelColliders() { return m_lstHeightLevelCollider; }
 
 	void drawBeforePlayer(sf::RenderWindow& window, int level, bool debugMode);
 	void drawAfterPlayer(sf::RenderWindow& window, int level, bool debugMode);
 
 	void update(sf::Time deltaTime);
 
-	void changeShowDebug();
-
 	// move assignment
 	TileMap& operator=(TileMap&& other) noexcept
 	{
 		if (this == &other) { return *this; }
-
-		m_scale = 1;
 
 		m_name = other.m_name;
 
@@ -97,15 +68,37 @@ public:
 		m_tileWidth = other.m_tileWidth;
 
 		m_layers = other.m_layers;
-		m_tileSet = other.m_tileSet;
+		m_tileSets = other.m_tileSets;
 		m_animatedTile = other.m_animatedTile;
 
 		m_startingPosition = other.m_startingPosition;
-		m_enemySpawn = other.m_enemySpawn;
-		m_collision = other.m_collision;
-		m_rectsChangeLevel = other.m_rectsChangeLevel;
+		m_lstZoneEnemy = other.m_lstZoneEnemy;
+		m_lstCollisionCollider = other.m_lstCollisionCollider;
+		m_lstHeightLevelCollider = other.m_lstHeightLevelCollider;
 
 
 		return *this;
 	}
+
+public:
+	std::string m_name = "";
+
+	size_t m_height = 0;
+	size_t m_width = 0;
+	size_t m_tileHeight = 0;
+	size_t m_tileWidth = 0;
+
+	std::vector<Layer> m_layers;
+	TileSet m_tileSets;
+	std::vector<Tile*> m_animatedTile;
+	std::vector<std::vector<sf::FloatRect>> m_lstCollisionCollider;
+	std::vector<HeightLevelCollider> m_lstHeightLevelCollider;
+
+	sf::Vector2f m_startingPosition;
+	std::vector<sf::IntRect> m_lstZoneEnemy;
+
+	void loadMap(std::string fileName);
+	sf::Vector2f getTilePositionFromId(size_t columns, size_t id);
+
+	void drawLayer(sf::RenderWindow& window, Layer& layer);
 };

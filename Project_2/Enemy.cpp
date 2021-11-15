@@ -2,14 +2,14 @@
 #include "Point.h"
 #include "Utils.h"
 
-Enemy::Enemy(sf::IntRect* zone, const sf::Texture* texture, const sf::Texture* lifebarTexture) :
+Enemy::Enemy(sf::IntRect& zone, const sf::Texture* texture, const sf::Texture* lifebarTexture) :
 	Entity("Orc", 5, texture)
 {
 	m_size = sf::Vector2f(8, 8);
 
 	m_zone = zone;
 	m_sprite.setOrigin(sf::Vector2f(12, 12));
-	m_sprite.setPosition(sf::Vector2f(rand() % m_zone->width + m_zone->left, rand() % m_zone->height + m_zone->top));
+	m_sprite.setPosition(sf::Vector2f(rand() % m_zone.width + m_zone.left, rand() % m_zone.height + m_zone.top));
 	m_speed = 20.f;
 
 	m_lifeBar = ProgressBar(5.f, sf::Sprite(*lifebarTexture));
@@ -99,10 +99,10 @@ void Enemy::Walk(sf::Time& deltaTime, const sf::Vector2f& playerPos)
 	int changeDir = rand() % 100;
 
 	sf::Vector2f position = m_sprite.getPosition();
-	if (position.x < m_zone->left ||
-		position.x > m_zone->left + m_zone->width ||
-		position.y < m_zone->top ||
-		position.y > m_zone->top + m_zone->height ||
+	if (position.x < m_zone.left ||
+		position.x > m_zone.left + m_zone.width ||
+		position.y < m_zone.top ||
+		position.y > m_zone.top + m_zone.height ||
 		changeDir < 1) {
 		m_currentState = State::CHANGEDIR;
 	}
@@ -133,7 +133,7 @@ void Enemy::ChangeDir(sf::Time& deltaTime, const sf::Vector2f& playerPos)
 	if (m_chronoChangeDir >= m_timeIdle) {
 		m_chronoChangeDir = 0;
 		m_timeIdle = (rand() % 20 + 5) / 10.f;
-		double angle = Utils::angle(m_sprite.getPosition(), sf::Vector2f(rand() % m_zone->width + m_zone->left, rand() % m_zone->height + m_zone->top));
+		double angle = Utils::angle(m_sprite.getPosition(), sf::Vector2f(rand() % m_zone.width + m_zone.left, rand() % m_zone.height + m_zone.top));
 		m_velocity.x = m_speed * cos(angle);
 		m_velocity.y = m_speed * sin(angle);
 		m_currentState = State::WALK;

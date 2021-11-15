@@ -1,6 +1,5 @@
 #include <fstream>
 #include <iostream>
-#include "Point.h"
 
 #include "TileMap.h"
 
@@ -31,28 +30,27 @@ void TileMap::loadMap(std::string fileName)
         if (layer["type"] == "tilelayer") {
             // Create a new layer
             Layer newLayer;
-            newLayer.id = layer["id"];
             newLayer.name = layer["name"];
             newLayer.width = layer["width"];
             newLayer.height = layer["height"];
             newLayer.isVisible = layer["visible"];
             for (auto& property : layer["properties"]) {
                 if (property["name"] == "level") {
-                    newLayer.level = property["value"];
+                    newLayer.heightLevel = property["value"];
                 }
                 if (property["name"] == "playerBehind") {
                     newLayer.drawBeforePlayer = !property["value"];
                 }
                 if (property["name"] == "Collision") {
-                    newLayer.collision = property["value"];
+                    newLayer.isCollisionLayer = property["value"];
                 }
             }
-            m_collision.emplace_back();
+            m_lstCollisionCollider.emplace_back();
             for (size_t i = 0; i < layer["data"].size(); ++i)
             {
-                if (newLayer.collision && layer["data"][i] != 0) {
-                    Point pos = getPosFromList(newLayer.width, i);
-                    m_collision[newLayer.level].push_back(sf::FloatRect(pos.x * m_tileWidth, pos.y * m_tileWidth, m_tileWidth, m_tileHeight));
+                if (newLayer.isCollisionLayer && layer["data"][i] != 0) {
+                    sf::Vector2f pos = getTilePositionFromId(newLayer.width, i);
+                    m_lstCollisionCollider[newLayer.heightLevel].push_back(sf::FloatRect(pos.x * m_tileWidth, pos.y * m_tileWidth, m_tileWidth, m_tileHeight));
                 }
                 newLayer.data.push_back(layer["data"][i]);
             }
@@ -64,16 +62,16 @@ void TileMap::loadMap(std::string fileName)
         {
             for (auto& obj : layer["objects"]) {
                 if (obj["name"] == "Player") {
-                    m_startingPosition = Point(obj["x"], obj["y"]);
+                    m_startingPosition = sf::Vector2f(obj["x"], obj["y"]);
                 }
                 if (obj["name"] == "Orc") {
-                    m_enemySpawn.push_back(new sf::IntRect(obj["x"], obj["y"], obj["width"], obj["height"]));
+                    m_lstZoneEnemy.push_back(sf::IntRect(obj["x"], obj["y"], obj["width"], obj["height"]));
                 }
                 if (obj["type"] == "Level") {
-                    RectLevel newRectLevel;
+                    HeightLevelCollider newRectLevel;
                     newRectLevel.rect = sf::FloatRect(obj["x"], obj["y"], obj["width"], obj["height"]);
                     newRectLevel.toLevel = obj["properties"][0]["value"];
-                    m_rectsChangeLevel.push_back(newRectLevel);
+                    m_lstHeightLevelCollider.push_back(newRectLevel);
                 }
             }
         }
@@ -83,12 +81,12 @@ void TileMap::loadMap(std::string fileName)
     size_t idTexture = 0;
     size_t lastTileId = 0;
     // Tile 0 is empty
-    m_tileSet.tiles.emplace_back();
+    m_tileSets.tiles.emplace_back();
     for (auto& tileset : jsonTiled["tilesets"]) {
         // Load texture
         std::string imageName = tileset["image"];
-        m_tileSet.textures.emplace_back(new sf::Texture); 
-        if (!m_tileSet.textures[idTexture]->loadFromFile(PATH + imageName))
+        m_tileSets.textures.emplace_back(new sf::Texture); 
+        if (!m_tileSets.textures[idTexture]->loadFromFile(PATH + imageName))
             std::cerr << "Can't load file: " << PATH + imageName << std::endl;
         // Load Tile of the texture
         for (auto& tile : tileset["tiles"])
@@ -99,26 +97,25 @@ void TileMap::loadMap(std::string fileName)
             newTile->id = lastTileId++;
 
             // Set the Texture (sprite)
-            newTile->sprite.setTexture(*m_tileSet.textures[idTexture]);
-            newTile->sprite.setScale(m_scale, m_scale);
+            newTile->sprite.setTexture(*m_tileSets.textures[idTexture]);
             size_t c = tileset["columns"];
             size_t id = tile["id"];
-            Point pos = getPosFromList(c, id);
+            sf::Vector2f pos = getTilePositionFromId(c, id);
             newTile->sprite.setTextureRect(sf::IntRect(pos.x * m_tileWidth, pos.y * m_tileHeight, m_tileWidth, m_tileHeight));
 
             if (tile["animation"] > 0) { // Verify if something in it
                 for (auto& anim : tile["animation"])
                 {
                     TileAnimation newTileAnim;
-                    Point animPos = getPosFromList(tileset["columns"], anim["tileid"]);
-                    newTileAnim.rect = sf::IntRect(animPos.x * m_tileWidth, animPos.y * m_tileHeight, m_tileWidth, m_tileHeight);
+                    sf::Vector2f animPos = getTilePositionFromId(tileset["columns"], anim["tileid"]);
+                    newTileAnim.textureRect = sf::IntRect(animPos.x * m_tileWidth, animPos.y * m_tileHeight, m_tileWidth, m_tileHeight);
                     newTileAnim.duration = anim["duration"];
                     newTile->animation.push_back(newTileAnim);
                     m_animatedTile.push_back(newTile);
                 }
             }
 
-            m_tileSet.tiles.push_back(newTile);
+            m_tileSets.tiles.push_back(newTile);
         }
         idTexture++;
     }
@@ -138,38 +135,38 @@ void TileMap::drawLayer(sf::RenderWindow& window, Layer& layer)
         for (size_t x = 0; x < layer.width; x++)
         {
             if (layer.data[y * layer.width + x] != 0) {
-                m_tileSet.tiles[layer.data[y * layer.width + x]]->sprite.setPosition(x * 8 * m_scale, y * 8 * m_scale);
-                window.draw(m_tileSet.tiles[layer.data[y * layer.width + x]]->sprite);
-                m_tileSet.tiles[layer.data[y * layer.width + x]]->sprite.setColor(sf::Color::White);
+                m_tileSets.tiles[layer.data[y * layer.width + x]]->sprite.setPosition(x * 8 , y * 8 );
+                window.draw(m_tileSets.tiles[layer.data[y * layer.width + x]]->sprite);
+                m_tileSets.tiles[layer.data[y * layer.width + x]]->sprite.setColor(sf::Color::White);
             }
         }
     }
 }
 
-void TileMap::drawBeforePlayer(sf::RenderWindow& window, int level, bool debugMode)
+void TileMap::drawBeforePlayer(sf::RenderWindow& window, int heightLevel, bool debugMode)
 {
     if (m_name == "") { return; }
     for (auto& layer : m_layers)
     {
         if (layer.isVisible) {
-            if (layer.drawBeforePlayer && layer.level <= level) {
+            if (layer.drawBeforePlayer && layer.heightLevel <= heightLevel) {
                 drawLayer(window, layer);
             }
         }
     }
 }
 
-void TileMap::drawAfterPlayer(sf::RenderWindow& window, int level, bool debugMode)
+void TileMap::drawAfterPlayer(sf::RenderWindow& window, int heightLevel, bool debugMode)
 {
     if (m_name == "") { return; }
     for (auto& layer : m_layers)
     {
         if (layer.isVisible) {
-            if (!layer.drawBeforePlayer || layer.level > level) {
+            if (!layer.drawBeforePlayer || layer.heightLevel > heightLevel) {
                 drawLayer(window, layer);
             }
         }
-        else if (debugMode && level == layer.level) {
+        else if (debugMode && heightLevel == layer.heightLevel) {
             drawLayer(window, layer);
         }
     }
@@ -180,10 +177,10 @@ void TileMap::update(sf::Time deltaTime)
     if (m_name == "") { return; }
     for (Tile* tile : m_animatedTile) 
     {
-        tile->animation[tile->currentAnim].time += deltaTime.asMilliseconds();
-        if (tile->animation[tile->currentAnim].time >= tile->animation[tile->currentAnim].duration) {
-            tile->animation[tile->currentAnim].time = 0;
-            tile->sprite.setTextureRect(tile->animation[tile->currentAnim].rect);
+        tile->animation[tile->currentAnim].chrono += deltaTime.asMilliseconds();
+        if (tile->animation[tile->currentAnim].chrono >= tile->animation[tile->currentAnim].duration) {
+            tile->animation[tile->currentAnim].chrono = 0;
+            tile->sprite.setTextureRect(tile->animation[tile->currentAnim].textureRect);
             tile->currentAnim++;
             if (tile->currentAnim >= tile->animation.size()) {
                 tile->currentAnim = 0;
@@ -192,16 +189,6 @@ void TileMap::update(sf::Time deltaTime)
     }
 }
 
-void TileMap::changeShowDebug()
-{
-    for (auto& layer : m_layers)
-    {
-        if (layer.collision) {
-            layer.isVisible = !layer.isVisible;
-        }
-    }
-}
-
-Point TileMap::getPosFromList(size_t columns, size_t id) {
-    return Point(id % columns, id / columns);
+sf::Vector2f TileMap::getTilePositionFromId(size_t columns, size_t id) {
+    return sf::Vector2f(id % columns, id / columns);
 }
