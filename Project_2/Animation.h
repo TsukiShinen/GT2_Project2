@@ -21,6 +21,6 @@ public:
 	void update(sf::Time deltaTime);
 	// bool update(sf::Time deltaTime);
 	void resetIndex(int index) { m_currentIndex = 0; }
-	int getEndIndex() { return m_list.size() - m_currentIndex - 1; }
+	size_t getEndIndex() { return m_list.size() - m_currentIndex - 1; }
 };
 

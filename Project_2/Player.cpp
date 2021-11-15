@@ -45,7 +45,16 @@ void Player::draw(sf::RenderWindow& window, bool debugMode) {
         m_movebox.setFillColor(sf::Color::Green);
         window.draw(m_movebox);
     }
-    Entity::draw(window, debugMode);
+    
+    if (m_direction.down) {
+        Entity::draw(window, debugMode);
+        m_sword.draw(window, debugMode);
+    }
+    else {
+        m_sword.draw(window, debugMode);
+        Entity::draw(window, debugMode);
+    }
+    
 }
 
 void Player::drawUI(sf::RenderWindow& window, bool debugMode)
@@ -53,7 +62,7 @@ void Player::drawUI(sf::RenderWindow& window, bool debugMode)
     if (m_isInventoryOpen) {
         m_inventaire.draw(window, debugMode);
     }
-    m_sword.draw(window, debugMode);
+   
 }
 
 void Player::changeSprite() {
@@ -174,7 +183,7 @@ void Player::update(sf::Time deltaTime, std::vector<sf::FloatRect>& listOfElemen
         changeSprite();
     }
 
-    m_sword.update(deltaTime, getCenter(), m_attack);
+    m_sword.update(deltaTime, getCenter(), m_attack, calcAngle());
 
     Entity::update(deltaTime);
 }
@@ -233,8 +242,9 @@ sf::FloatRect Player::intersects(std::vector<sf::FloatRect>& listOfElements) {
 
 void Player::attack() { 
     if (!m_attack && !m_sword.isHitting()) { 
-        m_attack = true; 
-        m_sword.attack(Utils::angle(m_sprite.getPosition() + m_velocity, m_sprite.getPosition()) * (180.0 / 3.141592653589793238463));
+        m_attack = true;
+
+        m_sword.attack(Utils::angle(m_sprite.getPosition(), m_sprite.getPosition() + m_velocity) * (180.0 / 3.141592653589793238463));
     } 
 };
 
@@ -242,14 +252,13 @@ bool Player::isAttacking(sf::Vector2f Enemy) {
     if (!m_attack) { return false; }
     double distance = Utils::dist(m_sprite.getPosition(), Enemy);
     int angleE = Utils::angle(Enemy, m_sprite.getPosition()) * (180.0 / 3.141592653589793238463);
-    int angleP = Utils::angle(m_sprite.getPosition() + m_velocity, m_sprite.getPosition()) * (180.0 / 3.141592653589793238463);
+    int angleP = calcAngle();
     angleP = (angleP + 360) % 360;
     angleE = (angleE + 360) % 360;
     
     int angle = angleP - angleE;
     if (distance < m_sword.getRange() && angle<45 && angle>-45) {
-        std::cout << "enemy : " << angleE << " player " << angleP << "\n";
-        std::cout << "angle : " << angle << "\n\n"; 
+        
         return true;
 
     }
@@ -267,7 +276,7 @@ void Player::keypressed(sf::Keyboard::Key keyCode)
         m_isInventoryOpen = !m_isInventoryOpen;
         m_velocity.x = 0;
         m_velocity.y = 0;
-        m_animationController.changeCurrentAnim("IdleBR");
+        m_animationController.changeCurrentAnim("Idle_DR");
     }
     if (m_isInventoryOpen) {
         m_inventaire.keypressed(keyCode);
@@ -275,4 +284,8 @@ void Player::keypressed(sf::Keyboard::Key keyCode)
     if (keyCode == sf::Keyboard::Space) {
         attack();
     }
+}
+
+float Player::calcAngle() {
+    return Utils::angle(m_sprite.getPosition() + m_velocity, m_sprite.getPosition())* (180.0 / 3.141592653589793238463);
 }
