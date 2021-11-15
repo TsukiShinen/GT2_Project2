@@ -156,7 +156,6 @@ void Enemy::ChangeDir(sf::Time& deltaTime, const sf::Vector2f& playerPos)
 		if (m_velocity.x < 0)
 			m_direction.left = true;
 	}
-
 }
 
 

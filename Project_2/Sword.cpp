@@ -39,7 +39,7 @@ void Sword::update(sf::Time deltaTime, sf::Vector2f position, bool isAttacking) 
 			m_elapsedTime += deltaTime.asSeconds();
 			
 			float tempAngle = fmod(ceil(m_startAngle + (180 * (m_elapsedTime/m_attackSpeed) * m_ratio) + 360), 360);
-			// std::cout << "temp angle " << tempAngle << std::endl;
+
 			m_sprite.setRotation(tempAngle);
 			if (m_elapsedTime > m_attackSpeed) {
 				m_sprite.setRotation(0);
@@ -48,7 +48,7 @@ void Sword::update(sf::Time deltaTime, sf::Vector2f position, bool isAttacking) 
 				m_elapsedTime = 0;
 			}
 		}
-			
+
 	setPosition(position);
 	Entity::update(deltaTime);
 }

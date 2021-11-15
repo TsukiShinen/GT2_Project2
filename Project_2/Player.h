@@ -17,7 +17,10 @@ public:
 
 	void attack();
 	bool isAttacking(sf::Vector2f);
+
+	sf::FloatRect intersects(std::vector<sf::FloatRect>& listOfElements);
 	void update(sf::Time, std::vector<sf::FloatRect>&);
+
 	void draw(sf::RenderWindow&, bool);
 	void drawUI(sf::RenderWindow&, bool);
 
@@ -33,10 +36,13 @@ public:
 	void keypressed(sf::Keyboard::Key keyCode);
 private:
 	std::string m_directionAnim = "WalkBL";
-	sf::Vector2f m_direction{ 0.f, 0.f };
+	Utils::Direction m_direction;
+	
 
 	sf::RectangleShape m_movebox;
 	Inventaire m_inventaire;
+
+	const sf::FloatRect m_walkingBox = sf::FloatRect(1, 6, 6, 2);
 
 	int angle = 0;
 	bool m_isInventoryOpen = false;
