@@ -68,6 +68,9 @@
     <ClCompile Include="Sword.cpp">
       <Filter>Entity</Filter>
     </ClCompile>
+    <ClCompile Include="Camera.cpp">
+      <Filter>Fichiers sources</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="TileMap.h">
@@ -119,6 +122,7 @@
     <ClInclude Include="Sword.h">
       <Filter>Entity</Filter>
     </ClInclude>
+    <ClInclude Include="Camera.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\Map\SandBox.json" />

@@ -147,7 +147,6 @@ void Player::update(sf::Time deltaTime, std::vector<sf::FloatRect>& listOfElemen
         addForce(Utils::normalize(movement) * m_speed);
 
         // direction changes
-        std::cout << "velocity : " << m_velocity.x << std::endl;
         if (m_velocity.y < 0)
         {
             m_direction.up = true;

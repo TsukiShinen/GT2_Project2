@@ -9,12 +9,13 @@
 #include "TileMap.h"
 #include "Entity.h"
 #include "Ressources.h"
+#include "Camera.h"
 
 class Game
 {
 	Point m_screenSize;
 
-	sf::View gameView;
+	Camera m_camera;
 	sf::View guiView;
 	Ressource m_ressource;
 	Player m_player = Player(m_ressource.getPlayerTexture(), m_ressource.getInventoryTexture(), m_ressource.getItemSelected());

@@ -30,9 +30,7 @@ void Game::load()
 
     guiView.setCenter(100, 75);
     guiView.setSize((m_screenSize / 4).toVector2());
-    gameView.setCenter(m_player.getPosition());
-    gameView.setSize((m_screenSize / 4).toVector2());
-
+    m_camera.setView(sf::View(m_player.getPosition(), (m_screenSize / 4).toVector2()));
 }
 
 void Game::update(sf::Time& deltaTime)
@@ -54,7 +52,7 @@ void Game::update(sf::Time& deltaTime)
     if (cameraPosition.x < 100) {
         cameraPosition.x = 100;
     }
-    gameView.setCenter(cameraPosition);
+    m_camera.Follow(deltaTime, cameraPosition);
 
     for (auto& rect : m_map.getHeightLevelColliders()) {
         if (m_player.collides(rect.rect)) {
@@ -90,7 +88,7 @@ void Game::update(sf::Time& deltaTime)
 void Game::draw(sf::RenderWindow& window)
 {
     // Game
-    window.setView(gameView);
+    window.setView(m_camera.getView());
     m_map.drawBeforePlayer(window, m_player.getMapLevel(), m_debugMode);
 
 

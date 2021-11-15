@@ -111,8 +111,8 @@ void Enemy::Walk(sf::Time& deltaTime, const sf::Vector2f& playerPos)
 void Enemy::Follow(sf::Time& deltaTime, const sf::Vector2f& playerPos)
 {
 	double angle = Utils::angle(m_sprite.getPosition(), playerPos);
-	m_velocity.x = m_speed * cos(angle);
-	m_velocity.y = m_speed * sin(angle);
+	m_thrust.x = m_speed * cos(angle);
+	m_thrust.y = m_speed * sin(angle);
 
 	float distance = Utils::dist(m_sprite.getPosition(), playerPos);
 	if (distance > m_range) {
@@ -134,26 +134,26 @@ void Enemy::ChangeDir(sf::Time& deltaTime, const sf::Vector2f& playerPos)
 		m_chronoChangeDir = 0;
 		m_timeIdle = (rand() % 20 + 5) / 10.f;
 		double angle = Utils::angle(m_sprite.getPosition(), sf::Vector2f(rand() % m_zone.width + m_zone.left, rand() % m_zone.height + m_zone.top));
-		m_velocity.x = m_speed * cos(angle);
-		m_velocity.y = m_speed * sin(angle);
+		m_thrust.x = m_speed * cos(angle);
+		m_thrust.y = m_speed * sin(angle);
 		m_currentState = State::WALK;
 		// Guatd 0
-		if (m_velocity.x == 0) {
-			m_velocity.x = DBL_EPSILON;
+		if (m_thrust.x == 0) {
+			m_thrust.x = DBL_EPSILON;
 		}
-		if (m_velocity.y == 0) {
-			m_velocity.y = DBL_EPSILON;
+		if (m_thrust.y == 0) {
+			m_thrust.y = DBL_EPSILON;
 		}
 
 		// Get the direction
 		m_direction.reset();
-		if (m_velocity.y < 0)
+		if (m_thrust.y < 0)
 			m_direction.up = true;
-		if (m_velocity.x > 0)
+		if (m_thrust.x > 0)
 			m_direction.right = true;
-		if (m_velocity.y > 0)
+		if (m_thrust.y > 0)
 			m_direction.down = true;
-		if (m_velocity.x < 0)
+		if (m_thrust.x < 0)
 			m_direction.left = true;
 	}
 }
