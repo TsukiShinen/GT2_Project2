@@ -13,13 +13,17 @@ Entity::Entity(std::string name, size_t life, const sf::Texture* texture) :
 void Entity::update(sf::Time& deltaTime)
 {
 	// Move the sprite
-	sf::Vector2f thrust = Utils::normalize(m_velocity) * m_speed;
-	sf::Vector2f acc(thrust / m_masse - m_friction * m_vitessse);
-	m_vitessse = m_vitessse + acc;
+	sf::Vector2f acc(m_thrust / m_masse - m_friction * m_velocity);
+	m_velocity = m_velocity + acc;
+	if (abs(m_velocity.x) < m_friction) {
+		m_velocity.x = 0;
+	}
+	if (abs(m_velocity.y) < m_friction) {
+		m_velocity.y = 0;
+	}
 
-	setPosition(getPosition() + m_vitessse * deltaTime.asSeconds());
-
-	//m_sprite.move(Utils::normalize(m_velocity) * m_speed * deltaTime.asSeconds());
+	setPosition(getPosition() + m_velocity * deltaTime.asSeconds());
+	m_thrust = { 0.f, 0.f };
 
 	// Animate
 	m_animationController.update(deltaTime);
@@ -73,6 +77,11 @@ void Entity::takeDamage(float damage)
 	if (m_life <= 0) {
 		m_life = 0;
 	}
+}
+
+void Entity::addForce(sf::Vector2f force)
+{
+	m_thrust += force;
 }
 
 bool Entity::toRemove()

@@ -121,7 +121,7 @@ void Player::changeSprite() {
 void Player::update(sf::Time deltaTime, std::vector<sf::FloatRect>& listOfElements) {
     if (!m_isInventoryOpen) 
     {
-        m_velocity = { 0.f, 0.f };
+        sf::Vector2f movement{ 0.f, 0.f };
     
         if (m_attack) {
             m_attack = false;
@@ -129,42 +129,44 @@ void Player::update(sf::Time deltaTime, std::vector<sf::FloatRect>& listOfElemen
 
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Z)) {
             // move(0, -_speed*clock.asSeconds());
-            m_velocity.y = -1;
+            movement.y = -1;
         }
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::D)) {
             // move(_speed * clock.asSeconds(), 0);
-            m_velocity.x = 1;
+            movement.x = 1;
         }
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::S)) {
             // move(0, _speed*clock.asSeconds());
-            m_velocity.y = 1;
+            movement.y = 1;
         }
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Q)) {
             // move(-_speed*clock.asSeconds(), 0);
-            m_velocity.x = -1;
+            movement.x = -1;
         
         }
+        addForce(Utils::normalize(movement) * m_speed);
 
         // direction changes
-        if (m_velocity.y < 0) 
+        std::cout << "velocity : " << m_velocity.x << std::endl;
+        if (m_velocity.y < 0)
         {
             m_direction.up = true;
             m_direction.down = false;
         }
            
-        if (m_velocity.x > 0) 
+        if (m_velocity.x > 0)
         {
             m_direction.right = true;
             m_direction.left = false;
         }
             
-        if (m_velocity.y > 0) 
+        if (m_velocity.y > 0)
         {
             m_direction.down = true;
             m_direction.up = false;
         }
             
-        if (m_velocity.x < 0) 
+        if (m_velocity.x < 0)
         {
             m_direction.left = true;
             m_direction.right = false;
@@ -174,8 +176,8 @@ void Player::update(sf::Time deltaTime, std::vector<sf::FloatRect>& listOfElemen
         sf::FloatRect futurePos = intersects(listOfElements);
 
         // adding after verification
-        futurePos.left += m_velocity.x;
-        futurePos.top += m_velocity.y;
+        futurePos.left += movement.x;
+        futurePos.top += movement.y;
 
         // update de la movebox
         m_movebox.setSize(sf::Vector2f(futurePos.width, futurePos.height));
@@ -287,5 +289,5 @@ void Player::keypressed(sf::Keyboard::Key keyCode)
 }
 
 float Player::calcAngle() {
-    return Utils::angle(m_sprite.getPosition() + m_velocity, m_sprite.getPosition())* (180.0 / 3.141592653589793238463);
+    return Utils::angle(getPosition() + m_velocity, m_sprite.getPosition())* (180.0 / 3.141592653589793238463);
 }

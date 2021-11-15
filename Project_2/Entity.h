@@ -23,6 +23,8 @@ public:
 	virtual bool collides(const sf::FloatRect& rect);
 	virtual void takeDamage(float damage);
 
+	void addForce(sf::Vector2f force);
+
 	bool toRemove();
 	bool isAlive();
 protected:
@@ -38,10 +40,9 @@ protected:
 	float m_friction{ 0.1f };
 	float m_masse{ 45.f };
 	sf::Vector2f m_velocity{ 0.f, 0.f };
+	sf::Vector2f m_thrust{ 0.f, 0.f };
 
 	int m_mapLevel = 0;
 
 	bool m_toRemove = false;
-private:
-	sf::Vector2f m_vitessse{ 0, 0 };
 };

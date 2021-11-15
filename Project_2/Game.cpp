@@ -118,6 +118,9 @@ void Game::keypressed(sf::Keyboard::Key keyCode)
     if (keyCode == sf::Keyboard::R) {
         m_map = TileMap("SandBox2.json");
     }
+    if (keyCode == sf::Keyboard::T) {
+        m_player.addForce(sf::Vector2f(2000, 2000));
+    }
     if (keyCode == sf::Keyboard::P) {
         for (Enemy* enemy : m_orc) {
             enemy->takeDamage(2);
