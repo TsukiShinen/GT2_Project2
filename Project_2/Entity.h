@@ -45,4 +45,5 @@ protected:
 	int m_mapLevel = 0;
 
 	bool m_toRemove = false;
+	bool m_useAcceleration = true;
 };

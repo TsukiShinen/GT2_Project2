@@ -6,6 +6,7 @@ Enemy::Enemy(sf::IntRect& zone, const sf::Texture* texture, const sf::Texture* l
 	Entity("Orc", 5, texture)
 {
 	m_size = sf::Vector2f(8, 8);
+	m_useAcceleration = false;
 
 	m_zone = zone;
 	m_sprite.setOrigin(sf::Vector2f(12, 12));
@@ -134,26 +135,26 @@ void Enemy::ChangeDir(sf::Time& deltaTime, const sf::Vector2f& playerPos)
 		m_chronoChangeDir = 0;
 		m_timeIdle = (rand() % 20 + 5) / 10.f;
 		double angle = Utils::angle(m_sprite.getPosition(), sf::Vector2f(rand() % m_zone.width + m_zone.left, rand() % m_zone.height + m_zone.top));
-		m_thrust.x = m_speed * cos(angle);
-		m_thrust.y = m_speed * sin(angle);
+		m_velocity.x = m_speed * cos(angle);
+		m_velocity.y = m_speed * sin(angle);
 		m_currentState = State::WALK;
 		// Guatd 0
-		if (m_thrust.x == 0) {
-			m_thrust.x = DBL_EPSILON;
+		if (m_velocity.x == 0) {
+			m_velocity.x = DBL_EPSILON;
 		}
-		if (m_thrust.y == 0) {
-			m_thrust.y = DBL_EPSILON;
+		if (m_velocity.y == 0) {
+			m_velocity.y = DBL_EPSILON;
 		}
 
 		// Get the direction
 		m_direction.reset();
-		if (m_thrust.y < 0)
+		if (m_velocity.y < 0)
 			m_direction.up = true;
-		if (m_thrust.x > 0)
+		if (m_velocity.x > 0)
 			m_direction.right = true;
-		if (m_thrust.y > 0)
+		if (m_velocity.y > 0)
 			m_direction.down = true;
-		if (m_thrust.x < 0)
+		if (m_velocity.x < 0)
 			m_direction.left = true;
 	}
 }
