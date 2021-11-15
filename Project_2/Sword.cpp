@@ -20,35 +20,43 @@ void Sword::attack(float angle) {
 	m_ratio = 1; // ceil(180/ m_attackSpeed);
 	
 	if (angle <= 90 || angle >= 270) {
-		m_ratio *= (-1);
-		m_startAngle = fmod((angle + 90 + 360), 360);
-	}
-	else {
-		
+		// m_ratio *= (-1);
 		m_startAngle = fmod((angle - 90 + 360), 360);
 	}
+	else {
+		m_ratio *= (-1);
+		m_startAngle = fmod((angle + 90  + 360), 360);
+	}
 	m_hitting = true;
+	m_startAngle += m_offsetAngle;
 	m_sprite.setRotation(m_startAngle);
-	std::cout << "Original angle : " << angle << std::endl;
-	std::cout << "Start angle : " << m_startAngle << std::endl;
+
 }
 
-void Sword::update(sf::Time deltaTime, sf::Vector2f position, bool isAttacking) {
-		if (m_hitting) {
-			int actualRotation = m_sprite.getRotation();
-			m_elapsedTime += deltaTime.asSeconds();
-			
-			float tempAngle = fmod(ceil(m_startAngle + (180 * (m_elapsedTime/m_attackSpeed) * m_ratio) + 360), 360);
+void Sword::update(sf::Time deltaTime, sf::Vector2f position, bool isAttacking, float angle) {
+	int actualRotation = m_sprite.getRotation() + m_offsetAngle;
+	
+	
+	if (m_hitting) {
 
+			float tempAngle = fmod(ceil(m_startAngle + (180 * (m_elapsedTime/m_attackSpeed) * m_ratio) + 360), 360);
+			m_elapsedTime += deltaTime.asSeconds();
 			m_sprite.setRotation(tempAngle);
 			if (m_elapsedTime > m_attackSpeed) {
-				m_sprite.setRotation(0);
 
 				m_hitting = false;
 				m_elapsedTime = 0;
 			}
-		}
 
+	}
+	/*else {
+		
+		m_sprite.setRotation(actualRotation + ((angle- actualRotation) * m_elapsedTime/m_attackSpeed));
+		if (m_elapsedTime > m_angleRecovery) {
+			m_elapsedTime = 0;
+		}
+	}
+	*/
 	setPosition(position);
 	Entity::update(deltaTime);
 }

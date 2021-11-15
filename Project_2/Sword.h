@@ -8,9 +8,11 @@ private:
 	int m_range = 30;
 	float m_damage = 1;
 	
-	float m_attackSpeed = 0.5f;
+	float m_attackSpeed = 0.15f;
 	float m_elapsedTime = 0;
 
+	float m_angleRecovery = 0.21f;
+	float m_offsetAngle = 90.f;
 	float m_ratio = 180/m_attackSpeed;
 	float m_startAngle = 1;
 
@@ -22,6 +24,6 @@ public:
 	void attack(float angle);
 	float& getDamage() { return m_damage; };
 	int& getRange() { return m_range; };
-	void update(sf::Time, sf::Vector2f, bool);
+	void update(sf::Time, sf::Vector2f, bool, float);
 	bool isHitting() { return m_hitting; }
 };

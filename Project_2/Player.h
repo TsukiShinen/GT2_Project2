@@ -32,6 +32,7 @@ public:
 	bool pickItem(Item* item);
 
 	std::function<void(int)> heal;
+	float calcAngle();
 
 	void keypressed(sf::Keyboard::Key keyCode);
 private:
