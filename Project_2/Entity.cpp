@@ -13,7 +13,13 @@ Entity::Entity(std::string name, size_t life, const sf::Texture* texture) :
 void Entity::update(sf::Time& deltaTime)
 {
 	// Move the sprite
-	m_sprite.move(Utils::normalize(m_velocity) * m_speed * deltaTime.asSeconds());
+	sf::Vector2f thrust = Utils::normalize(m_velocity) * m_speed;
+	sf::Vector2f acc(thrust / m_masse - m_friction * m_vitessse);
+	m_vitessse = m_vitessse + acc;
+
+	setPosition(getPosition() + m_vitessse * deltaTime.asSeconds());
+
+	//m_sprite.move(Utils::normalize(m_velocity) * m_speed * deltaTime.asSeconds());
 
 	// Animate
 	m_animationController.update(deltaTime);

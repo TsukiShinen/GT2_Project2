@@ -6,7 +6,7 @@ Player::Player(const sf::Texture* texture, const sf::Texture* inventoryTexture, 
     m_inventaire(10, inventoryTexture, itemSelectedTexture),
     m_sword(texture)
 {  
-    m_speed = 30.f;
+    m_speed = 200.f;
 
     setAnimation();
     m_size = sf::Vector2f(8, 8);
@@ -112,7 +112,6 @@ void Player::changeSprite() {
 void Player::update(sf::Time deltaTime, std::vector<sf::FloatRect>& listOfElements) {
     if (!m_isInventoryOpen) 
     {
-
         m_velocity = { 0.f, 0.f };
     
         if (m_attack) {

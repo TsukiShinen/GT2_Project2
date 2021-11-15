@@ -6,21 +6,6 @@
 
 class Entity
 {
-protected:
-	std::string m_name{ "Entity" };
-	float m_life{ 0 };
-
-	sf::Texture m_texture;
-	sf::Sprite m_sprite;
-	sf::Vector2f m_size;
-	AnimationController m_animationController;
-
-	float m_speed{ 0.f };
-	sf::Vector2f m_velocity{ 0.f, 0.f };
-
-	int m_mapLevel = 0;
-
-	bool m_toRemove = false;
 public:
 	Entity(std::string name, size_t life, const sf::Texture* texture);
 
@@ -40,4 +25,23 @@ public:
 
 	bool toRemove();
 	bool isAlive();
+protected:
+	std::string m_name{ "Entity" };
+	float m_life{ 0 };
+
+	sf::Texture m_texture;
+	sf::Sprite m_sprite;
+	sf::Vector2f m_size;
+	AnimationController m_animationController;
+
+	float m_speed{ 0.f };
+	float m_friction{ 0.1f };
+	float m_masse{ 45.f };
+	sf::Vector2f m_velocity{ 0.f, 0.f };
+
+	int m_mapLevel = 0;
+
+	bool m_toRemove = false;
+private:
+	sf::Vector2f m_vitessse{ 0, 0 };
 };
