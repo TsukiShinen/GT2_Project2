@@ -55,7 +55,8 @@ const sf::Vector2f& Entity::getPosition()
 
 const sf::Vector2f& Entity::getCenter()
 {
-	return (getPosition() + sf::Vector2f(m_size.x / 2, m_size.y / 2));
+	sf::Vector2f center(getPosition().x + m_size.x / 2, getPosition().y + m_size.y / 2);
+	return center;
 }
 
 int Entity::getMapLevel()

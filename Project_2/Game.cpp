@@ -42,6 +42,15 @@ void Game::update(sf::Time& deltaTime)
         {
             enemy->takeDamage(m_player.getDamage());
         }
+        // Collision with player
+        if (m_player.collides(enemy->getBoundingBox())) {
+            sf::Vector2f enemyPos = enemy->getCenter();
+            sf::Vector2f playerPos = m_player.getCenter();
+            double angle = Utils::angle(enemyPos, playerPos);
+            sf::Vector2f force(cos(angle), sin(angle));
+            force = Utils::normalize(force) * 5000.f;
+            m_player.addForce(force);
+        }
     }
     m_map.update(deltaTime);
     m_player.update(deltaTime, m_map.getCollisionColliders(m_player.getMapLevel()));
