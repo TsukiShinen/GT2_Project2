@@ -7,7 +7,7 @@ Player::Player(const sf::Texture* texture, const sf::Texture* inventoryTexture, 
     m_sword(texture)
 {  
     m_speed = 30.f;
-    
+
     setAnimation();
     m_size = sf::Vector2f(8, 8);
     m_sprite.setOrigin(sf::Vector2f(12, 12));
@@ -20,24 +20,23 @@ Player::Player(const sf::Texture* texture, const sf::Texture* inventoryTexture, 
 }
 
 void Player::setAnimation() {
-    m_animationController.addAnimation("WalkBR", 336, 4, 0.13f);
-    m_animationController.addAnimation("WalkBL", 352, 4, 0.13f);
-    m_animationController.addAnimation("WalkTR", 368, 4, 0.13f);
-    m_animationController.addAnimation("WalkTL", 384, 4, 0.13f);
+    m_animationController.addAnimation("Walk_DR", 336, 4, 0.13f);
+    m_animationController.addAnimation("Walk_DL", 352, 4, 0.13f);
+    m_animationController.addAnimation("Walk_UR", 368, 4, 0.13f);
+    m_animationController.addAnimation("Walk_UL", 384, 4, 0.13f);
     std::vector <sf::IntRect> allIdle = m_animationController.getAllRect(176, 16);
     std::map<std::string, std::pair<size_t, size_t>> IdleMap{
-        {"IdleBR", {176, 16}},
-        {"IdleBL", {192,8}},
-        {"IdleTR", {208,16}},
-        {"IdleTL", {224,16}}
+        {"Idle_DR", {176, 16}},
+        {"Idle_DL", {192,8}},
+        {"Idle_UR", {208,16}},
+        {"Idle_UL", {224,16}}
     };
 
     for (const auto& Idle : IdleMap) {
         m_animationController.addAnimation(Idle.first, Idle.second.first, Idle.second.second, 0.31111f);
     }
 
-    m_animationController.changeCurrentAnim("IdleBL");
-    
+    m_animationController.changeCurrentAnim("Idle_DL");
 }
 
 void Player::draw(sf::RenderWindow& window, bool debugMode) {
@@ -66,10 +65,6 @@ void Player::changeSprite() {
         base = "Idle";
 
     std::string dir = "";
-    std::cout << "up : " << m_direction.up;
-    std::cout << "down : " << m_direction.down;
-    std::cout << "right : " << m_direction.right;
-    std::cout << "left : " << m_direction.left;
     if (m_direction.up)
         dir += "U";
     else if (m_direction.down)
@@ -143,18 +138,30 @@ void Player::update(sf::Time deltaTime, std::vector<sf::FloatRect>& listOfElemen
         }
 
         // direction changes
-        if (m_velocity.y < 0)
+        if (m_velocity.y < 0) 
+        {
             m_direction.up = true;
             m_direction.down = false;
-        if (m_velocity.x > 0)
+        }
+           
+        if (m_velocity.x > 0) 
+        {
             m_direction.right = true;
             m_direction.left = false;
-        if (m_velocity.y > 0)
+        }
+            
+        if (m_velocity.y > 0) 
+        {
             m_direction.down = true;
             m_direction.up = false;
-        if (m_velocity.x < 0)
+        }
+            
+        if (m_velocity.x < 0) 
+        {
             m_direction.left = true;
             m_direction.right = false;
+        }
+            
 
         sf::FloatRect futurePos = intersects(listOfElements);
 
@@ -165,7 +172,6 @@ void Player::update(sf::Time deltaTime, std::vector<sf::FloatRect>& listOfElemen
         // update de la movebox
         m_movebox.setSize(sf::Vector2f(futurePos.width, futurePos.height));
         m_movebox.setPosition(futurePos.left, futurePos.top);
-
         changeSprite();
     }
 

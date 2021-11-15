@@ -37,7 +37,7 @@ public:
 private:
 	std::string m_directionAnim = "WalkBL";
 	Utils::Direction m_direction;
-
+	
 
 	sf::RectangleShape m_movebox;
 	Inventaire m_inventaire;
