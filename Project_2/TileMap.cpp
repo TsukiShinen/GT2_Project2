@@ -2,122 +2,164 @@
 #include <iostream>
 
 #include "TileMap.h"
+#include "Utils.h"
 
 #include "json.h"
-
 using json = nlohmann::json;
 
 void TileMap::loadMap(std::string fileName)
 {
-    json jsonTiled;
+    json jsonTiled = Utils::readJson(PATH + fileName);
 
-    // Read the json file
-    std::ifstream reader(PATH + fileName);
-    reader >> jsonTiled;
-    reader.close();
+    m_name = fileName.substr(0, fileName.find("."));
+    loadMapInfo(jsonTiled);
 
-    // Get the info fromo the json
-    m_name = fileName.substr(0, fileName.find(".")); // get the name from the file name (splt on .)
+    loadLayers(jsonTiled);
 
-    m_height = jsonTiled["height"];
-    m_width = jsonTiled["width"];
-    m_tileHeight = jsonTiled["tileheight"];
-    m_tileWidth = jsonTiled["tilewidth"];
+    loadTileSets(jsonTiled);
+}
 
-    // Load the layer
-    for (auto& layer : jsonTiled["layers"])
+void TileMap::loadMapInfo(const json& mapJson)
+{
+    m_height = mapJson["height"];
+    m_width = mapJson["width"];
+    m_tileHeight = mapJson["tileheight"];
+    m_tileWidth = mapJson["tilewidth"];
+}
+
+void TileMap::loadLayers(const json& mapJson)
+{
+    for (auto& layer : mapJson["layers"])
     {
         if (layer["type"] == "tilelayer") {
-            // Create a new layer
-            Layer newLayer;
-            newLayer.name = layer["name"];
-            newLayer.width = layer["width"];
-            newLayer.height = layer["height"];
-            newLayer.isVisible = layer["visible"];
-            for (auto& property : layer["properties"]) {
-                if (property["name"] == "level") {
-                    newLayer.heightLevel = property["value"];
-                }
-                if (property["name"] == "playerBehind") {
-                    newLayer.drawBeforePlayer = !property["value"];
-                }
-                if (property["name"] == "Collision") {
-                    newLayer.isCollisionLayer = property["value"];
-                }
-            }
-            m_lstCollisionCollider.emplace_back();
-            for (size_t i = 0; i < layer["data"].size(); ++i)
-            {
-                if (newLayer.isCollisionLayer && layer["data"][i] != 0) {
-                    sf::Vector2f pos = getTilePositionFromId(newLayer.width, i);
-                    m_lstCollisionCollider[newLayer.heightLevel].push_back(sf::FloatRect(pos.x * m_tileWidth, pos.y * m_tileWidth, m_tileWidth, m_tileHeight));
-                }
-                newLayer.data.push_back(layer["data"][i]);
-            }
-
-            // Add the new layer
-            m_layers.push_back(newLayer);
+            loadTileLayer(layer);
         }
-        else if (layer["type"] == "objectgroup") 
+        else if (layer["type"] == "objectgroup")
         {
-            for (auto& obj : layer["objects"]) {
-                if (obj["name"] == "Player") {
-                    m_startingPosition = sf::Vector2f(obj["x"], obj["y"]);
-                }
-                if (obj["name"] == "Orc") {
-                    m_lstZoneEnemy.push_back(sf::IntRect(obj["x"], obj["y"], obj["width"], obj["height"]));
-                }
-                if (obj["type"] == "Level") {
-                    HeightLevelCollider newRectLevel;
-                    newRectLevel.rect = sf::FloatRect(obj["x"], obj["y"], obj["width"], obj["height"]);
-                    newRectLevel.toLevel = obj["properties"][0]["value"];
-                    m_lstHeightLevelCollider.push_back(newRectLevel);
-                }
-            }
+            loadObjectLayer(layer);
         }
     }
+}
 
+void TileMap::loadTileLayer(const json& layerJson)
+{
+    Layer newLayer;
+    loadLayerInfoTo(newLayer, layerJson);
+    loadLayerPropertiesTo(newLayer, layerJson);
+    loadLayerDataTo(newLayer, layerJson);
+
+    m_layers.push_back(newLayer);
+}
+
+
+void TileMap::loadLayerInfoTo(Layer& layer, const json& layerJson) {
+    layer.name = layerJson["name"];
+    layer.width = layerJson["width"];
+    layer.height = layerJson["height"];
+    layer.isVisible = layerJson["visible"];
+}
+
+void TileMap::loadLayerPropertiesTo(Layer& layer, const json& layerJson) {
+    for (auto& property : layerJson["properties"]) {
+        if (property["name"] == "level") {
+            layer.heightLevel = property["value"];
+        }
+        else if (property["name"] == "playerBehind") {
+            layer.drawBeforePlayer = !property["value"];
+        }
+        else if (property["name"] == "Collision") {
+            layer.isCollisionLayer = property["value"];
+        }
+    }
+}
+
+void TileMap::loadLayerDataTo(Layer& layer, const json& layerJson) {
+    m_lstCollisionCollider.emplace_back();
+    for (size_t i = 0; i < layerJson["data"].size(); ++i) {
+        if (layer.isCollisionLayer && layerJson["data"][i] != 0) {
+            sf::Vector2f pos = getTilePositionFromId(layer.width, i);
+            m_lstCollisionCollider[layer.heightLevel].push_back(sf::FloatRect(pos.x * m_tileWidth, pos.y * m_tileWidth, m_tileWidth, m_tileHeight));
+        }
+        layer.data.push_back(layerJson["data"][i]);
+    }
+}
+
+void TileMap::loadObjectLayer(const json& layerJson)
+{
+    for (auto& obj : layerJson["objects"]) {
+        if (obj["name"] == "Player") {
+            m_startingPosition = sf::Vector2f(obj["x"], obj["y"]);
+        }
+        if (obj["name"] == "Orc") {
+            m_lstZoneEnemy.push_back(sf::IntRect(obj["x"], obj["y"], obj["width"], obj["height"]));
+        }
+        if (obj["type"] == "Level") {
+            HeightLevelCollider newRectLevel;
+            newRectLevel.rect = sf::FloatRect(obj["x"], obj["y"], obj["width"], obj["height"]);
+            newRectLevel.toLevel = obj["properties"][0]["value"];
+            m_lstHeightLevelCollider.push_back(newRectLevel);
+        }
+    }
+}
+
+void TileMap::loadTileSets(const json& mapJson)
+{
     // Load the tileset
     size_t idTexture = 0;
     size_t lastTileId = 0;
     // Tile 0 is empty
     m_tileSets.tiles.emplace_back();
-    for (auto& tileset : jsonTiled["tilesets"]) {
+    for (auto& tileset : mapJson["tilesets"]) {
         // Load texture
         std::string imageName = tileset["image"];
-        m_tileSets.textures.emplace_back(new sf::Texture); 
+        m_tileSets.textures.emplace_back(new sf::Texture);
         if (!m_tileSets.textures[idTexture]->loadFromFile(PATH + imageName))
             std::cerr << "Can't load file: " << PATH + imageName << std::endl;
         // Load Tile of the texture
-        for (auto& tile : tileset["tiles"])
-        {
-            Tile* newTile = new Tile();
-
-            // Set the id
-            newTile->id = lastTileId++;
-
-            // Set the Texture (sprite)
-            newTile->sprite.setTexture(*m_tileSets.textures[idTexture]);
-            size_t c = tileset["columns"];
-            size_t id = tile["id"];
-            sf::Vector2f pos = getTilePositionFromId(c, id);
-            newTile->sprite.setTextureRect(sf::IntRect(pos.x * m_tileWidth, pos.y * m_tileHeight, m_tileWidth, m_tileHeight));
-
-            if (tile["animation"] > 0) { // Verify if something in it
-                for (auto& anim : tile["animation"])
-                {
-                    TileAnimation newTileAnim;
-                    sf::Vector2f animPos = getTilePositionFromId(tileset["columns"], anim["tileid"]);
-                    newTileAnim.textureRect = sf::IntRect(animPos.x * m_tileWidth, animPos.y * m_tileHeight, m_tileWidth, m_tileHeight);
-                    newTileAnim.duration = anim["duration"];
-                    newTile->animation.push_back(newTileAnim);
-                    m_animatedTile.push_back(newTile);
-                }
-            }
-
-            m_tileSets.tiles.push_back(newTile);
-        }
+        loadTileSetTiles(tileset);
         idTexture++;
+    }
+}
+
+void TileMap::loadTileSetTextures(const json& mapJson)
+{
+}
+
+void TileMap::loadTileSetTiles(const json& tileSetJson)
+{
+    for (auto& tile : tileSetJson["tiles"])
+    {
+        Tile* newTile = new Tile();
+
+        // Set the id
+        newTile->id = tileSetJson["firstgid"];
+        newTile->id += tile["id"];
+
+        // Set the Texture (sprite)
+        newTile->sprite.setTexture(*m_tileSets.textures[m_tileSets.textures.size()-1]);
+        size_t c = tileSetJson["columns"];
+        size_t id = tile["id"];
+        sf::Vector2f pos = getTilePositionFromId(c, id);
+        newTile->sprite.setTextureRect(sf::IntRect(pos.x * m_tileWidth, pos.y * m_tileHeight, m_tileWidth, m_tileHeight));
+
+        loadTileAnimationTo(newTile, tile, c);
+
+        m_tileSets.tiles.push_back(newTile);
+    }
+}
+
+void TileMap::loadTileAnimationTo(Tile* tile, const json& tileJson, const size_t tileSetwidth)
+{
+    if (tileJson.find("animation") != tileJson.end()) { // Verify if something in it
+        for (auto& anim : tileJson["animation"])
+        {
+            TileAnimation newTileAnim;
+            sf::Vector2f animPos = getTilePositionFromId(tileSetwidth, anim["tileid"]);
+            newTileAnim.textureRect = sf::IntRect(animPos.x * m_tileWidth, animPos.y * m_tileHeight, m_tileWidth, m_tileHeight);
+            newTileAnim.duration = anim["duration"];
+            tile->lstFrameAnimation.push_back(newTileAnim);
+            m_animatedTile.push_back(tile);
+        }
     }
 }
 
@@ -177,13 +219,13 @@ void TileMap::update(sf::Time deltaTime)
     if (m_name == "") { return; }
     for (Tile* tile : m_animatedTile) 
     {
-        tile->animation[tile->currentAnim].chrono += deltaTime.asMilliseconds();
-        if (tile->animation[tile->currentAnim].chrono >= tile->animation[tile->currentAnim].duration) {
-            tile->animation[tile->currentAnim].chrono = 0;
-            tile->sprite.setTextureRect(tile->animation[tile->currentAnim].textureRect);
-            tile->currentAnim++;
-            if (tile->currentAnim >= tile->animation.size()) {
-                tile->currentAnim = 0;
+        tile->lstFrameAnimation[tile->currentAnimationFrame].chrono += deltaTime.asMilliseconds();
+        if (tile->lstFrameAnimation[tile->currentAnimationFrame].chrono >= tile->lstFrameAnimation[tile->currentAnimationFrame].duration) {
+            tile->lstFrameAnimation[tile->currentAnimationFrame].chrono = 0;
+            tile->sprite.setTextureRect(tile->lstFrameAnimation[tile->currentAnimationFrame].textureRect);
+            tile->currentAnimationFrame++;
+            if (tile->currentAnimationFrame >= tile->lstFrameAnimation.size()) {
+                tile->currentAnimationFrame = 0;
             }
         }
     }

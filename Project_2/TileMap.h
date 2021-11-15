@@ -3,6 +3,9 @@
 #include <vector>
 #include <SFML/Graphics.hpp>
 
+#include "json.h"
+using json = nlohmann::json;
+
 class TileMap
 {
 	const std::string PATH = "./Assets/Map/";
@@ -28,9 +31,9 @@ class TileMap
 	struct Tile {
 		size_t id;
 		sf::Sprite sprite;
-		int currentAnim = 0;
+		int currentAnimationFrame = 0;
 
-		std::vector<TileAnimation> animation;
+		std::vector<TileAnimation> lstFrameAnimation;
 	};
 
 	struct TileSet {
@@ -98,6 +101,18 @@ public:
 	std::vector<sf::IntRect> m_lstZoneEnemy;
 
 	void loadMap(std::string fileName);
+	void loadMapInfo(const json& mapJson);
+	void loadLayers(const json& mapJson);
+	void loadTileLayer(const json& layerJson);
+	void loadLayerInfoTo(Layer& layer, const json& layerJson);
+	void loadLayerPropertiesTo(Layer& layer, const json& layerJson);
+	void loadLayerDataTo(Layer& layer, const json& layerJson);
+	void loadObjectLayer(const json& layerJson);
+	void loadTileSets(const json& mapJson);
+	void loadTileSetTextures(const json& mapJson);
+	void loadTileSetTiles(const json& tile);
+	void loadTileAnimationTo(Tile* tile, const json& mapJson, const size_t tileSetwidth);
+
 	sf::Vector2f getTilePositionFromId(size_t columns, size_t id);
 
 	void drawLayer(sf::RenderWindow& window, Layer& layer);
