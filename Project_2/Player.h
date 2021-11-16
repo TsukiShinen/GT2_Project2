@@ -59,5 +59,8 @@ private:
 	float m_time = 0.f;
 	bool m_attack = false;
 	Sword m_sword;
+
+	float chronoAniamtionDie;
+	float timeAnimationDie;
 };
 

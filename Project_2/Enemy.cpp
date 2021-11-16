@@ -202,18 +202,11 @@ void Enemy::updateAnimation(sf::Time& deltaTime) {
 }
 
 
-void Enemy::takeDamage(float damage, sf::Time deltaTime, float cooldown) {
+void Enemy::takeDamage(float damage, sf::Time& deltaTime, float cooldown) {
 	
 	if (m_elapsedTime > cooldown) {
-		Entity::takeDamage(damage);
+		takeDamage(damage);
 		m_elapsedTime = 0;
-	}
-	
-	m_lifeBar.setValue(m_life);
-	if (m_life == 0) {
-		m_velocity.x = 0;
-		m_velocity.y = 0;
-		m_currentState = State::DIE;
 	}
 }
 

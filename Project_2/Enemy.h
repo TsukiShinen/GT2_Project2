@@ -41,7 +41,7 @@ public:
 
 	sf::FloatRect getBoundingBox() override;
 
-	void takeDamage(float damage, sf::Time deltaTime, float cooldown);
+	void takeDamage(float damage, sf::Time& deltaTime, float cooldown);
 	void takeDamage(float damage) override;
 };
 

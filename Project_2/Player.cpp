@@ -2,7 +2,7 @@
 
 
 Player::Player(const sf::Texture* texture, const sf::Texture* inventoryTexture, const sf::Texture* itemSelectedTexture) :
-    Entity("Player", 5.f, texture),
+    Entity("Player", 10.f, texture),
     m_inventaire(10, inventoryTexture, itemSelectedTexture),
     m_sword(texture)
 {
@@ -35,6 +35,8 @@ void Player::setAnimation() {
     for (const auto& Idle : IdleMap) {
         m_animationController.addAnimation(Idle.first, Idle.second.first, Idle.second.second, 0.31111f);
     }
+    m_animationController.addAnimation("Die", 320, 12, 0.13f);
+    timeAnimationDie = 12 * 0.13f;
 
     m_animationController.changeCurrentAnim("Idle_DL");
 }
@@ -48,11 +50,13 @@ void Player::draw(sf::RenderWindow& window, bool debugMode) {
     
     if (m_direction.down) {
         Entity::draw(window, debugMode);
-        m_sword.draw(window, debugMode);
+        if (isAlive())
+            m_sword.draw(window, debugMode);
     }
     else {
         m_sword.draw(window, debugMode);
-        Entity::draw(window, debugMode);
+        if (isAlive())
+            Entity::draw(window, debugMode);
     }
     
 }
@@ -120,7 +124,7 @@ void Player::changeSprite() {
 }
 
 void Player::update(sf::Time deltaTime, std::vector<sf::FloatRect>& listOfElements) {
-    if (!m_isInventoryOpen) 
+    if (!m_isInventoryOpen && isAlive()) 
     {
         sf::Vector2f movement{ 0.f, 0.f };
     
@@ -184,10 +188,17 @@ void Player::update(sf::Time deltaTime, std::vector<sf::FloatRect>& listOfElemen
         m_movebox.setSize(sf::Vector2f(futurePos.width, futurePos.height));
         m_movebox.setPosition(futurePos.left, futurePos.top);
         changeSprite();
+        m_sword.update(deltaTime, getCenter(), m_attack, calcDirectionAngle());
     }
-
-    Entity::update(deltaTime);
-    m_sword.update(deltaTime, getCenter(), m_attack, calcDirectionAngle());
+    if (!isAlive()) {
+        chronoAniamtionDie += deltaTime.asSeconds();
+        if (chronoAniamtionDie >= timeAnimationDie) {
+            m_toRemove = true;
+        }
+    }
+    if (!m_toRemove) {
+        Entity::update(deltaTime);
+    }
 }
 
 sf::FloatRect Player::getBoundingBox() {
@@ -198,6 +209,9 @@ void Player::takeDamage(float damage)
 {
     Entity::takeDamage(damage);
     m_lifeBar.setValue(m_life);
+    if (m_life <= 0) {
+        m_animationController.changeCurrentAnim("Die");
+    }
 }
 
 
@@ -279,17 +293,19 @@ bool Player::pickItem(Item* item)
 
 void Player::keypressed(sf::Keyboard::Key keyCode)
 {
-    if (keyCode == sf::Keyboard::E) {
-        m_isInventoryOpen = !m_isInventoryOpen;
-        m_velocity.x = 0;
-        m_velocity.y = 0;
-        m_animationController.changeCurrentAnim("Idle_DR");
-    }
-    if (m_isInventoryOpen) {
-        m_inventaire.keypressed(keyCode);
-    }
-    if (keyCode == sf::Keyboard::Space) {
-        attack();
+    if (isAlive()) {
+        if (keyCode == sf::Keyboard::E) {
+            m_isInventoryOpen = !m_isInventoryOpen;
+            m_velocity.x = 0;
+            m_velocity.y = 0;
+            m_animationController.changeCurrentAnim("Idle_DR");
+        }
+        if (m_isInventoryOpen) {
+            m_inventaire.keypressed(keyCode);
+        }
+        if (keyCode == sf::Keyboard::Space) {
+            attack();
+        }
     }
 }
 

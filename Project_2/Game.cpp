@@ -13,15 +13,6 @@ void Game::load()
     m_ressource.load();
 
     m_map = TileMap("SandBox2.json");
-    m_player.pickItem(new Item("Meat", m_ressource.getMeat(), Item::Type::Potion, m_player.heal));
-    m_player.pickItem(new Item("Meat", m_ressource.getMeat(), Item::Type::Potion, m_player.heal));
-    m_player.pickItem(new Item("Meat", m_ressource.getMeat(), Item::Type::Potion, m_player.heal));
-    m_player.pickItem(new Item("Meat", m_ressource.getMeat(), Item::Type::Potion, m_player.heal));
-    m_player.pickItem(new Item("Meat", m_ressource.getMeat(), Item::Type::Potion, m_player.heal));
-    m_player.pickItem(new Item("Meat", m_ressource.getMeat(), Item::Type::Potion, m_player.heal));
-    m_player.pickItem(new Item("Meat", m_ressource.getMeat(), Item::Type::Potion, m_player.heal));
-    m_player.pickItem(new Item("Meat", m_ressource.getMeat(), Item::Type::Potion, m_player.heal));
-    m_player.pickItem(new Item("Meat", m_ressource.getMeat(), Item::Type::Potion, m_player.heal));
     m_player.setPosition(m_map.getStartingPosition());
 
     for (sf::IntRect& enemyZone : m_map.getEnemyZone()) {
@@ -37,7 +28,10 @@ void Game::load()
 
 void Game::update(sf::Time& deltaTime)
 {
-    
+    if (!m_player.isAlive()) {
+        m_player.update(deltaTime, m_map.getCollisionColliders(m_player.getMapLevel()));
+        return;
+    }
     for (Enemy* enemy : m_orc) {
         enemy->update(deltaTime, m_player.getPosition());
         if (m_player.isAttacking(enemy->getPosition())) 
