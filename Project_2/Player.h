@@ -26,14 +26,16 @@ public:
 
 	void changeSprite();
 
+	float getAttackSpeed() { return m_sword.getAttackSpeed(); }
 	float getDamage() { return m_sword.getDamage(); }
+
 	sf::FloatRect getBoundingBox() override;
 
 	bool pickItem(Item* item);
 
 	std::function<void(int)> heal;
 
-	double calcAngle();
+	double calcDirectionAngle();
 
 	void keypressed(sf::Keyboard::Key keyCode);
 private:

@@ -51,5 +51,19 @@ public:
 		}
 		return sf::Vector2f(0, 0);
 	}
+
+	static float shortestAngle(float angle1, float angle2) {
+		return fmod(angle2 - angle1 + 180, 360) - 180;
+	}
+	static int shortestAngle(int angle1, int angle2) {
+		return (angle2 - angle1 + 180) % 360 - 180;
+	}
+
+	static int modAngle(int angle) {
+		return (angle + 360) % 360;
+	}
+	static float modAngle(float angle) {
+		return fmod(angle + 360, 360);
+	}
 };
 

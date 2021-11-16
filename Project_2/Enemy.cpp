@@ -10,7 +10,7 @@ Enemy::Enemy(sf::IntRect& zone, const sf::Texture* texture, const sf::Texture* l
 	m_zone = zone;
 	m_sprite.setOrigin(sf::Vector2f(12, 12));
 	m_sprite.setPosition(sf::Vector2f(rand() % m_zone.width + m_zone.left, rand() % m_zone.height + m_zone.top));
-	m_speed = 20.f;
+	m_speed = 15.f;
 
 	m_lifeBar = ProgressBar(5.f, sf::Sprite(*lifebarTexture));
 	m_lifeBar.setValue(m_life);
@@ -73,6 +73,8 @@ void Enemy::update(sf::Time& deltaTime, const sf::Vector2f& playerPos)
 		// Animation
 		updateAnimation(deltaTime);
 	}
+
+	m_elapsedTime += deltaTime.asSeconds();
 
 	Entity::update(deltaTime);
 }
@@ -200,8 +202,25 @@ void Enemy::updateAnimation(sf::Time& deltaTime) {
 }
 
 
+void Enemy::takeDamage(float damage, sf::Time deltaTime, float cooldown) {
+	
+	if (m_elapsedTime > cooldown) {
+		Entity::takeDamage(damage);
+		m_elapsedTime = 0;
+	}
+	
+	m_lifeBar.setValue(m_life);
+	if (m_life == 0) {
+		m_velocity.x = 0;
+		m_velocity.y = 0;
+		m_currentState = State::DIE;
+	}
+}
+
 void Enemy::takeDamage(float damage) {
+	
 	Entity::takeDamage(damage);
+
 	m_lifeBar.setValue(m_life);
 	if (m_life == 0) {
 		m_velocity.x = 0;

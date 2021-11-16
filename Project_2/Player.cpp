@@ -5,7 +5,8 @@ Player::Player(const sf::Texture* texture, const sf::Texture* inventoryTexture, 
     Entity("Player", 10, texture),
     m_inventaire(10, inventoryTexture, itemSelectedTexture),
     m_sword(texture)
-{  
+{
+    // m_useAcceleration = false;
     m_speed = 200.f;
 
     setAnimation();
@@ -124,26 +125,27 @@ void Player::update(sf::Time deltaTime, std::vector<sf::FloatRect>& listOfElemen
         sf::Vector2f movement{ 0.f, 0.f };
     
         if (m_attack) {
-            m_attack = false;
+            
+            m_attack = m_sword.isHitting();
         }
 
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Z)) {
-            // move(0, -_speed*clock.asSeconds());
-            movement.y = -1;
+
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up) || sf::Keyboard::isKeyPressed(sf::Keyboard::Z) || sf::Keyboard::isKeyPressed(sf::Keyboard::W)) {
+            movement.y -= 1;
         }
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::D)) {
-            // move(_speed * clock.asSeconds(), 0);
-            movement.x = 1;
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right) || sf::Keyboard::isKeyPressed(sf::Keyboard::D)) {
+            movement.x += 1;
         }
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::S)) {
-            // move(0, _speed*clock.asSeconds());
-            movement.y = 1;
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down) || sf::Keyboard::isKeyPressed(sf::Keyboard::S)) {
+
+            movement.y += 1;
         }
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Q)) {
-            // move(-_speed*clock.asSeconds(), 0);
-            movement.x = -1;
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left) || sf::Keyboard::isKeyPressed(sf::Keyboard::Q) || sf::Keyboard::isKeyPressed(sf::Keyboard::A)) {
+            
+            movement.x -= 1;
         
         }
+
         addForce(Utils::normalize(movement) * m_speed);
 
         // direction changes
@@ -184,9 +186,8 @@ void Player::update(sf::Time deltaTime, std::vector<sf::FloatRect>& listOfElemen
         changeSprite();
     }
 
-    m_sword.update(deltaTime, getCenter(), m_attack, calcAngle());
-
     Entity::update(deltaTime);
+    m_sword.update(deltaTime, getCenter(), m_attack, calcDirectionAngle());
 }
 
 sf::FloatRect Player::getBoundingBox() {
@@ -252,15 +253,14 @@ bool Player::isAttacking(sf::Vector2f Enemy) {
     if (!m_attack) { return false; }
     double distance = Utils::dist(m_sprite.getPosition(), Enemy);
     int angleE = static_cast<int>(Utils::angle(Enemy, m_sprite.getPosition()) * (180.0 / 3.141592653589793238463));
-    int angleP = static_cast<int>(calcAngle());
-    angleP = (angleP + 360) % 360;
-    angleE = (angleE + 360) % 360;
+    int angleP = static_cast<int>(calcDirectionAngle());
+    angleP = Utils::modAngle(angleP);
+    angleE = Utils::modAngle(angleE);
     
-    int angle = angleP - angleE;
-    if (distance < m_sword.getRange() && angle<45 && angle>-45) {
-        
-        return true;
+    int diffAngle = Utils::shortestAngle(angleP, angleE);
 
+    if (distance < m_sword.getRange() && diffAngle<m_sword.getAttackAngle()) {
+        return true;
     }
     return false;
 
@@ -287,6 +287,6 @@ void Player::keypressed(sf::Keyboard::Key keyCode)
     }
 }
 
-double Player::calcAngle() {
+double Player::calcDirectionAngle() {
     return Utils::angle(getPosition() + m_velocity, m_sprite.getPosition())* (180.0 / 3.141592653589793238463);
 }
