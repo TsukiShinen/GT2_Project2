@@ -244,9 +244,8 @@ sf::FloatRect Player::intersects(std::vector<sf::FloatRect>& listOfElements) {
 void Player::attack() { 
     if (!m_attack && !m_sword.isHitting()) { 
         m_attack = true;
-
         m_sword.attack(Utils::angle(m_sprite.getPosition(), m_sprite.getPosition() + m_velocity) * (180.0 / 3.141592653589793238463));
-    } 
+    }
 };
 
 bool Player::isAttacking(sf::Vector2f Enemy) {
@@ -264,6 +263,7 @@ bool Player::isAttacking(sf::Vector2f Enemy) {
 
     }
     return false;
+
 };
 
 bool Player::pickItem(Item* item)

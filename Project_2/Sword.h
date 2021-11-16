@@ -26,4 +26,6 @@ public:
 	int& getRange() { return m_range; };
 	void update(sf::Time, sf::Vector2f, bool, float);
 	bool isHitting() { return m_hitting; }
+	sf::FloatRect getRect();
+	sf::FloatRect getBoundingBox() override;
 };

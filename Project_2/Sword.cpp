@@ -2,10 +2,9 @@
 Sword::Sword(const sf::Texture* texture) :
 	Entity("Sword", 100, texture)
 {
-	setAnimation();
-	m_size = sf::Vector2f(8, 8);
+	m_size = sf::Vector2f(3, 13);
 	m_sprite.setOrigin(m_rotationPoint);
-
+	setAnimation();
 }
 
 void Sword::setAnimation() {
@@ -59,4 +58,14 @@ void Sword::update(sf::Time deltaTime, sf::Vector2f position, bool isAttacking, 
 	*/
 	setPosition(position);
 	Entity::update(deltaTime);
+}
+
+sf::FloatRect Sword::getBoundingBox() {
+	sf::FloatRect tempRect = sf::FloatRect(getPosition().x, getPosition().y, m_size.x, m_size.y);
+	tempRect.left += 1;
+	return tempRect;
+}
+
+sf::FloatRect Sword::getRect() {
+	return sf::FloatRect();
 }
