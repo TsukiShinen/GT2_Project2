@@ -27,7 +27,9 @@ public:
 
 	void changeSprite();
 
+	float getAttackSpeed() { return m_sword.getAttackSpeed(); }
 	float getDamage() { return m_sword.getDamage(); }
+
 	sf::FloatRect getBoundingBox() override;
 	void takeDamage(float damage) override;
 
@@ -35,7 +37,7 @@ public:
 
 	std::function<void(int)> heal;
 
-	double calcAngle();
+	double calcDirectionAngle();
 
 	void setProgressBar(ProgressBar& progressBar);
 

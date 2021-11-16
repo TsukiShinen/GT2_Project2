@@ -42,10 +42,10 @@ void Game::update(sf::Time& deltaTime)
         enemy->update(deltaTime, m_player.getPosition());
         if (m_player.isAttacking(enemy->getPosition())) 
         {
-            enemy->takeDamage(m_player.getDamage());
+            enemy->takeDamage(m_player.getDamage(), deltaTime, m_player.getAttackSpeed());
         }
         // Collision with player
-        if (m_player.collides(enemy->getBoundingBox())) {
+        if (m_player.collides(enemy->getBoundingBox()) && enemy->isAlive()) {
             sf::Vector2f enemyPos = enemy->getCenter();
             sf::Vector2f playerPos = m_player.getCenter();
             double angle = Utils::angle(enemyPos, playerPos);

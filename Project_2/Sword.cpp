@@ -2,7 +2,7 @@
 Sword::Sword(const sf::Texture* texture) :
 	Entity("Sword", 100, texture)
 {
-	m_size = sf::Vector2f(3, 13);
+	m_size = sf::Vector2f(8, 8);
 	m_sprite.setOrigin(m_rotationPoint);
 	setAnimation();
 }
@@ -33,16 +33,15 @@ void Sword::attack(float angle) {
 }
 
 void Sword::update(sf::Time deltaTime, sf::Vector2f position, bool isAttacking, float angle) {
-	int actualRotation = m_sprite.getRotation() + m_offsetAngle;
+	float actualRotation = m_sprite.getRotation() + m_offsetAngle;
 	
 	
 	if (m_hitting) {
 
-			float tempAngle = fmod(ceil(m_startAngle + (180 * (m_elapsedTime/m_attackSpeed) * m_ratio) + 360), 360);
+			double newAngle = fmod(ceil(m_startAngle + (180 * (m_elapsedTime/m_attackSpeed) * m_ratio) + 360), 360);
 			m_elapsedTime += deltaTime.asSeconds();
-			m_sprite.setRotation(tempAngle);
+			m_sprite.setRotation(newAngle);
 			if (m_elapsedTime > m_attackSpeed) {
-
 				m_hitting = false;
 				m_elapsedTime = 0;
 			}
@@ -60,12 +59,3 @@ void Sword::update(sf::Time deltaTime, sf::Vector2f position, bool isAttacking, 
 	Entity::update(deltaTime);
 }
 
-sf::FloatRect Sword::getBoundingBox() {
-	sf::FloatRect tempRect = sf::FloatRect(getPosition().x, getPosition().y, m_size.x, m_size.y);
-	tempRect.left += 1;
-	return tempRect;
-}
-
-sf::FloatRect Sword::getRect() {
-	return sf::FloatRect();
-}
