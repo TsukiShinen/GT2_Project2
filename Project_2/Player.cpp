@@ -90,37 +90,6 @@ void Player::changeSprite() {
 
     std::string name = base + "_" + dir;
     m_animationController.changeCurrentAnim(name);
-    /*if (m_velocity.x < 0) 
-    {
-        m_directionAnim = m_directionAnim.replace(5, 1, "L");
-    }
-    else if (0 < m_velocity.x)
-    {
-        m_directionAnim = m_directionAnim.replace(5, 1, "R");
-    }
-    if (m_velocity.y < 0)
-    {
-        m_directionAnim = m_directionAnim.replace(4, 1, "T");
-    }
-    else if (m_velocity.y > 0)
-    {
-        m_directionAnim = m_directionAnim.replace(4, 1, "B");
-    }
-
-
-    if (m_velocity.x == 0.f && m_velocity.y == 0.f) {
-        std::string test = "Idle";
-        test.append(m_directionAnim.substr(4, 6));
-        if (m_animationController.getCurrentAnim() != test) {
-            m_animationController.changeCurrentAnim(test);
-        }       
-    }
-    else {
-        if (m_animationController.getCurrentAnim() != m_directionAnim) {
-            m_animationController.changeCurrentAnim(m_directionAnim);
-        }
-    }*/
-    
 }
 
 void Player::update(sf::Time deltaTime, std::vector<sf::FloatRect>& listOfElements) {
@@ -155,24 +124,28 @@ void Player::update(sf::Time deltaTime, std::vector<sf::FloatRect>& listOfElemen
         // direction changes
         if (m_velocity.y < 0)
         {
+            m_moveHistory.y = -1;
             m_direction.up = true;
             m_direction.down = false;
         }
            
         if (m_velocity.x > 0)
         {
+            m_moveHistory.x = 1;
             m_direction.right = true;
             m_direction.left = false;
         }
             
         if (m_velocity.y > 0)
         {
+            m_moveHistory.y = 1;
             m_direction.down = true;
             m_direction.up = false;
         }
             
         if (m_velocity.x < 0)
         {
+            m_moveHistory.x = -1;
             m_direction.left = true;
             m_direction.right = false;
         }
@@ -310,7 +283,7 @@ void Player::keypressed(sf::Keyboard::Key keyCode)
 }
 
 double Player::calcDirectionAngle() {
-    return Utils::angle(getPosition() + m_velocity, m_sprite.getPosition())* (180.0 / 3.141592653589793238463);
+    return Utils::angle(getPosition() + m_moveHistory, getPosition())* (180.0 / 3.141592653589793238463);
 }
 
 void Player::setProgressBar(ProgressBar& progressBar)

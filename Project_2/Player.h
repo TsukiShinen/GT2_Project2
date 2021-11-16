@@ -59,6 +59,7 @@ private:
 	float m_time = 0.f;
 	bool m_attack = false;
 	Sword m_sword;
+	sf::Vector2f m_moveHistory = { 1, 1 };
 
 	float chronoAniamtionDie;
 	float timeAnimationDie;

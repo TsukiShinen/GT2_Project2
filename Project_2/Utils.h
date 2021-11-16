@@ -65,5 +65,6 @@ public:
 	static float modAngle(float angle) {
 		return fmod(angle + 360, 360);
 	}
+
 };
 

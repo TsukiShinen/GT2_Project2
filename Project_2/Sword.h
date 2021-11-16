@@ -14,7 +14,7 @@ private:
 	float m_angleRecovery = 0.21f;
 
 	float m_offsetAngle = 90.f;
-	float m_attackAngle = 178.f;
+	float m_attackAngle = 90.f;
 
 	float m_ratio = 180/m_attackSpeed;
 	float m_startAngle = 1;
