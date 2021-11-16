@@ -2,7 +2,7 @@
 
 
 Player::Player(const sf::Texture* texture, const sf::Texture* inventoryTexture, const sf::Texture* itemSelectedTexture) :
-    Entity("Player", 10, texture),
+    Entity("Player", 5.f, texture),
     m_inventaire(10, inventoryTexture, itemSelectedTexture),
     m_sword(texture)
 {  
@@ -14,9 +14,8 @@ Player::Player(const sf::Texture* texture, const sf::Texture* inventoryTexture, 
 
     heal = [&](int value) {
         m_life += value;
+        m_lifeBar.setValue(m_life);
     };
-
-    heal(3);
 }
 
 void Player::setAnimation() {
@@ -59,6 +58,7 @@ void Player::draw(sf::RenderWindow& window, bool debugMode) {
 
 void Player::drawUI(sf::RenderWindow& window, bool debugMode)
 {
+    window.draw(m_lifeBar);
     if (m_isInventoryOpen) {
         m_inventaire.draw(window, debugMode);
     }
@@ -193,6 +193,12 @@ sf::FloatRect Player::getBoundingBox() {
         return sf::FloatRect(getPosition().x, getPosition().y, m_size.x, m_size.y);
 }
 
+void Player::takeDamage(float damage)
+{
+    Entity::takeDamage(damage);
+    m_lifeBar.setValue(m_life);
+}
+
 
 
 sf::FloatRect Player::intersects(std::vector<sf::FloatRect>& listOfElements) {
@@ -289,4 +295,11 @@ void Player::keypressed(sf::Keyboard::Key keyCode)
 
 double Player::calcAngle() {
     return Utils::angle(getPosition() + m_velocity, m_sprite.getPosition())* (180.0 / 3.141592653589793238463);
+}
+
+void Player::setProgressBar(ProgressBar& progressBar)
+{
+    m_lifeBar = progressBar;
+    m_lifeBar.setNumberOfSprite(5);
+    m_lifeBar.setValue(m_life);
 }

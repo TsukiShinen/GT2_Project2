@@ -8,6 +8,7 @@
 #include "Inventaire.h"
 #include "Sword.h"
 #include "Utils.h"
+#include "ProgressBar.h"
 
 class Player : public Entity
 {
@@ -28,6 +29,7 @@ public:
 
 	float getDamage() { return m_sword.getDamage(); }
 	sf::FloatRect getBoundingBox() override;
+	void takeDamage(float damage) override;
 
 	bool pickItem(Item* item);
 
@@ -35,11 +37,14 @@ public:
 
 	double calcAngle();
 
+	void setProgressBar(ProgressBar& progressBar);
+
 	void keypressed(sf::Keyboard::Key keyCode);
 private:
 	std::string m_directionAnim = "WalkBL";
 	Utils::Direction m_direction;
-	
+
+	ProgressBar m_lifeBar;
 
 	sf::RectangleShape m_movebox;
 	Inventaire m_inventaire;

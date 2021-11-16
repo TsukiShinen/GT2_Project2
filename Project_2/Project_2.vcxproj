@@ -184,6 +184,8 @@
     <None Include="Assets\Map\SandBox2.json" />
   </ItemGroup>
   <ItemGroup>
+    <Image Include="Assets\heart.png" />
+    <Image Include="Assets\heartBackground.png" />
     <Image Include="Assets\Inventaire.png" />
     <Image Include="Assets\Items.png" />
     <Image Include="Assets\itemSelected.png" />

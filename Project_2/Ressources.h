@@ -11,6 +11,8 @@ class Ressource
 	sf::Texture* inventory = new sf::Texture();
 	sf::Texture* items = new sf::Texture();
 	sf::Texture* itemSelected = new sf::Texture();
+	sf::Texture* heart = new sf::Texture();
+	sf::Texture* heartBackground = new sf::Texture();
 
 
 	sf::Font* mainFont = new sf::Font();
@@ -40,7 +42,14 @@ public:
 			std::cout << "Can't load itemSelected Texture !" << std::endl;
 			return;
 		}
-
+		if (!heart->loadFromFile("./Assets/heart.png")) {
+			std::cout << "Can't load heart Texture !" << std::endl;
+			return;
+		}
+		if (!heartBackground->loadFromFile("./Assets/heartBackground.png")) {
+			std::cout << "Can't load heartBackground Texture !" << std::endl;
+			return;
+		}
 		std::cout << "Succefully load Textures." << std::endl;
 
 		if (!mainFont->loadFromFile("./Assets/Fonts/Pixel_4x4.ttf")) {
@@ -57,6 +66,8 @@ public:
 	const sf::Texture* getlifeBarTexture() { return lifeBar; }
 	const sf::Texture* getInventoryTexture() { return inventory; }
 	const sf::Texture* getItemSelected() { return itemSelected; }
+	const sf::Texture* getHeart() { return heart; }
+	const sf::Texture* getHeartBackground() { return heartBackground; }
 	sf::Sprite* getMeat() {
 		return new sf::Sprite(*items, sf::IntRect(0, 96, 8, 8));
 	}

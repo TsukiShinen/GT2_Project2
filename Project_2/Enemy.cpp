@@ -12,7 +12,7 @@ Enemy::Enemy(sf::IntRect& zone, const sf::Texture* texture, const sf::Texture* l
 	m_sprite.setPosition(sf::Vector2f(rand() % m_zone.width + m_zone.left, rand() % m_zone.height + m_zone.top));
 	m_speed = 20.f;
 
-	m_lifeBar = ProgressBar(5.f, sf::Sprite(*lifebarTexture));
+	m_lifeBar = ProgressBar(0.f, 5.f, sf::Sprite(*lifebarTexture));
 	m_lifeBar.setValue(m_life);
 
 	setAnimations();

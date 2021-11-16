@@ -27,6 +27,8 @@ void Game::load()
     for (sf::IntRect& enemyZone : m_map.getEnemyZone()) {
         m_orc.push_back(new Enemy(enemyZone, m_ressource.getOrcTexture(), m_ressource.getlifeBarTexture()));
     }
+    ProgressBar progressBar(0.f, 10.f, sf::Sprite(*m_ressource.getHeart()), new sf::Sprite(*m_ressource.getHeartBackground()));
+    m_player.setProgressBar(progressBar);
 
     guiView.setCenter(100, 75);
     guiView.setSize(m_screenSize / 4.f);
@@ -50,6 +52,7 @@ void Game::update(sf::Time& deltaTime)
             sf::Vector2f force(cos(angle), sin(angle));
             force = Utils::normalize(force) * 5000.f;
             m_player.addForce(force);
+            m_player.takeDamage(1.f);
         }
     }
     m_map.update(deltaTime);

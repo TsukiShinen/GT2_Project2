@@ -152,6 +152,12 @@
     <Image Include="Assets\itemSelected.png">
       <Filter>Fichiers de ressources</Filter>
     </Image>
+    <Image Include="Assets\heart.png">
+      <Filter>Fichiers de ressources</Filter>
+    </Image>
+    <Image Include="Assets\heartBackground.png">
+      <Filter>Fichiers de ressources</Filter>
+    </Image>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Project_2.rc">

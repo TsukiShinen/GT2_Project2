@@ -3,7 +3,8 @@
 Item::Item(std::string name, sf::Sprite* icon, Type type, std::function<void(int)>& function, int value):
 	m_name(name),
 	m_icon(*icon),
-	m_type(type)
+	m_type(type),
+	m_value(value)
 {
 	use = function;
 }
