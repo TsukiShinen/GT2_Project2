@@ -112,11 +112,12 @@ void Enemy::Walk(sf::Time& deltaTime, const sf::Vector2f& playerPos)
 void Enemy::Follow(sf::Time& deltaTime, const sf::Vector2f& playerPos)
 {
 	double angle = Utils::angle(m_sprite.getPosition(), playerPos);
-	m_thrust.x = m_speed * cos(angle);
-	m_thrust.y = m_speed * sin(angle);
+	m_velocity.x = m_speed * cos(angle);
+	m_velocity.y = m_speed * sin(angle);
 
 	float distance = Utils::dist(m_sprite.getPosition(), playerPos);
 	if (distance > m_range) {
+		std::cout << "Change" << std::endl;
 		m_currentState = State::CHANGEDIR;
 	}
 }
@@ -173,6 +174,7 @@ void Enemy::triggerFollow(const sf::Vector2f& playerPos) {
 	if (m_currentState == State::FOLLOW) { return; }
 	float distance = Utils::dist(m_sprite.getPosition(), playerPos);
 	if (distance < m_range) {
+		std::cout << "trigger" << std::endl;
 		m_currentState = State::FOLLOW;
 	}
 }

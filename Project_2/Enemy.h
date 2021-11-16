@@ -9,7 +9,7 @@ class Enemy : public Entity
 	enum class State { NONE, WALK, FOLLOW, ATTACK, CHANGEDIR, DIE };
 
 	sf::IntRect m_zone;
-	float m_range{ 30.f };
+	float m_range{ 64.f };
 
 	State m_currentState = State::NONE;
 	Utils::Direction m_direction;
