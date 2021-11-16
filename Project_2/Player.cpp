@@ -252,8 +252,8 @@ void Player::attack() {
 bool Player::isAttacking(sf::Vector2f Enemy) {
     if (!m_attack) { return false; }
     double distance = Utils::dist(m_sprite.getPosition(), Enemy);
-    int angleE = Utils::angle(Enemy, m_sprite.getPosition()) * (180.0 / 3.141592653589793238463);
-    int angleP = calcAngle();
+    int angleE = static_cast<int>(Utils::angle(Enemy, m_sprite.getPosition()) * (180.0 / 3.141592653589793238463));
+    int angleP = static_cast<int>(calcAngle());
     angleP = (angleP + 360) % 360;
     angleE = (angleE + 360) % 360;
     
@@ -287,6 +287,6 @@ void Player::keypressed(sf::Keyboard::Key keyCode)
     }
 }
 
-float Player::calcAngle() {
+double Player::calcAngle() {
     return Utils::angle(getPosition() + m_velocity, m_sprite.getPosition())* (180.0 / 3.141592653589793238463);
 }

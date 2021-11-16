@@ -1,7 +1,6 @@
 #include <SFML/Graphics.hpp>
 #include <iostream>
 #include "Game.h"
-#include "Point.h"
 #include "ProgressBar.h"
 
 
@@ -12,7 +11,7 @@ int main()
     sf::Clock clock; 
     window.setKeyRepeatEnabled(false);
 
-    Game game(Point(800, 600));
+    Game game(sf::Vector2f(800, 600));
     game.load();
 
 

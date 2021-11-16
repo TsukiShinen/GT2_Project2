@@ -11,10 +11,10 @@ class TileMap
 	const std::string PATH = "./Assets/Map/";
 
 	struct Layer {
-		std::string name;
+		std::string name{ ""};
 		std::vector<size_t> data;
-		size_t width;
-		size_t height;
+		size_t width{ 0 };
+		size_t height{ 0 };
 		int heightLevel = 0;
 		bool drawBeforePlayer = true;
 		bool isCollisionLayer = false;
@@ -24,12 +24,12 @@ class TileMap
 
 	struct TileAnimation {
 		sf::IntRect textureRect;
-		size_t duration;
+		size_t duration{ 1 };
 		float chrono = 0;
 	};
 
 	struct Tile {
-		size_t id;
+		size_t id{ 0 };
 		sf::Sprite sprite;
 		int currentAnimationFrame = 0;
 
@@ -42,8 +42,8 @@ class TileMap
 	};
 
 	struct HeightLevelCollider {
-		sf::FloatRect rect;
-		int toLevel;
+		sf::FloatRect rect{ 0, 0, 0, 0 };
+		int toLevel{ 0 };
 	};
 public:
 	TileMap(std::string fileName = "");

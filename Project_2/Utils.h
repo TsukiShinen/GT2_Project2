@@ -2,15 +2,13 @@
 #include <SFML/Graphics.hpp>
 #include <fstream>
 
-#include "Point.h"
-
 #include "json.h"
 using json = nlohmann::json;
 
 class Utils
 {
 public:
-	static struct Direction {
+	struct Direction {
 		bool up = false;
 		bool right = true;
 		bool down = true;

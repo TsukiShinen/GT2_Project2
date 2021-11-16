@@ -31,6 +31,6 @@ public:
 	// void addAnimation(std::string name, std::vector<size_t> lstId, float duration, std::string nextAnim) { m_animations[name] = Animation(getAllRect(lstId), duration, nextAnim); }
 	std::vector<sf::IntRect> getAllRect(std::vector<size_t> lstId);
 	std::vector<sf::IntRect> getAllRect(size_t idBegin, size_t nbr);
-	int getAnimCountdown() { return m_animations[m_animationName].getEndIndex(); }
+	size_t getAnimCountdown() { return m_animations[m_animationName].getEndIndex(); }
 };
 

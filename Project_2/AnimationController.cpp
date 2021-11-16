@@ -1,5 +1,4 @@
 #include "AnimationController.h"
-#include "Point.h"
 
 void AnimationController::changeCurrentAnim(std::string name) {
 	if (m_animationName == name) { return; }
@@ -17,7 +16,7 @@ std::vector<sf::IntRect> AnimationController::getAllRect(std::vector<size_t> lst
 	std::vector<sf::IntRect> lstRect;
 
 	for (size_t& id : lstId) {
-		Point pos(id % m_columns, id / m_columns);
+		sf::Vector2f pos(id % m_columns, id / m_columns);
 
 		lstRect.push_back(sf::IntRect(pos.x * m_tileSizeX, pos.y * m_tileSizeY, m_tileSizeX, m_tileSizeY));
 	}

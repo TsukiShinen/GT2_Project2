@@ -172,7 +172,6 @@
     <ClInclude Include="json.h" />
     <ClInclude Include="ParticleSystem.h" />
     <ClInclude Include="Player.h" />
-    <ClInclude Include="Point.h" />
     <ClInclude Include="ProgressBar.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="Ressources.h" />

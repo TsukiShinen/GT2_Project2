@@ -3,7 +3,7 @@
 #include <SFML/Graphics.hpp>
 #include <functional>
 
-Game::Game(Point screenSize)
+Game::Game(sf::Vector2f screenSize)
 {
     m_screenSize = screenSize;
 }
@@ -29,8 +29,8 @@ void Game::load()
     }
 
     guiView.setCenter(100, 75);
-    guiView.setSize((m_screenSize / 4).toVector2());
-    m_camera.setView(sf::View(m_player.getPosition(), (m_screenSize / 4).toVector2()));
+    guiView.setSize(m_screenSize / 4.f);
+    m_camera.setView(sf::View(m_player.getPosition(), m_screenSize / 4.f));
 }
 
 void Game::update(sf::Time& deltaTime)
@@ -70,7 +70,7 @@ void Game::update(sf::Time& deltaTime)
     }
 
     // Pick Item
-    for (int i = m_groundItems.size() - 1; i >= 0; --i) {
+    for (int i = static_cast<int>(m_groundItems.size() - 1); i >= 0; --i) {
         if (m_player.collides(m_groundItems[i]->getBoundingBox())) {
             bool getItem = m_player.pickItem(m_groundItems[i]);
             if (getItem) {
@@ -81,7 +81,7 @@ void Game::update(sf::Time& deltaTime)
 
 
     // Remove dead people
-    for (int i = m_orc.size() - 1; i >= 0; --i) {
+    for (int i = static_cast<int>(m_orc.size() - 1); i >= 0; --i) {
         if (m_orc[i]->toRemove()) {
             Enemy* enemy = m_orc[i];
 

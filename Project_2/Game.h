@@ -2,8 +2,6 @@
 #include <SFML/Graphics.hpp>
 #include <vector>
 
-#include "Point.h"
-
 #include "Player.h"
 #include "Enemy.h"
 #include "TileMap.h"
@@ -13,7 +11,7 @@
 
 class Game
 {
-	Point m_screenSize;
+	sf::Vector2f m_screenSize;
 
 	Camera m_camera;
 	sf::View guiView;
@@ -26,7 +24,7 @@ class Game
 	bool m_debugMode = false;
 
 public:
-	Game(Point screenSize = Point(0, 0));
+	Game(sf::Vector2f screenSize = sf::Vector2f(0, 0));
 	void load();
 	void update(sf::Time& deltaTime);
 	void draw(sf::RenderWindow& window);

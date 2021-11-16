@@ -1,5 +1,4 @@
 #include "Enemy.h"
-#include "Point.h"
 #include "Utils.h"
 
 Enemy::Enemy(sf::IntRect& zone, const sf::Texture* texture, const sf::Texture* lifebarTexture) :
@@ -115,7 +114,7 @@ void Enemy::Follow(sf::Time& deltaTime, const sf::Vector2f& playerPos)
 	m_velocity.x = m_speed * cos(angle);
 	m_velocity.y = m_speed * sin(angle);
 
-	float distance = Utils::dist(m_sprite.getPosition(), playerPos);
+	double distance = Utils::dist(m_sprite.getPosition(), playerPos);
 	if (distance > m_range) {
 		std::cout << "Change" << std::endl;
 		m_currentState = State::CHANGEDIR;
@@ -172,7 +171,7 @@ void Enemy::Die(sf::Time& deltaTime) {
 
 void Enemy::triggerFollow(const sf::Vector2f& playerPos) {
 	if (m_currentState == State::FOLLOW) { return; }
-	float distance = Utils::dist(m_sprite.getPosition(), playerPos);
+	double distance = Utils::dist(m_sprite.getPosition(), playerPos);
 	if (distance < m_range) {
 		std::cout << "trigger" << std::endl;
 		m_currentState = State::FOLLOW;

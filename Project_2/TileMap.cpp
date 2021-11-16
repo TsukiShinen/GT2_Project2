@@ -177,7 +177,7 @@ void TileMap::drawLayer(sf::RenderWindow& window, Layer& layer)
         for (size_t x = 0; x < layer.width; x++)
         {
             if (layer.data[y * layer.width + x] != 0) {
-                m_tileSets.tiles[layer.data[y * layer.width + x]]->sprite.setPosition(x * 8 , y * 8 );
+                m_tileSets.tiles[layer.data[y * layer.width + x]]->sprite.setPosition(x * 8.f, y * 8.f);
                 window.draw(m_tileSets.tiles[layer.data[y * layer.width + x]]->sprite);
                 m_tileSets.tiles[layer.data[y * layer.width + x]]->sprite.setColor(sf::Color::White);
             }

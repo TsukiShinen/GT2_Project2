@@ -79,9 +79,6 @@
     <ClInclude Include="Player.h">
       <Filter>Entity</Filter>
     </ClInclude>
-    <ClInclude Include="Point.h">
-      <Filter>Utils</Filter>
-    </ClInclude>
     <ClInclude Include="ParticleSystem.h">
       <Filter>Utils</Filter>
     </ClInclude>
