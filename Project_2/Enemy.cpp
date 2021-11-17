@@ -31,12 +31,32 @@ void Enemy::setAnimations() {
 	float timeFrameDie = 0.15f;
 	m_animationController.addAnimation("Die", 304, nbrFrameDie, timeFrameDie);
 	m_timeDie = nbrFrameDie * timeFrameDie;
+	int nbrFrameTakeHit = 4;
+	float timeFrameTakeHit = 0.15f;
+	m_animationController.addAnimation("Hit_UL", 112, nbrFrameTakeHit, timeFrameTakeHit);
+	m_animationController.addAnimation("Hit_UR", 112, nbrFrameTakeHit, timeFrameTakeHit);
+	m_animationController.addAnimation("Hit_DR", 112, nbrFrameTakeHit, timeFrameTakeHit);
+	m_animationController.addAnimation("Hit_DL", 112, nbrFrameTakeHit, timeFrameTakeHit);
+	m_timeTakeHit = nbrFrameTakeHit * timeFrameTakeHit;
 	m_animationController.changeCurrentAnim("Idle_DL");
 }
 
 sf::FloatRect Enemy::getBoundingBox()
 {
 	return sf::FloatRect(getPosition().x, getPosition().y, m_size.x, m_size.y);
+}
+
+void Enemy::reloadDirection()
+{
+	m_direction.reset();
+	if (m_velocity.y < 0)
+		m_direction.up = true;
+	if (m_velocity.x > 0)
+		m_direction.right = true;
+	if (m_velocity.y > 0)
+		m_direction.down = true;
+	if (m_velocity.x < 0)
+		m_direction.left = true;
 }
 
 void Enemy::update(sf::Time& deltaTime, const sf::Vector2f& playerPos)
@@ -56,8 +76,8 @@ void Enemy::update(sf::Time& deltaTime, const sf::Vector2f& playerPos)
 	case Enemy::State::FOLLOW:
 		Follow(deltaTime, playerPos);
 		break;
-	case Enemy::State::ATTACK:
-		Attack(deltaTime);
+	case Enemy::State::TAKEHIT:
+		TakeHit(deltaTime);
 		break;
 	case Enemy::State::CHANGEDIR:
 		ChangeDir(deltaTime, playerPos);
@@ -68,10 +88,11 @@ void Enemy::update(sf::Time& deltaTime, const sf::Vector2f& playerPos)
 	default:
 		break;
 	}
-	if (m_currentState != State::DIE) {
+	if (m_currentState != State::DIE &&
+		m_currentState != State::TAKEHIT) {
 		triggerFollow(playerPos);
 		// Animation
-		updateAnimation(deltaTime);
+		updateAnimation();
 	}
 
 	m_elapsedTime += deltaTime.asSeconds();
@@ -115,16 +136,22 @@ void Enemy::Follow(sf::Time& deltaTime, const sf::Vector2f& playerPos)
 	double angle = Utils::angle(m_sprite.getPosition(), playerPos);
 	m_velocity.x = m_speed * cos(angle);
 	m_velocity.y = m_speed * sin(angle);
+	reloadDirection();
 
 	double distance = Utils::dist(m_sprite.getPosition(), playerPos);
 	if (distance > m_range) {
-		std::cout << "Change" << std::endl;
 		m_currentState = State::CHANGEDIR;
 	}
 }
 
-void Enemy::Attack(sf::Time& deltaTime)
+void Enemy::TakeHit(sf::Time& deltaTime)
 {
+	m_chronoTakeHit += deltaTime.asSeconds();
+
+	if (m_chronoTakeHit >= m_timeTakeHit) {
+		m_chronoTakeHit = 0;
+		m_currentState = State::CHANGEDIR;
+	}
 }
 
 void Enemy::ChangeDir(sf::Time& deltaTime, const sf::Vector2f& playerPos)
@@ -148,16 +175,7 @@ void Enemy::ChangeDir(sf::Time& deltaTime, const sf::Vector2f& playerPos)
 			m_velocity.y = DBL_EPSILON;
 		}
 
-		// Get the direction
-		m_direction.reset();
-		if (m_velocity.y < 0)
-			m_direction.up = true;
-		if (m_velocity.x > 0)
-			m_direction.right = true;
-		if (m_velocity.y > 0)
-			m_direction.down = true;
-		if (m_velocity.x < 0)
-			m_direction.left = true;
+		reloadDirection();
 	}
 }
 
@@ -175,14 +193,15 @@ void Enemy::triggerFollow(const sf::Vector2f& playerPos) {
 	if (m_currentState == State::FOLLOW) { return; }
 	double distance = Utils::dist(m_sprite.getPosition(), playerPos);
 	if (distance < m_range) {
-		std::cout << "trigger" << std::endl;
 		m_currentState = State::FOLLOW;
 	}
 }
 
-void Enemy::updateAnimation(sf::Time& deltaTime) {
+void Enemy::updateAnimation() {
 	std::string base = "";
-	if (m_velocity.x != 0 || m_velocity.y != 0)
+	if (m_currentState == State::TAKEHIT)
+		base = "Hit";
+	else if (m_velocity.x != 0 || m_velocity.y != 0)
 		base = "Walk";
 	else
 		base = "Idle";
@@ -219,5 +238,9 @@ void Enemy::takeDamage(float damage) {
 		m_velocity.x = 0;
 		m_velocity.y = 0;
 		m_currentState = State::DIE;
+	}
+	else {
+		m_currentState = State::TAKEHIT;
+		updateAnimation();
 	}
 }
