@@ -95,7 +95,7 @@ void Player::changeSprite() {
 void Player::update(sf::Time deltaTime, std::vector<sf::FloatRect>& listOfElements) {
     if (!m_isInventoryOpen && isAlive()) 
     {
-        sf::Vector2f movement{ 0.f, 0.f };
+        m_movement = { 0.f, 0.f };
     
         if (m_attack) {
             
@@ -104,22 +104,22 @@ void Player::update(sf::Time deltaTime, std::vector<sf::FloatRect>& listOfElemen
 
 
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up) || sf::Keyboard::isKeyPressed(sf::Keyboard::Z) || sf::Keyboard::isKeyPressed(sf::Keyboard::W)) {
-            movement.y -= 1;
+            m_movement.y -= 1;
         }
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right) || sf::Keyboard::isKeyPressed(sf::Keyboard::D)) {
-            movement.x += 1;
+            m_movement.x += 1;
         }
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down) || sf::Keyboard::isKeyPressed(sf::Keyboard::S)) {
 
-            movement.y += 1;
+            m_movement.y += 1;
         }
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left) || sf::Keyboard::isKeyPressed(sf::Keyboard::Q) || sf::Keyboard::isKeyPressed(sf::Keyboard::A)) {
             
-            movement.x -= 1;
+            m_movement.x -= 1;
         
         }
 
-        addForce(Utils::normalize(movement) * m_speed);
+        addForce(Utils::normalize(m_movement) * m_speed);
 
         // direction changes
         if (m_velocity.y < 0)
@@ -151,15 +151,15 @@ void Player::update(sf::Time deltaTime, std::vector<sf::FloatRect>& listOfElemen
         }
             
 
-        sf::FloatRect futurePos = intersects(listOfElements);
+        sf::FloatRect futurePos = intersects(listOfElements, deltaTime);
 
-        // adding after verification
-        futurePos.left += movement.x;
-        futurePos.top += movement.y;
+        /*futurePos.left += movement.x;
+        futurePos.top += movement.y;*/
 
         // update de la movebox
         m_movebox.setSize(sf::Vector2f(futurePos.width, futurePos.height));
         m_movebox.setPosition(futurePos.left, futurePos.top);
+
         changeSprite();
         m_sword.update(deltaTime, getCenter(), m_attack, calcDirectionAngle());
     }
@@ -189,9 +189,21 @@ void Player::takeDamage(float damage)
 
 
 
-sf::FloatRect Player::intersects(std::vector<sf::FloatRect>& listOfElements) {
-    sf::Vector2f initial(m_velocity.x, m_velocity.y);
-    
+sf::FloatRect Player::intersects(std::vector<sf::FloatRect>& listOfElements, sf::Time& deltaTime) {
+
+    sf::Vector2f futureVel = m_velocity;
+
+    sf::Vector2f acc(m_thrust / m_masse - m_friction * futureVel);
+    futureVel += acc;
+    if (abs(futureVel.x) < m_friction) {
+        futureVel.x = 0;
+    }
+    if (abs(futureVel.y) < m_friction) {
+        futureVel.y = 0;
+    }
+
+    futureVel *= deltaTime.asSeconds();
+
     sf::FloatRect playerPos = getBoundingBox();
     sf::FloatRect futurePos = playerPos;
 
@@ -199,38 +211,44 @@ sf::FloatRect Player::intersects(std::vector<sf::FloatRect>& listOfElements) {
     futurePos.top += m_walkingBox.top;
     futurePos.width = m_walkingBox.width;
     futurePos.height = m_walkingBox.height;
+
+    // sf::Vector2f initial = m_velocity;
     
     for (const sf::FloatRect& bound : listOfElements) {
 
-        if (m_velocity.x != 0.f) {
-            futurePos.left += m_velocity.x;
+        if (futureVel.x != 0.f) {
+            futurePos.left += futureVel.x;
             if (futurePos.intersects(bound)) {
-
+                m_thrust.x = 0.f;
                 m_velocity.x = 0.f;
                 // reset x
             }
-            futurePos.left -= initial.x;
+            futurePos.left -= futureVel.x;
         }
 
-        if (m_velocity.y != 0.f) {
-            futurePos.top += m_velocity.y;
+        if (futureVel.y != 0.f) {
+            futurePos.top += futureVel.y;
             if (futurePos.intersects(bound)) {
-
+                m_thrust.y = 0.f;
                 m_velocity.y = 0.f;
                 // reset y
             }
-            futurePos.top -= initial.y;
+            futurePos.top -= futureVel.y;
         }
 
-        if (m_velocity.x != 0.f && m_velocity.y != 0.f) {
-            futurePos.left += m_velocity.x;
-
-            if (futurePos.intersects(bound)) {
-                m_velocity.x = 0.f;
-                // reset only x : arbitrary choise
-            }
-            futurePos.left -= initial.x;
-        }
+        //if (futureVel.x != 0.f && futureVel.y != 0.f) {
+        //    futurePos.left += futureVel.x;
+        //    futurePos.top += futureVel.y;
+        //    if (futurePos.intersects(bound)) {
+        //        m_velocity.x = 0.f;
+        //        m_velocity.y = 0.f;
+        //        m_thrust.x = 0.f;
+        //        m_thrust.y = 0.f;
+        //        // reset only x : arbitrary choise
+        //    }
+        //    futurePos.top -= futureVel.y;
+        //    futurePos.left -= futureVel.x;
+        //}
     }
     return futurePos;
 }
@@ -238,7 +256,7 @@ sf::FloatRect Player::intersects(std::vector<sf::FloatRect>& listOfElements) {
 void Player::attack() { 
     if (!m_attack && !m_sword.isHitting()) { 
         m_attack = true;
-        m_sword.attack(Utils::angle(m_sprite.getPosition(), m_sprite.getPosition() + m_velocity) * (180.0 / 3.141592653589793238463));
+        m_sword.attack(Utils::angle(m_sprite.getPosition(), m_sprite.getPosition() + m_moveHistory) * (180.0 / 3.141592653589793238463));
     }
 };
 

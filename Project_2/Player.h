@@ -19,7 +19,7 @@ public:
 	void attack();
 	bool isAttacking(sf::Vector2f);
 
-	sf::FloatRect intersects(std::vector<sf::FloatRect>& listOfElements);
+	sf::FloatRect intersects(std::vector<sf::FloatRect>& listOfElements, sf::Time& deltaTime);
 	void update(sf::Time, std::vector<sf::FloatRect>&);
 
 	void draw(sf::RenderWindow&, bool);
@@ -60,6 +60,8 @@ private:
 	bool m_attack = false;
 	Sword m_sword;
 	sf::Vector2f m_moveHistory = { 1, 1 };
+
+	sf::Vector2f m_movement = { 0, 0 };
 
 	float chronoAniamtionDie;
 	float timeAnimationDie;
