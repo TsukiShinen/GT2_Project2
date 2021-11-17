@@ -196,9 +196,6 @@
     <Image Include="Assets\PlayerAnimations.png" />
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="Project_2.rc" />
-  </ItemGroup>
-  <ItemGroup>
     <Font Include="Assets\Fonts\mainFont.TTF" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

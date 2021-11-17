@@ -97,7 +97,7 @@
                  "value":0
                 }],
          "type":"tilelayer",
-         "visible":true,
+         "visible":false,
          "width":100,
          "x":0,
          "y":0
@@ -306,28 +306,6 @@
          "objects":[
                 {
                  "height":48,
-                 "id":3,
-                 "name":"Orc",
-                 "rotation":0,
-                 "type":"Spawn",
-                 "visible":true,
-                 "width":96,
-                 "x":256,
-                 "y":184
-                }, 
-                {
-                 "height":48,
-                 "id":4,
-                 "name":"Orc",
-                 "rotation":0,
-                 "type":"Spawn",
-                 "visible":true,
-                 "width":96,
-                 "x":112,
-                 "y":208
-                }, 
-                {
-                 "height":48,
                  "id":5,
                  "name":"Orc",
                  "rotation":0,
@@ -336,17 +314,6 @@
                  "width":96,
                  "x":32,
                  "y":96
-                }, 
-                {
-                 "height":39.9993098688751,
-                 "id":6,
-                 "name":"Orc",
-                 "rotation":0,
-                 "type":"Spawn",
-                 "visible":true,
-                 "width":160,
-                 "x":120,
-                 "y":56.56
                 }],
          "opacity":1,
          "type":"objectgroup",

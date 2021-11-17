@@ -51,25 +51,25 @@ bool Inventaire::addItem(Item* item)
 
 void Inventaire::keypressed(sf::Keyboard::Key keyCode)
 {
-	if (keyCode == sf::Keyboard::Up) {
+	if (keyCode == sf::Keyboard::Z || keyCode == sf::Keyboard::W) {
 		m_selectedItem -= m_sizeRow;
 		if (m_selectedItem < 0) {
 			m_selectedItem += m_size-1;
 		}
 	}
-	if (keyCode == sf::Keyboard::Right) {
+	if (keyCode == sf::Keyboard::D) {
 		m_selectedItem += 1;
 		if (m_selectedItem % m_sizeRow == 0) {
 			m_selectedItem -= m_sizeRow;
 		}
 	}
-	if (keyCode == sf::Keyboard::Down) {
+	if (keyCode == sf::Keyboard::S) {
 		m_selectedItem += m_sizeRow;
 		if (m_selectedItem >= m_size -1) {
 			m_selectedItem -= m_size-1;
 		}
 	}
-	if (keyCode == sf::Keyboard::Left) {
+	if (keyCode == sf::Keyboard::Q || keyCode == sf::Keyboard::A) {
 		m_selectedItem -= 1;
 		if (m_selectedItem % m_sizeRow == m_sizeRow -1 || m_selectedItem < 0) {
 			m_selectedItem += m_sizeRow;
