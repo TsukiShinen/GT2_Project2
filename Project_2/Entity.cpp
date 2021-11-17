@@ -94,7 +94,7 @@ bool Entity::toRemove()
 
 bool Entity::isAlive()
 {
-	return m_life > 0;
+	return m_life > DBL_EPSILON;
 }
 
 void Entity::setPosition(sf::Vector2f position)

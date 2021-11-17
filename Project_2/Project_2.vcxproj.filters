@@ -160,11 +160,6 @@
     </Image>
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="Project_2.rc">
-      <Filter>Fichiers de ressources</Filter>
-    </ResourceCompile>
-  </ItemGroup>
-  <ItemGroup>
     <Font Include="Assets\Fonts\mainFont.TTF" />
   </ItemGroup>
 </Project>

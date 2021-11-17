@@ -5,7 +5,7 @@ Enemy::Enemy(sf::IntRect& zone, const sf::Texture* texture, const sf::Texture* l
 	Entity("Orc", 5, texture)
 {
 	m_size = sf::Vector2f(8, 8);
-	m_useAcceleration = false;
+	m_speed = 200.f;
 
 	m_zone = zone;
 	m_sprite.setOrigin(sf::Vector2f(12, 12));

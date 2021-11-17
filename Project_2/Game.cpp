@@ -34,21 +34,30 @@ void Game::update(sf::Time& deltaTime)
     }
     for (Enemy* enemy : m_orc) {
         enemy->update(deltaTime, m_player.getPosition());
-        if (m_player.isAttacking(enemy->getPosition())) 
-        {
-            enemy->takeDamage(m_player.getDamage(), deltaTime, m_player.getAttackSpeed());
-        }
-        // Collision with player
-        if (m_player.collides(enemy->getBoundingBox()) && enemy->isAlive()) {
-            sf::Vector2f enemyPos = enemy->getCenter();
-            sf::Vector2f playerPos = m_player.getCenter();
-            double angle = Utils::angle(enemyPos, playerPos);
-            sf::Vector2f force(cos(angle), sin(angle));
-            force = Utils::normalize(force) * 5000.f;
-            m_player.addForce(force);
-            m_player.takeDamage(1.f);
+        if (enemy->isAlive()) {
+            if (m_player.isAttacking(enemy->getPosition()))
+            {
+                enemy->takeDamage(m_player.getDamage(), deltaTime, m_player.getAttackSpeed());
+                sf::Vector2f enemyPos = enemy->getCenter();
+                sf::Vector2f playerPos = m_player.getCenter();
+                double angle = Utils::angle(playerPos, enemyPos);
+                sf::Vector2f force(cos(angle), sin(angle));
+                force = Utils::normalize(force) * 5000.f;
+                enemy->addForce(force);
+            }
+            // Collision with player
+            if (m_player.collides(enemy->getBoundingBox()) && enemy->isAlive()) {
+                sf::Vector2f enemyPos = enemy->getCenter();
+                sf::Vector2f playerPos = m_player.getCenter();
+                double angle = Utils::angle(enemyPos, playerPos);
+                sf::Vector2f force(cos(angle), sin(angle));
+                force = Utils::normalize(force) * 5000.f;
+                m_player.addForce(force);
+                m_player.takeDamage(1.f);
+            }
         }
     }
+
     m_map.update(deltaTime);
     m_player.update(deltaTime, m_map.getCollisionColliders(m_player.getMapLevel()));
     sf::Vector2f cameraPosition = m_player.getPosition();
