@@ -3,7 +3,7 @@
 
 Player::Player(const sf::Texture* texture, const sf::Texture* inventoryTexture, const sf::Texture* itemSelectedTexture) :
     Entity("Player", 10.f, texture),
-    m_inventaire(10, inventoryTexture, itemSelectedTexture),
+    m_inventory(10, inventoryTexture, itemSelectedTexture),
     m_sword(texture)
 {
     // m_useAcceleration = false;
@@ -95,7 +95,7 @@ void Player::drawUI(sf::RenderWindow& window, bool debugMode)
 {
     window.draw(m_lifeBar);
     if (m_isInventoryOpen) {
-        m_inventaire.draw(window, debugMode);
+        m_inventory.draw(window, debugMode);
     }
    
 }
@@ -330,7 +330,7 @@ bool Player::isAttacking(sf::Vector2f Enemy) {
 
 bool Player::pickItem(Item* item)
 {
-    return m_inventaire.addItem(item);
+    return m_inventory.addItem(item);
 }
 
 void Player::movementShift() {
@@ -363,7 +363,7 @@ void Player::keypressed(sf::Keyboard::Key keyCode)
             m_animationController.changeCurrentAnim("Idle_DR");
         }
         if (m_isInventoryOpen) {
-            m_inventaire.keypressed(keyCode);
+            m_inventory.keypressed(keyCode);
         }
         if (keyCode == sf::Keyboard::Space) {
             attack();
