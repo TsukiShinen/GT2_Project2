@@ -37,6 +37,16 @@ void Player::setAnimation() {
     for (const auto& Idle : IdleMap) {
         m_animationController.addAnimation(Idle.first, Idle.second.first, Idle.second.second, 0.31111f);
     }
+
+    m_animationController.addAnimation("FrontIdleRiding_R", 416, 16, 0.13f);
+    m_animationController.addAnimation("FrontIdleRiding_L", 432, 16, 0.13f);
+    m_animationController.addAnimation("FrontRiding_R", 448, 4, 0.13f);
+    m_animationController.addAnimation("FrontRiding_L", 464, 4, 0.13f);
+
+    m_animationController.addAnimation("IdleRide", 480, 16, 0.13f);
+    m_animationController.addAnimation("Ride", 496, 8, 0.13f);
+
+
     m_animationController.addAnimation("Die", 320, 12, 0.13f);
     timeAnimationDie = 12 * 0.13f;
 
@@ -48,30 +58,28 @@ void Player::drawGestion(sf::RenderWindow& window, bool debugMode) {
         m_movebox.setFillColor(sf::Color::Green);
         window.draw(m_movebox);
     }
-    
     if (m_direction.down) {
         draw(window, debugMode);
-        if (isAlive())
-            if (!m_riding)
-                m_sword.draw(window, debugMode);
+        if (isAlive() && !m_riding && m_rideDuration < m_rideTime)
+            m_sword.draw(window, debugMode);
+        
+        
     }
     else {
+        
+        if (isAlive() && !m_riding && m_rideDuration < m_rideTime)
+            m_sword.draw(window, debugMode);
         draw(window, debugMode);
-        if (isAlive())
-            if (!m_riding)
-                m_sword.draw(window, debugMode);
-            
     }
-    
 }
 
 void Player::draw(sf::RenderWindow& window, bool debugMode)
 {
-    sf::RenderStates states;
-    states.transform = m_transform;
-    // Draw entity
-    window.draw(m_sprite, states);
-
+    //sf::RenderStates states;
+    //states.transform = m_transform;
+    //// Draw entity
+    //window.draw(m_sprite, states);
+    window.draw(m_sprite);
     // Draw boundingBox
     if (debugMode) {
         sf::FloatRect boundingBox = getBoundingBox();
@@ -97,21 +105,39 @@ void Player::changeSprite() {
     std::string base = "";
 
     if (m_velocity.x != 0 || m_velocity.y != 0)
-        base = "Walk";
-    else
+    {
+        if (m_riding && m_rideDuration < m_rideTime) {
+            base = "Ride";
+        }
+        else {
+            base = "Walk";
+        }
+    }
+    else {
         base = "Idle";
+        if (m_riding && m_rideDuration < m_rideTime)
+            base.append("Ride");
+    }
 
     std::string dir = "";
-    if (m_direction.up)
-        dir += "U";
-    else if (m_direction.down)
-        dir += "D";
-    if (m_direction.right)
-        dir += "R";
-    else if (m_direction.left)
-        dir += "L";
-
-    std::string name = base + "_" + dir;
+    if(!m_riding || m_rideDuration > m_rideTime) 
+    {
+        if (m_direction.up)
+            dir += "U";
+        else if (m_direction.down)
+            dir += "D";
+        if (m_direction.right)
+            dir += "R";
+        else if (m_direction.left)
+            dir += "L";
+    }
+    
+    std::string name = "";
+    if (!m_riding || m_rideDuration > m_rideTime)
+       name = base + "_" + dir;
+    else
+       name = base;
+    
     m_animationController.changeCurrentAnim(name);
 }
 
@@ -121,7 +147,6 @@ void Player::update(sf::Time deltaTime, std::vector<sf::FloatRect>& listOfElemen
     {
         m_movement = { 0.f, 0.f };
         if (m_attack) {
-            
             m_attack = m_sword.isHitting();
         }
 
@@ -143,22 +168,31 @@ void Player::update(sf::Time deltaTime, std::vector<sf::FloatRect>& listOfElemen
         {
             if (m_riding) {
                 float vecAngle = (m_movement.x == 0.f) ? 0 : (m_movement.x < 0) ? -m_rotationSpeed * deltaTime.asSeconds() : m_rotationSpeed * deltaTime.asSeconds();
-                vecAngle = fmod(m_sprite.getRotation() + 90 + vecAngle, 360);
-                /*m_sprite.setOrigin(sf::Vector2f(16, 16));
+                vecAngle = fmod(m_sprite.getRotation() + vecAngle, 360);
+                float radAngle = (vecAngle * 3.141592653589793238463) / 180;
+                m_sprite.setRotation(vecAngle);
+
+               /* sf::Vector2f pos = getPosition();
+                float HalfSpriteWidth = m_sprite.getScale().x / 2;
+                float HalfSpriteHeight = m_sprite.getScale().y / 2;
+                float spriteX = pos.x - HalfSpriteWidth * cos(radAngle) + HalfSpriteHeight * sin(radAngle);
+                float spriteY = pos.y - HalfSpriteHeight * cos(radAngle) - HalfSpriteWidth * sin(radAngle);
+                m_sprite.setPosition(spriteX, spriteY);*/
+
+
+               /* m_sprite.setOrigin(sf::Vector2f(16, 16));
                 m_sprite.setRotation(vecAngle-90);
-                m_sprite.setOrigin(sf::Vector2f(12, 12));*/
-                sf::Vector2f center = getCenter();
-                m_transform.rotate(vecAngle-90, center.x, center.y);
+                m_sprite.setOrigin(sf::Vector2f(-4, -4));*/
+ 
                 
-                sf::Vector2f pos = getPosition();
+                //sf::Vector2f center = getCenter();
+                // m_transform.rotate(vecAngle-90, center.x, center.y);
+                
                 m_movement.x = cos(vecAngle * 3.141592653589793238463 / 180)  * m_movement.y;
                 m_movement.y = sin(vecAngle * 3.141592653589793238463 / 180) * m_movement.y;
-                
-                sf::Vector2f test = m_movement * m_speed;
-                std::cout << "x : " << m_movement.x << " y : " << m_movement.y << std::endl;
+               
                 addForce(m_movement * m_speed);
             } else {
-                
                 addForce(Utils::normalize(m_movement) * m_speed);
             }
            
@@ -194,7 +228,11 @@ void Player::update(sf::Time deltaTime, std::vector<sf::FloatRect>& listOfElemen
 }
 
 sf::FloatRect Player::getBoundingBox() {
+    if(!m_riding)
         return sf::FloatRect(getPosition().x, getPosition().y, m_size.x, m_size.y);
+    else {
+        return sf::FloatRect(getPosition().x + m_horseHitBox.left, getPosition().y + m_horseHitBox.top, m_horseHitBox.width, m_horseHitBox.height);
+    }
 }
 
 void Player::takeDamage(float damage)
@@ -253,11 +291,13 @@ sf::FloatRect Player::intersects(std::vector<sf::FloatRect>& listOfElements, sf:
 
     sf::FloatRect playerPos = getBoundingBox();
     sf::FloatRect futurePos = playerPos;
-
-    futurePos.left += m_walkingBox.left;
-    futurePos.top += m_walkingBox.top;
-    futurePos.width = m_walkingBox.width;
-    futurePos.height = m_walkingBox.height;
+    if (!m_riding) {
+        futurePos.left += m_walkingBox.left;
+        futurePos.top += m_walkingBox.top;
+        futurePos.width = m_walkingBox.width;
+        futurePos.height = m_walkingBox.height;
+    }
+    
     
     for (const sf::FloatRect& bound : listOfElements) {
 

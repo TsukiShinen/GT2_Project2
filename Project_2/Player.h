@@ -57,6 +57,7 @@ private:
 	Inventaire m_inventaire;
 
 	const sf::FloatRect m_walkingBox = sf::FloatRect(1, 6, 6, 2);
+	const sf::FloatRect m_horseHitBox = sf::FloatRect(-6, -5, 13, 12);
 
 	bool m_riding = false;
 
