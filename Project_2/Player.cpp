@@ -240,7 +240,7 @@ void Player::keypressed(sf::Keyboard::Key keyCode)
             m_animationController.changeCurrentAnim("Idle_DR");
         }
         if (m_isInventoryOpen) { // Inventory navigation
-            m_inventaire.keypressed(keyCode);
+            m_inventory.keypressed(keyCode);
         }
         if (keyCode == sf::Keyboard::Space) { // Sword attack
             attack();
