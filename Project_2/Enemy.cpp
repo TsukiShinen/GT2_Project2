@@ -126,6 +126,7 @@ void Enemy::draw(sf::RenderWindow& window, bool debugMode)
 
 void Enemy::Walk(sf::Time& deltaTime, const sf::Vector2f& playerPos)
 {
+	m_velocity = m_velocityToAddForWalk;
 	int changeDir = rand() % 100;
 
 	sf::Vector2f position = m_sprite.getPosition();
@@ -165,6 +166,8 @@ void Enemy::ChangeDir(sf::Time& deltaTime, const sf::Vector2f& playerPos)
 {
 	m_velocity.x = 0;
 	m_velocity.y = 0;
+	m_velocityToAddForWalk.x = 0;
+	m_velocityToAddForWalk.y = 0;
 	m_chronoChangeDir += deltaTime.asSeconds();
 
 	if (m_chronoChangeDir >= m_timeIdle) {
@@ -173,17 +176,18 @@ void Enemy::ChangeDir(sf::Time& deltaTime, const sf::Vector2f& playerPos)
 
 		// Calcul Angle
 		double angle = Utils::angle(m_sprite.getPosition(), sf::Vector2f(static_cast<float>(rand() % m_zone.width + m_zone.left), static_cast<float>(rand() % m_zone.height + m_zone.top)));
-		m_velocity.x = static_cast<float>(m_speed * cos(angle));
-		m_velocity.y = static_cast<float>(m_speed * sin(angle));
+		m_velocityToAddForWalk.x = static_cast<float>(m_speed * cos(angle));
+		m_velocityToAddForWalk.y = static_cast<float>(m_speed * sin(angle));
 
 		m_currentState = State::WALK;
 		// Guard against 0 (0,00000...)
-		if (m_velocity.x == 0) {
-			m_velocity.x = DBL_EPSILON;
+		if (m_velocityToAddForWalk.x == 0) {
+			m_velocityToAddForWalk.x = DBL_EPSILON;
 		}
-		if (m_velocity.y == 0) {
-			m_velocity.y = DBL_EPSILON;
+		if (m_velocityToAddForWalk.y == 0) {
+			m_velocityToAddForWalk.y = DBL_EPSILON;
 		}
+		m_velocity = m_velocityToAddForWalk;
 
 		reloadDirection();
 	}
@@ -211,7 +215,7 @@ void Enemy::updateAnimation() {
 	std::string base = "";
 	if (m_currentState == State::TAKEHIT)
 		base = "Hit";
-	else if (m_velocity.x != 0 || m_velocity.y != 0)
+	else if (m_velocityToAddForWalk.x != 0 || m_velocityToAddForWalk.y != 0)
 		base = "Walk";
 	else
 		base = "Idle";
@@ -247,6 +251,8 @@ void Enemy::takeDamage(float damage) { // Preferably call takeDame(damge, deltaT
 	if (m_life == 0) {
 		m_velocity.x = 0;
 		m_velocity.y = 0;
+		m_velocityToAddForWalk.x = 0;
+		m_velocityToAddForWalk.y = 0;
 		m_currentState = State::DIE;
 	}
 	else {

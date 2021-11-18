@@ -6,7 +6,7 @@
 class AnimationController
 {
 	std::map < std::string, Animation > m_animations;
-	std::string m_animationName;
+	std::string m_animationName = "";
 
 	size_t m_columns;
 	size_t m_tileSizeX;

@@ -13,6 +13,7 @@ class Enemy : public Entity
 
 	State m_currentState = State::NONE;
 	Utils::Direction m_direction;
+	sf::Vector2f m_velocityToAddForWalk{ 0.f, 0.f };
 	float m_chronoChangeDir = 0;
 	float m_elapsedTimeSinceAttacked = 0;
 	float m_timeIdle = 2;
