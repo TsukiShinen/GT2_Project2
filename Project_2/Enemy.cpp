@@ -19,18 +19,22 @@ Enemy::Enemy(sf::IntRect& zone, const sf::Texture* texture, const sf::Texture* l
 }
 
 void Enemy::setAnimations() {
+	// Idle
 	m_animationController.addAnimation("Idle_UL", 224, 16, 0.3f);
 	m_animationController.addAnimation("Idle_UR", 208, 16, 0.3f);
 	m_animationController.addAnimation("Idle_DR", 176, 16, 0.3f);
 	m_animationController.addAnimation("Idle_DL", 192, 16, 0.3f);
+	// Walk
 	m_animationController.addAnimation("Walk_UL", 368, 4, 0.3f);
 	m_animationController.addAnimation("Walk_UR", 352, 4, 0.3f);
 	m_animationController.addAnimation("Walk_DR", 320, 4, 0.3f);
 	m_animationController.addAnimation("Walk_DL", 336, 4, 0.3f);
+	// Die
 	int nbrFrameDie = 12;
 	float timeFrameDie = 0.15f;
 	m_animationController.addAnimation("Die", 304, nbrFrameDie, timeFrameDie);
 	m_timeDie = nbrFrameDie * timeFrameDie;
+	// Hit
 	int nbrFrameTakeHit = 4;
 	float timeFrameTakeHit = 0.15f;
 	m_animationController.addAnimation("Hit_UL", 112, nbrFrameTakeHit, timeFrameTakeHit);
@@ -38,6 +42,8 @@ void Enemy::setAnimations() {
 	m_animationController.addAnimation("Hit_DR", 112, nbrFrameTakeHit, timeFrameTakeHit);
 	m_animationController.addAnimation("Hit_DL", 112, nbrFrameTakeHit, timeFrameTakeHit);
 	m_timeTakeHit = nbrFrameTakeHit * timeFrameTakeHit;
+
+	// Set Base Animation
 	m_animationController.changeCurrentAnim("Idle_DL");
 }
 
@@ -88,6 +94,7 @@ void Enemy::update(sf::Time& deltaTime, const sf::Vector2f& playerPos)
 	default:
 		break;
 	}
+
 	if (m_currentState != State::DIE &&
 		m_currentState != State::TAKEHIT) {
 		triggerFollow(playerPos);
@@ -95,7 +102,7 @@ void Enemy::update(sf::Time& deltaTime, const sf::Vector2f& playerPos)
 		updateAnimation();
 	}
 
-	m_elapsedTime += deltaTime.asSeconds();
+	m_elapsedTimeSinceAttacked += deltaTime.asSeconds();
 
 	Entity::update(deltaTime);
 }
@@ -163,11 +170,14 @@ void Enemy::ChangeDir(sf::Time& deltaTime, const sf::Vector2f& playerPos)
 	if (m_chronoChangeDir >= m_timeIdle) {
 		m_chronoChangeDir = 0;
 		m_timeIdle = (rand() % 20 + 5) / 10.f;
+
+		// Calcul Angle
 		double angle = Utils::angle(m_sprite.getPosition(), sf::Vector2f(rand() % m_zone.width + m_zone.left, rand() % m_zone.height + m_zone.top));
 		m_velocity.x = m_speed * cos(angle);
 		m_velocity.y = m_speed * sin(angle);
+
 		m_currentState = State::WALK;
-		// Guatd 0
+		// Guard against 0 (0,00000...)
 		if (m_velocity.x == 0) {
 			m_velocity.x = DBL_EPSILON;
 		}
@@ -221,15 +231,15 @@ void Enemy::updateAnimation() {
 }
 
 
-void Enemy::takeDamage(float damage, sf::Time& deltaTime, float cooldown) {
+void Enemy::takeDamage(float damage, sf::Time& deltaTime, float cooldown) { // Preferably called (to not get one shot by player)
 	
-	if (m_elapsedTime > cooldown) {
-		takeDamage(damage);
-		m_elapsedTime = 0;
+	if (m_elapsedTimeSinceAttacked > cooldown) {
+		takeDamage(damage); // Call normal function
+		m_elapsedTimeSinceAttacked = 0;
 	}
 }
 
-void Enemy::takeDamage(float damage) {
+void Enemy::takeDamage(float damage) { // Preferably call takeDame(damge, deltaTime, cooldown) (else enemy get one shot)
 	
 	Entity::takeDamage(damage);
 

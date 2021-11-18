@@ -9,6 +9,7 @@ using json = nlohmann::json;
 class TileMap
 {
 	const std::string PATH = "./Assets/Map/";
+	const size_t TILE_SIZE = 8;
 
 	struct Layer {
 		std::string name{ ""};
@@ -49,6 +50,8 @@ public:
 	TileMap(std::string fileName = "");
 
 	sf::Vector2f getStartingPosition() { return m_startingPosition; }
+	size_t getWidth() { return m_width * TILE_SIZE; }
+	size_t getHeight() { return m_height * TILE_SIZE; }
 	std::vector<sf::IntRect>& getEnemyZone() { return m_lstZoneEnemy; }
 	std::vector<sf::FloatRect>& getCollisionColliders(int level) { return m_lstCollisionCollider[level]; }
 	std::vector<HeightLevelCollider>& getHeightLevelColliders() { return m_lstHeightLevelCollider; }

@@ -10,6 +10,7 @@ int main()
     srand(time(NULL));
     sf::Clock clock; 
     window.setKeyRepeatEnabled(false);
+    window.setFramerateLimit(60);
 
     Game game(sf::Vector2f(800, 600));
     game.load();

@@ -51,6 +51,7 @@ bool Inventaire::addItem(Item* item)
 
 void Inventaire::keypressed(sf::Keyboard::Key keyCode)
 {
+	// Move Selection
 	if (keyCode == sf::Keyboard::Z || keyCode == sf::Keyboard::W) {
 		m_selectedItem -= m_sizeRow;
 		if (m_selectedItem < 0) {
@@ -75,6 +76,8 @@ void Inventaire::keypressed(sf::Keyboard::Key keyCode)
 			m_selectedItem += m_sizeRow;
 		}
 	}
+
+	// Use Item
 	if (keyCode == sf::Keyboard::Space) {
 		if (m_lstItem[m_selectedItem] != nullptr) {
 			if (m_lstItem[m_selectedItem]->getType() != Item::Type::None) {

@@ -14,7 +14,7 @@ class Enemy : public Entity
 	State m_currentState = State::NONE;
 	Utils::Direction m_direction;
 	float m_chronoChangeDir = 0;
-	float m_elapsedTime = 0;
+	float m_elapsedTimeSinceAttacked = 0;
 	float m_timeIdle = 2;
 	float m_chronoDie = 0;
 	float m_timeDie = 0;

@@ -180,6 +180,7 @@
     <ClInclude Include="Utils.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Assets\Map\Lvl_1.json" />
     <None Include="Assets\Map\SandBox.json" />
     <None Include="Assets\Map\SandBox2.json" />
   </ItemGroup>

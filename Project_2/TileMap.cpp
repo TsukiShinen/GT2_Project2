@@ -216,6 +216,7 @@ void TileMap::drawAfterPlayer(sf::RenderWindow& window, int heightLevel, bool de
 
 void TileMap::update(sf::Time deltaTime) 
 {
+    // Update animation
     if (m_name == "") { return; }
     for (Tile* tile : m_animatedTile) 
     {
