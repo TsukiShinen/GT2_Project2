@@ -10,30 +10,58 @@ Game::Game(sf::Vector2f screenSize)
 
 void Game::load()
 {
+    // Load ressource
     m_ressource.load();
 
+    // Load Map
     m_map = TileMap("Lvl_1.json");
-    m_player.setPosition(m_map.getStartingPosition()    );
-
-    for (sf::IntRect& enemyZone : m_map.getEnemyZone()) {
-        m_orc.push_back(new Enemy(enemyZone, m_ressource.getOrcTexture(), m_ressource.getlifeBarTexture()));
-    }
+    
+    // Load Player
+    m_player.setPosition(m_map.getStartingPosition());
     ProgressBar progressBar(0.f, 10.f, sf::Sprite(*m_ressource.getHeart()), new sf::Sprite(*m_ressource.getHeartBackground()));
     m_player.setProgressBar(progressBar);
 
+    // Load Enemy
+    for (sf::IntRect& enemyZone : m_map.getEnemyZone()) {
+        m_enemy.push_back(new Enemy(enemyZone, m_ressource.getOrcTexture(), m_ressource.getlifeBarTexture()));
+    }
+
+    // Load View
     guiView.setCenter(100, 75);
     guiView.setSize(m_screenSize / 4.f);
-    m_camera.setView(sf::View(m_player.getPosition(), m_screenSize / 4.f));
+
+    sf::Vector2f cameraPosition = m_player.getPosition();
+    if (cameraPosition.y < 75) {
+        cameraPosition.y = 75;
+    }
+    if (cameraPosition.x < 100) {
+        cameraPosition.x = 100;
+    }
+    if (cameraPosition.y > m_map.getHeight() - 75) {
+        cameraPosition.y = m_map.getHeight() - 75.f;
+    }
+    if (cameraPosition.x > m_map.getWidth() - 100) {
+        cameraPosition.x = m_map.getWidth() - 100.f;
+    }
+    m_camera.setView(sf::View(cameraPosition, m_screenSize / 4.f));
 }
 
 void Game::update(sf::Time& deltaTime)
+{
+    updatePlayer(deltaTime);
+    updateEnemy(deltaTime);
+    updateMap(deltaTime);
+    updateCamera(deltaTime);
+    removeDeadEnemy(deltaTime);
+}
+
+void Game::updatePlayer(sf::Time& deltaTime)
 {
     if (!m_player.isAlive()) { // Update only player (for animation if dead)
         m_player.update(deltaTime, m_map.getCollisionColliders(m_player.getMapLevel()));
         return;
     }
 
-    // Player update
     m_player.update(deltaTime, m_map.getCollisionColliders(m_player.getMapLevel()));
     for (auto& rect : m_map.getHeightLevelColliders()) { // Check collision for Height level
         if (m_player.collides(rect.rect)) {
@@ -48,11 +76,19 @@ void Game::update(sf::Time& deltaTime)
             }
         }
     }
+}
 
-    // Enemy Update
-    for (Enemy* enemy : m_orc) {
+void Game::updateMap(sf::Time& deltaTime)
+{
+    m_map.update(deltaTime);
+}
+
+void Game::updateEnemy(sf::Time& deltaTime)
+{
+    for (Enemy* enemy : m_enemy) {
         enemy->update(deltaTime, m_player.getPosition());
         if (enemy->isAlive()) {
+            // Get hit by player
             if (m_player.isAttacking(enemy->getPosition()))
             {
                 enemy->takeDamage(m_player.getDamage(), deltaTime, m_player.getAttackSpeed());
@@ -75,11 +111,10 @@ void Game::update(sf::Time& deltaTime)
             }
         }
     }
+}
 
-    // Update Map (animation)
-    m_map.update(deltaTime);
-
-    // Update Camera
+void Game::updateCamera(sf::Time& deltaTime)
+{
     sf::Vector2f cameraPosition = m_player.getPosition();
     if (cameraPosition.y < 75) {
         cameraPosition.y = 75;
@@ -87,23 +122,25 @@ void Game::update(sf::Time& deltaTime)
     if (cameraPosition.x < 100) {
         cameraPosition.x = 100;
     }
-    if (cameraPosition.y > m_map.getHeight()-75) {
+    if (cameraPosition.y > m_map.getHeight() - 75) {
         cameraPosition.y = m_map.getHeight() - 75.f;
     }
     if (cameraPosition.x > m_map.getWidth() - 100) {
         cameraPosition.x = m_map.getWidth() - 100.f;
     }
     m_camera.Follow(deltaTime, cameraPosition);
+}
 
-    // Remove dead Enemy
-    for (int i = static_cast<int>(m_orc.size() - 1); i >= 0; --i) {
-        if (m_orc[i]->toRemove()) {
-            Enemy* enemy = m_orc[i];
+void Game::removeDeadEnemy(sf::Time& deltaTime)
+{
+    for (int i = static_cast<int>(m_enemy.size() - 1); i >= 0; --i) {
+        if (m_enemy[i]->toRemove()) {
+            Enemy* enemy = m_enemy[i];
 
             m_groundItems.push_back(new Item("Meat", m_ressource.getMeat(), Item::Type::Potion, m_player.heal));
             m_groundItems[m_groundItems.size() - 1]->setPosition(enemy->getPosition());
 
-            m_orc.erase(m_orc.begin() + i);
+            m_enemy.erase(m_enemy.begin() + i);
             delete enemy;
         }
     }
@@ -113,23 +150,23 @@ void Game::draw(sf::RenderWindow& window)
 {
     // Game
     window.setView(m_camera.getView());
-    m_map.drawBeforePlayer(window, m_player.getMapLevel(), m_debugMode);
+    m_map.drawBeforePlayer(window, m_player.getMapLevel(), m_debugMode); // Map
 
-    for (Item* item : m_groundItems) {
+    for (Item* item : m_groundItems) { // Item
         item->drawIcon(window, m_debugMode);
     }
 
-    for (Enemy* enemy : m_orc) {
+    for (Enemy* enemy : m_enemy) { // Enemy
         enemy->draw(window, m_debugMode);
     }
-    m_player.drawGestion(window, m_debugMode);
+    m_player.drawGestion(window, m_debugMode); // Player
 
 
-    m_map.drawAfterPlayer(window, m_player.getMapLevel(), m_debugMode);
+    m_map.drawAfterPlayer(window, m_player.getMapLevel(), m_debugMode); // Map
 
     // GUI
     window.setView(guiView);
-    m_player.drawUI(window, m_debugMode);
+    m_player.drawUI(window, m_debugMode); // Player
 }
 
 void Game::keypressed(sf::Keyboard::Key keyCode)
@@ -144,7 +181,7 @@ void Game::keypressed(sf::Keyboard::Key keyCode)
         m_player.addForce(sf::Vector2f(2000, 2000));
     }
     if (keyCode == sf::Keyboard::P) {
-        for (Enemy* enemy : m_orc) {
+        for (Enemy* enemy : m_enemy) {
             enemy->takeDamage(2);
         }
     }

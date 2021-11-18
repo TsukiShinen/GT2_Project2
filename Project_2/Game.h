@@ -17,7 +17,7 @@ class Game
 	sf::View guiView;
 	Ressource m_ressource;
 	Player m_player = Player(m_ressource.getPlayerTexture(), m_ressource.getInventoryTexture(), m_ressource.getItemSelected());
-	std::vector<Enemy*> m_orc;
+	std::vector<Enemy*> m_enemy;
 	TileMap m_map;
 	std::vector<Item*> m_groundItems;
 
@@ -27,6 +27,11 @@ public:
 	Game(sf::Vector2f screenSize = sf::Vector2f(0, 0));
 	void load();
 	void update(sf::Time& deltaTime);
+	void updatePlayer(sf::Time& deltaTime);
+	void updateMap(sf::Time& deltaTime);
+	void updateEnemy(sf::Time& deltaTime);
+	void updateCamera(sf::Time& deltaTime);
+	void removeDeadEnemy(sf::Time& deltaTime);
 	void draw(sf::RenderWindow& window);
 	void keypressed(sf::Keyboard::Key keyCode);
 };

@@ -4,7 +4,7 @@
 
 #include "Item.h"
 
-class Inventaire
+class Inventory
 {
 	size_t m_size;
 	int m_sizeRow;
@@ -16,7 +16,7 @@ class Inventaire
 	int m_selectedItem = 0;
 
 public:
-	Inventaire(size_t size, const sf::Texture* texture, const sf::Texture* itemSelectedTexture);
+	Inventory(size_t size, const sf::Texture* texture, const sf::Texture* itemSelectedTexture);
 
 	void draw(sf::RenderWindow& window, bool debugMode);
 

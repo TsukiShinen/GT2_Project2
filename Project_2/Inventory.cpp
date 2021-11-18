@@ -1,8 +1,8 @@
-#include "Inventaire.h"
+#include "Inventory.h"
 #include<iostream>
 #include<functional>
 
-Inventaire::Inventaire(size_t size, const sf::Texture* texture, const sf::Texture* itemSelectedTexture) :
+Inventory::Inventory(size_t size, const sf::Texture* texture, const sf::Texture* itemSelectedTexture) :
 	m_size(size),
 	m_background(*texture),
 	m_spriteItemSelected(*itemSelectedTexture),
@@ -14,7 +14,7 @@ Inventaire::Inventaire(size_t size, const sf::Texture* texture, const sf::Textur
 
 }
 
-void Inventaire::draw(sf::RenderWindow& window, bool debugMode)
+void Inventory::draw(sf::RenderWindow& window, bool debugMode)
 {
 	window.draw(m_background);
 
@@ -34,7 +34,7 @@ void Inventaire::draw(sf::RenderWindow& window, bool debugMode)
 	}
 }
 
-bool Inventaire::addItem(Item* item)
+bool Inventory::addItem(Item* item)
 {
 	for (size_t i = 0; i < m_lstItem.size(); ++i) {
 		if (m_lstItem[i] == nullptr) {
@@ -49,7 +49,7 @@ bool Inventaire::addItem(Item* item)
 	return false;
 }
 
-void Inventaire::keypressed(sf::Keyboard::Key keyCode)
+void Inventory::keypressed(sf::Keyboard::Key keyCode)
 {
 	// Move Selection
 	if (keyCode == sf::Keyboard::Z || keyCode == sf::Keyboard::W) {
