@@ -7,7 +7,7 @@
 int main()
 {
     sf::RenderWindow window(sf::VideoMode(800, 600), "SFML works!");
-    srand(time(NULL));
+    srand((unsigned int)time(NULL));
     sf::Clock clock; 
     window.setKeyRepeatEnabled(false);
     window.setFramerateLimit(60);

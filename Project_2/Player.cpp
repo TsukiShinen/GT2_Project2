@@ -184,7 +184,6 @@ void Player::update(sf::Time deltaTime, std::vector<sf::FloatRect>& listOfElemen
 
             sf::FloatRect futurePos = intersects(listOfElements, deltaTime);
 
-            // update de la movebox
             m_movebox.setSize(sf::Vector2f(futurePos.width, futurePos.height));
             m_movebox.setPosition(futurePos.left, futurePos.top);
         }
@@ -282,7 +281,6 @@ sf::FloatRect Player::intersects(std::vector<sf::FloatRect>& listOfElements, sf:
         futurePos.height = m_walkingBox.height;
     }
     
-    
     for (const sf::FloatRect& bound : listOfElements) {
 
         if (futureVel.x != 0.f) {
@@ -290,7 +288,6 @@ sf::FloatRect Player::intersects(std::vector<sf::FloatRect>& listOfElements, sf:
             if (futurePos.intersects(bound)) {
                 m_thrust.x = 0.f;
                 m_velocity.x = 0.f;
-                // reset x
             }
             futurePos.left -= futureVel.x;
         }
@@ -300,7 +297,6 @@ sf::FloatRect Player::intersects(std::vector<sf::FloatRect>& listOfElements, sf:
             if (futurePos.intersects(bound)) {
                 m_thrust.y = 0.f;
                 m_velocity.y = 0.f;
-                // reset y
             }
             futurePos.top -= futureVel.y;
         }
@@ -388,28 +384,3 @@ void Player::setProgressBar(ProgressBar& progressBar)
     m_lifeBar.setNumberOfSprite(5);
     m_lifeBar.setValue(m_life);
 }
-
-
-//void Player::update(sf::Time& deltaTime)
-//{
-//    // Move the sprite
-//    if (m_useAcceleration) {
-//       
-//        sf::Vector2f acc(m_thrust / m_masse - m_friction * m_velocity);
-//        
-//        m_velocity = m_velocity + acc;
-//        if (abs(m_velocity.x) < m_friction) {
-//            m_velocity.x = 0;
-//        }
-//        if (abs(m_velocity.y) < m_friction) {
-//            m_velocity.y = 0;
-//        }
-//    }
-//
-//    setPosition(getPosition() + m_velocity * deltaTime.asSeconds());
-//    m_thrust = { 0.f, 0.f };
-//
-//    // Animate
-//    m_animationController.update(deltaTime);
-//    m_sprite.setTextureRect(m_animationController.getCurrentRect());
-//}

@@ -51,7 +51,7 @@ const sf::Vector2f& Entity::getPosition()
 	return m_sprite.getPosition();
 }
 
-const sf::Vector2f& Entity::getCenter()
+const sf::Vector2f Entity::getCenter()
 {
 	return sf::Vector2f(getPosition().x + m_size.x / 2, getPosition().y + m_size.y / 2);
 }

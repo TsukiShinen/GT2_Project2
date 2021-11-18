@@ -16,7 +16,7 @@ public:
 	void setPosition(sf::Vector2f position);
 	const sf::Vector2f& getSize();
 	const sf::Vector2f& getPosition();
-	const sf::Vector2f& getCenter();
+	const sf::Vector2f getCenter();
 	int getMapLevel();
 	void setMapLevel(int level);
 

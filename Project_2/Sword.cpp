@@ -41,7 +41,7 @@ void Sword::update(sf::Time deltaTime, float angle) {
 	
 	if (m_hitting) {
 
-			double newAngle = fmod(ceil(m_startAngle + (180 * (m_elapsedTimeSinceAttacked/m_attackSpeed) * m_ratio) + 360), 360);
+			double newAngle = fmod(ceil(m_startAngle + (180 * m_ratio * m_elapsedTimeSinceAttacked / m_attackSpeed) + 360), 360);
 			m_elapsedTimeSinceAttacked += deltaTime.asSeconds();
 			m_sprite.setRotation(static_cast<float>(newAngle));
 			if (m_elapsedTimeSinceAttacked > m_attackSpeed) {

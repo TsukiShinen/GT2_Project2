@@ -16,9 +16,12 @@ std::vector<sf::IntRect> AnimationController::getAllRect(std::vector<size_t> lst
 	std::vector<sf::IntRect> lstRect;
 
 	for (size_t& id : lstId) {
-		sf::Vector2f pos(id % m_columns, id / m_columns);
+		sf::Vector2f pos(static_cast<float>(id % m_columns), static_cast<float>(id) / m_columns);
 
-		lstRect.push_back(sf::IntRect(pos.x * m_tileSizeX, pos.y * m_tileSizeY, m_tileSizeX, m_tileSizeY));
+		lstRect.push_back(sf::IntRect(static_cast<int>(pos.x) * static_cast<int>(m_tileSizeX),
+			static_cast<int>(pos.y) * static_cast<int>(m_tileSizeY),
+			static_cast<int>(m_tileSizeX),
+			static_cast<int>(m_tileSizeY)));
 	}
 
 	return lstRect;

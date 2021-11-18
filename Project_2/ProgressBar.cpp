@@ -86,7 +86,7 @@ void ProgressBar::draw(sf::RenderTarget& target, sf::RenderStates states) const
 void ProgressBar::setValueSingle(float value)
 {
 	float m_pourcentage = m_value / m_maxValue;
-	m_front.setTextureRect(sf::IntRect(0, 0, m_front.getTexture()->getSize().x * m_pourcentage, m_front.getTexture()->getSize().y));
+	m_front.setTextureRect(sf::IntRect(0, 0, static_cast<int>(m_front.getTexture()->getSize().x * m_pourcentage), static_cast<int>(m_front.getTexture()->getSize().y)));
 }
 
 void ProgressBar::setValueMultiple(float value)
@@ -102,7 +102,7 @@ void ProgressBar::setValueMultiple(float value)
 			m_rectPourcentage = m_pourcentage;
 		}
 
-		m_lstSprite[i].setTextureRect(sf::IntRect(0, 0, m_front.getTexture()->getSize().x * m_rectPourcentage, m_front.getTexture()->getSize().y));
+		m_lstSprite[i].setTextureRect(sf::IntRect(0, 0, m_front.getTexture()->getSize().x * static_cast<int>(m_rectPourcentage), m_front.getTexture()->getSize().y));
 
 		m_pourcentage--;
 		if (m_pourcentage < 0) {

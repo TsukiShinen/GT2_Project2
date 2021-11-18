@@ -33,7 +33,6 @@ public:
 
 	sf::FloatRect getBoundingBox() override;
 	void takeDamage(float damage) override;
-	//void update(sf::Time& deltaTime) override;
 	
 	bool pickItem(Item* item);
 
