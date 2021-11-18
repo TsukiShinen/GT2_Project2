@@ -122,7 +122,7 @@ void Game::draw(sf::RenderWindow& window)
     for (Enemy* enemy : m_orc) {
         enemy->draw(window, m_debugMode);
     }
-    m_player.drawGestion(window, m_debugMode);
+    m_player.draw(window, m_debugMode);
 
 
     m_map.drawAfterPlayer(window, m_player.getMapLevel(), m_debugMode);

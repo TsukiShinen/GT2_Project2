@@ -21,6 +21,9 @@ Player::Player(const sf::Texture* texture, const sf::Texture* inventoryTexture, 
     
 }
 
+
+
+
 void Player::setAnimation() {
     m_animationController.addAnimation("Walk_DR", 336, 4, 0.13f);
     m_animationController.addAnimation("Walk_DL", 352, 4, 0.13f);
@@ -53,41 +56,60 @@ void Player::setAnimation() {
     m_animationController.changeCurrentAnim("Idle_DL");
 }
 
-void Player::drawGestion(sf::RenderWindow& window, bool debugMode) {
+
+
+
+void Player::update(sf::Time deltaTime, std::vector<sf::FloatRect>& listOfElements) {
+
+    if (!m_isInventoryOpen && isAlive())
+    {
+        m_movement = { 0.f, 0.f };
+
+        if (m_attack) {
+            m_attack = m_sword.isHitting();
+        }
+
+        movementsOnKeyPressed();
+
+        handleMovement(deltaTime, listOfElements);
+
+        changeSprite();
+
+    }
+    if (!isAlive()) {
+        chronoAniamtionDie += deltaTime.asSeconds();
+        if (chronoAniamtionDie >= timeAnimationDie) {
+            m_toRemove = true;
+        }
+    }
+
+    if (!m_toRemove) {
+        Entity::update(deltaTime);
+    }
+
+    if (!m_isInventoryOpen && isAlive())
+    {
+        m_sword.update(deltaTime, static_cast<float>(calcDirectionAngle()));
+        m_sword.setPosition(getCenter());
+    }
+
+    m_switchModeTime += deltaTime.asSeconds();
+}
+
+void Player::draw(sf::RenderWindow& window, bool debugMode) {
     if (debugMode) {
         m_movebox.setFillColor(sf::Color::Green);
         window.draw(m_movebox);
     }
     if (m_direction.down) {
-        draw(window, debugMode);
-        if (isAlive() && !m_riding && m_rideDuration < m_rideTime)
+        Entity::draw(window, debugMode);
+        if (isAlive() && !m_riding && !isInSwitchingMode())
             m_sword.draw(window, debugMode);
-        
-        
     }
     else {
-        
-        if (isAlive() && !m_riding && m_rideDuration < m_rideTime)
+        if (isAlive() && !m_riding && !isInSwitchingMode())
             m_sword.draw(window, debugMode);
-        draw(window, debugMode);
-    }
-}
-
-void Player::draw(sf::RenderWindow& window, bool debugMode)
-{
-    //sf::RenderStates states;
-    //states.transform = m_transform;
-    //// Draw entity
-    //window.draw(m_sprite, states);
-    window.draw(m_sprite);
-    // Draw boundingBox
-    if (debugMode) {
-        sf::FloatRect boundingBox = getBoundingBox();
-        sf::RectangleShape rectBoundingBox;
-        rectBoundingBox.setPosition(sf::Vector2f(boundingBox.left, boundingBox.top));
-        rectBoundingBox.setSize(sf::Vector2f(boundingBox.width, boundingBox.height));
-        rectBoundingBox.setFillColor(sf::Color(255, 0, 0, 50));
-        window.draw(rectBoundingBox);
+        Entity::draw(window, debugMode);
     }
 }
 
@@ -100,13 +122,16 @@ void Player::drawUI(sf::RenderWindow& window, bool debugMode)
    
 }
 
+
+
+
 void Player::changeSprite() {
 
     std::string base = "";
 
     if (m_velocity.x != 0 || m_velocity.y != 0)
     {
-        if (m_riding && m_rideDuration < m_rideTime) {
+        if (m_riding && !isInSwitchingMode()) {
             base = "Ride";
         }
         else {
@@ -115,12 +140,12 @@ void Player::changeSprite() {
     }
     else {
         base = "Idle";
-        if (m_riding && m_rideDuration < m_rideTime)
+        if (m_riding && !isInSwitchingMode())
             base.append("Ride");
     }
 
     std::string dir = "";
-    if(!m_riding || m_rideDuration > m_rideTime) 
+    if(!m_riding || isInSwitchingMode())
     {
         if (m_direction.up)
             dir += "U";
@@ -133,7 +158,7 @@ void Player::changeSprite() {
     }
     
     std::string name = "";
-    if (!m_riding || m_rideDuration > m_rideTime)
+    if (!m_riding || isInSwitchingMode())
        name = base + "_" + dir;
     else
        name = base;
@@ -141,82 +166,32 @@ void Player::changeSprite() {
     m_animationController.changeCurrentAnim(name);
 }
 
-void Player::update(sf::Time deltaTime, std::vector<sf::FloatRect>& listOfElements) {
-    
-    if (!m_isInventoryOpen && isAlive()) 
-    {
-        m_movement = { 0.f, 0.f };
-        if (m_attack) {
-            m_attack = m_sword.isHitting();
-        }
 
 
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up) || sf::Keyboard::isKeyPressed(sf::Keyboard::Z) || sf::Keyboard::isKeyPressed(sf::Keyboard::W)) {
-            m_movement.y -= 1;
-        }
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right) || sf::Keyboard::isKeyPressed(sf::Keyboard::D)) {
-            m_movement.x += 1;
-        }
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down) || sf::Keyboard::isKeyPressed(sf::Keyboard::S)) {
-            m_movement.y += 1;
-        }
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left) || sf::Keyboard::isKeyPressed(sf::Keyboard::Q) || sf::Keyboard::isKeyPressed(sf::Keyboard::A)) {
-            m_movement.x -= 1;
-        }
 
-        if (m_rideDuration < m_rideTime) 
-        {
-            if (m_riding) {
-                double vecAngle = (m_movement.x == 0.f) ? 0 : (m_movement.x < 0) ? -m_rotationSpeed * deltaTime.asSeconds() : m_rotationSpeed * deltaTime.asSeconds();
-                vecAngle = fmod(m_sprite.getRotation() + vecAngle, 360);
-                m_sprite.setRotation(static_cast<float>(vecAngle));
-                
-                m_movement.x = static_cast<float>(cos(vecAngle * 3.141592653589793238463 / 180) * m_movement.y);
-                m_movement.y = static_cast<float>(sin(vecAngle * 3.141592653589793238463 / 180) * m_movement.y);
-               
-                addForce(m_movement * m_speed);
-            } else {
-                addForce(Utils::normalize(m_movement) * m_speed);
-            }
-           
-
-            directionChange();
-
-            sf::FloatRect futurePos = intersects(listOfElements, deltaTime);
-
-            m_movebox.setSize(sf::Vector2f(futurePos.width, futurePos.height));
-            m_movebox.setPosition(futurePos.left, futurePos.top);
-        }
-        changeSprite();
-        
+void Player::attack() {
+    if (!m_attack && !m_sword.isHitting()) {
+        m_attack = true;
+        m_sword.attack(Utils::angle(m_sprite.getPosition(), m_sprite.getPosition() + m_moveHistory) * (180.0 / 3.141592653589793238463));
     }
-    if (!isAlive()) {
-        chronoAniamtionDie += deltaTime.asSeconds();
-        if (chronoAniamtionDie >= timeAnimationDie) {
-            m_toRemove = true;
-        }
-    }
-   
-    if (!m_toRemove) {
-        Entity::update(deltaTime);
-    }
+};
 
-    if (!m_isInventoryOpen && isAlive())
-    {
-        m_sword.update(deltaTime, static_cast<float>(calcDirectionAngle()));
-        m_sword.setPosition(getCenter());
-    }
-        
-    m_rideTime += deltaTime.asSeconds();
-}
+bool Player::isAttacking(sf::Vector2f Enemy) {
+    if (!m_attack) { return false; }
+    double distance = Utils::dist(m_sprite.getPosition(), Enemy);
+    int angleE = static_cast<int>(Utils::angle(Enemy, m_sprite.getPosition()) * (180.0 / 3.141592653589793238463));
+    int angleP = static_cast<int>(calcDirectionAngle());
+    angleP = Utils::modAngle(angleP);
+    angleE = Utils::modAngle(angleE);
 
-sf::FloatRect Player::getBoundingBox() {
-    if(!m_riding)
-        return sf::FloatRect(getPosition().x, getPosition().y, m_size.x, m_size.y);
-    else {
-        return sf::FloatRect(getPosition().x + m_horseHitBox.left, getPosition().y + m_horseHitBox.top, m_horseHitBox.width, m_horseHitBox.height);
+    int diffAngle = Utils::shortestAngle(angleP, angleE);
+
+    if (distance < m_sword.getRange() && diffAngle < m_sword.getAttackAngle()) {
+        return true;
     }
-}
+    return false;
+
+};
 
 void Player::takeDamage(float damage)
 {
@@ -227,33 +202,68 @@ void Player::takeDamage(float damage)
     }
 }
 
-void Player::directionChange() {
-    if (m_velocity.y < 0)
-    {
-        m_moveHistory.y = -1;
-        m_direction.up = true;
-        m_direction.down = false;
-    }
 
-    if (m_velocity.x > 0)
-    {
-        m_moveHistory.x = 1;
-        m_direction.right = true;
-        m_direction.left = false;
-    }
 
-    if (m_velocity.y > 0)
-    {
-        m_moveHistory.y = 1;
-        m_direction.down = true;
-        m_direction.up = false;
-    }
 
-    if (m_velocity.x < 0)
-    {
-        m_moveHistory.x = -1;
-        m_direction.left = true;
-        m_direction.right = false;
+bool Player::pickItem(Item* item)
+{
+    return m_inventaire.addItem(item);
+}
+
+void Player::setProgressBar(ProgressBar& progressBar)
+{
+    m_lifeBar = progressBar;
+    m_lifeBar.setNumberOfSprite(5);
+    m_lifeBar.setValue(m_life);
+}
+
+
+
+
+sf::FloatRect Player::getBoundingBox() {
+    if(!m_riding)
+        return sf::FloatRect(getPosition().x, getPosition().y, m_size.x, m_size.y);
+    else {
+        return sf::FloatRect(getPosition().x + m_horseHitBox.left, getPosition().y + m_horseHitBox.top, m_horseHitBox.width, m_horseHitBox.height);
+    }
+}
+
+
+
+
+void Player::keypressed(sf::Keyboard::Key keyCode)
+{
+    if (isAlive()) {
+        if (keyCode == sf::Keyboard::E) { // Inventory
+            m_isInventoryOpen = !m_isInventoryOpen;
+            m_velocity.x = 0;
+            m_velocity.y = 0;
+            m_animationController.changeCurrentAnim("Idle_DR");
+        }
+        if (m_isInventoryOpen) { // Inventory navigation
+            m_inventaire.keypressed(keyCode);
+        }
+        if (keyCode == sf::Keyboard::Space) { // Sword attack
+            attack();
+        }
+        if (keyCode == sf::Keyboard::T) { // Switch Walk/Ride
+            movementShift();
+        }
+    }
+}
+
+void Player::movementsOnKeyPressed() {
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up) || sf::Keyboard::isKeyPressed(sf::Keyboard::Z) || sf::Keyboard::isKeyPressed(sf::Keyboard::W)) {
+        m_movement.y -= 1;
+    }
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right) || sf::Keyboard::isKeyPressed(sf::Keyboard::D)) {
+        m_movement.x += 1;
+    }
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down) || sf::Keyboard::isKeyPressed(sf::Keyboard::S)) {
+        m_movement.y += 1;
+    }
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left) || sf::Keyboard::isKeyPressed(sf::Keyboard::Q) || sf::Keyboard::isKeyPressed(sf::Keyboard::A)) {
+        m_movement.x -= 1;
     }
 }
 
@@ -280,9 +290,8 @@ sf::FloatRect Player::intersects(std::vector<sf::FloatRect>& listOfElements, sf:
         futurePos.width = m_walkingBox.width;
         futurePos.height = m_walkingBox.height;
     }
-    
-    for (const sf::FloatRect& bound : listOfElements) {
 
+    for (const sf::FloatRect& bound : listOfElements) {
         if (futureVel.x != 0.f) {
             futurePos.left += futureVel.x;
             if (futurePos.intersects(bound)) {
@@ -304,34 +313,74 @@ sf::FloatRect Player::intersects(std::vector<sf::FloatRect>& listOfElements, sf:
     return futurePos;
 }
 
-void Player::attack() { 
-    if (!m_attack && !m_sword.isHitting()) { 
-        m_attack = true;
-        m_sword.attack(Utils::angle(m_sprite.getPosition(), m_sprite.getPosition() + m_moveHistory) * (180.0 / 3.141592653589793238463));
+void Player::handleMovement(sf::Time deltaTime, std::vector<sf::FloatRect>& listOfElements) {
+    if (!isInSwitchingMode())
+    {
+        if (m_riding) {
+            double vecAngle = (m_movement.x == 0.f) ? 0 : (m_movement.x < 0) ? -m_rotationSpeed * deltaTime.asSeconds() : m_rotationSpeed * deltaTime.asSeconds();
+            vecAngle = fmod(m_sprite.getRotation() + vecAngle, 360);
+            m_sprite.setRotation(static_cast<float>(vecAngle));
+
+            m_movement.x = static_cast<float>(cos(vecAngle * 3.141592653589793238463 / 180) * m_movement.y);
+            m_movement.y = static_cast<float>(sin(vecAngle * 3.141592653589793238463 / 180) * m_movement.y);
+
+            addForce(m_movement * m_speed);
+        }
+        else {
+            addForce(Utils::normalize(m_movement) * m_speed);
+        }
+
+        directionChange();
+
+        sf::FloatRect futurePos = intersects(listOfElements, deltaTime);
+
+        m_movebox.setSize(sf::Vector2f(futurePos.width, futurePos.height));
+        m_movebox.setPosition(futurePos.left, futurePos.top);
     }
-};
-
-bool Player::isAttacking(sf::Vector2f Enemy) {
-    if (!m_attack) { return false; }
-    double distance = Utils::dist(m_sprite.getPosition(), Enemy);
-    int angleE = static_cast<int>(Utils::angle(Enemy, m_sprite.getPosition()) * (180.0 / 3.141592653589793238463));
-    int angleP = static_cast<int>(calcDirectionAngle());
-    angleP = Utils::modAngle(angleP);
-    angleE = Utils::modAngle(angleE);
-    
-    int diffAngle = Utils::shortestAngle(angleP, angleE);
-
-    if (distance < m_sword.getRange() && diffAngle<m_sword.getAttackAngle()) {
-        return true;
-    }
-    return false;
-
-};
-
-bool Player::pickItem(Item* item)
-{
-    return m_inventaire.addItem(item);
 }
+
+
+
+
+
+void Player::updateMoveHistory() {
+    if (m_movement.x == 0 && m_movement.y == 0) { return; }
+    m_moveHistory = m_movement;
+}
+
+double Player::calcDirectionAngle() {
+    return Utils::angle(getPosition() + m_moveHistory, getPosition()) * (180.0 / 3.141592653589793238463);
+}
+
+void Player::directionChange() {
+    if (m_velocity.y < 0)
+    {
+        m_direction.up = true;
+        m_direction.down = false;
+    }
+
+    if (m_velocity.x > 0)
+    {
+        m_direction.right = true;
+        m_direction.left = false;
+    }
+
+    if (m_velocity.y > 0)
+    {
+        m_direction.down = true;
+        m_direction.up = false;
+    }
+
+    if (m_velocity.x < 0)
+    {
+        m_direction.left = true;
+        m_direction.right = false;
+    }
+    updateMoveHistory();
+}
+
+
+
 
 void Player::movementShift() {
     m_riding = !m_riding;
@@ -347,40 +396,11 @@ void Player::movementShift() {
 
     m_sprite.setRotation(0);
 
-    m_rideTime = 0;
+    m_switchModeTime = 0;
     m_thrust = { 0.f , 0.f };
     m_velocity = { 0.f , 0.f };
 }
 
-
-void Player::keypressed(sf::Keyboard::Key keyCode)
-{
-    if (isAlive()) {
-        if (keyCode == sf::Keyboard::E) {
-            m_isInventoryOpen = !m_isInventoryOpen;
-            m_velocity.x = 0;
-            m_velocity.y = 0;
-            m_animationController.changeCurrentAnim("Idle_DR");
-        }
-        if (m_isInventoryOpen) {
-            m_inventaire.keypressed(keyCode);
-        }
-        if (keyCode == sf::Keyboard::Space) {
-            attack();
-        }
-        if (keyCode == sf::Keyboard::T) {
-            movementShift();
-        }
-    }
-}
-
-double Player::calcDirectionAngle() {
-    return Utils::angle(getPosition() + m_moveHistory, getPosition())* (180.0 / 3.141592653589793238463);
-}
-
-void Player::setProgressBar(ProgressBar& progressBar)
-{
-    m_lifeBar = progressBar;
-    m_lifeBar.setNumberOfSprite(5);
-    m_lifeBar.setValue(m_life);
+bool Player::isInSwitchingMode() {
+    return m_switchModeDuration > m_switchModeTime;
 }
