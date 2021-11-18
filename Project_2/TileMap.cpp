@@ -78,7 +78,7 @@ void TileMap::loadLayerDataTo(Layer& layer, const json& layerJson) {
     for (size_t i = 0; i < layerJson["data"].size(); ++i) {
         if (layer.isCollisionLayer && layerJson["data"][i] != 0) {
             sf::Vector2f pos = getTilePositionFromId(layer.width, i);
-            m_lstCollisionCollider[layer.heightLevel].push_back(sf::FloatRect(pos.x * m_tileWidth, pos.y * m_tileWidth, m_tileWidth, m_tileHeight));
+            m_lstCollisionCollider[layer.heightLevel].push_back(sf::FloatRect(static_cast<float>(pos.x * m_tileWidth), static_cast<float>(pos.y * m_tileWidth), static_cast<float>(m_tileWidth), static_cast<float>(m_tileHeight)));
         }
         layer.data.push_back(layerJson["data"][i]);
     }
@@ -140,7 +140,10 @@ void TileMap::loadTileSetTiles(const json& tileSetJson)
         size_t c = tileSetJson["columns"];
         size_t id = tile["id"];
         sf::Vector2f pos = getTilePositionFromId(c, id);
-        newTile->sprite.setTextureRect(sf::IntRect(pos.x * m_tileWidth, pos.y * m_tileHeight, m_tileWidth, m_tileHeight));
+        newTile->sprite.setTextureRect(sf::IntRect(static_cast<int>(pos.x * m_tileWidth), 
+                                                    static_cast<int>(pos.y * m_tileHeight), 
+                                                    static_cast<int>(m_tileWidth), 
+                                                    static_cast<int>(m_tileHeight)));
 
         loadTileAnimationTo(newTile, tile, c);
 
@@ -155,7 +158,10 @@ void TileMap::loadTileAnimationTo(Tile* tile, const json& tileJson, const size_t
         {
             TileAnimation newTileAnim;
             sf::Vector2f animPos = getTilePositionFromId(tileSetwidth, anim["tileid"]);
-            newTileAnim.textureRect = sf::IntRect(animPos.x * m_tileWidth, animPos.y * m_tileHeight, m_tileWidth, m_tileHeight);
+            newTileAnim.textureRect = sf::IntRect(static_cast<int>(animPos.x) * m_tileWidth,
+                                                    static_cast<int>(animPos.y) * m_tileHeight, 
+                                                    static_cast<int>(m_tileWidth),
+                                                    static_cast<int>(m_tileHeight));
             newTileAnim.duration = anim["duration"];
             tile->lstFrameAnimation.push_back(newTileAnim);
             m_animatedTile.push_back(tile);
@@ -233,5 +239,5 @@ void TileMap::update(sf::Time deltaTime)
 }
 
 sf::Vector2f TileMap::getTilePositionFromId(size_t columns, size_t id) {
-    return sf::Vector2f(id % columns, id / columns);
+    return sf::Vector2f(static_cast<float>(id % columns), static_cast<float>(id / columns));
 }

@@ -22,12 +22,12 @@ void Inventaire::draw(sf::RenderWindow& window, bool debugMode)
 	{
 		sf::Vector2f offset = m_background.getPosition() + sf::Vector2f(15, 20);
 		if (i == m_selectedItem) {
-			m_spriteItemSelected.setPosition(sf::Vector2f((i % m_sizeRow) * 13 - 2, (i / m_sizeRow) * 13 - 2) + offset);
+			m_spriteItemSelected.setPosition(sf::Vector2f(static_cast<float>((i % m_sizeRow) * 13 - 2), static_cast<float>((i / m_sizeRow) * 13 - 2)) + offset);
 			window.draw(m_spriteItemSelected);
 		}
 		if (m_lstItem[i] != nullptr) {
 			if (m_lstItem[i]->getType() != Item::Type::None) {
-				m_lstItem[i]->setPosition(sf::Vector2f((i % m_sizeRow) * 13, (i / m_sizeRow) * 13) + offset);
+				m_lstItem[i]->setPosition(sf::Vector2f(static_cast<float>((i % m_sizeRow) * 13 - 2), static_cast<float>((i / m_sizeRow) * 13 - 2)) + offset);
 				m_lstItem[i]->drawIcon(window, debugMode);
 			}
 		}
@@ -55,7 +55,7 @@ void Inventaire::keypressed(sf::Keyboard::Key keyCode)
 	if (keyCode == sf::Keyboard::Z || keyCode == sf::Keyboard::W) {
 		m_selectedItem -= m_sizeRow;
 		if (m_selectedItem < 0) {
-			m_selectedItem += m_size-1;
+			m_selectedItem += static_cast<int>(m_size-1);
 		}
 	}
 	if (keyCode == sf::Keyboard::D) {
@@ -67,7 +67,7 @@ void Inventaire::keypressed(sf::Keyboard::Key keyCode)
 	if (keyCode == sf::Keyboard::S) {
 		m_selectedItem += m_sizeRow;
 		if (m_selectedItem >= m_size -1) {
-			m_selectedItem -= m_size-1;
+			m_selectedItem -= static_cast<int>(m_size-1);
 		}
 	}
 	if (keyCode == sf::Keyboard::Q || keyCode == sf::Keyboard::A) {

@@ -1,6 +1,15 @@
 #include "ProgressBar.h"
 #include <iostream>
 
+ProgressBar::ProgressBar():
+	m_minValue(0),
+	m_maxValue(10),
+	m_front(sf::Sprite()),
+	m_back(nullptr),
+	m_value(0)
+{
+}
+
 ProgressBar::ProgressBar(float minValue, float maxValue, sf::Sprite front, sf::Sprite* back) :
 	m_minValue(minValue),
 	m_maxValue(maxValue),

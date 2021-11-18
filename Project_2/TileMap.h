@@ -20,7 +20,7 @@ class TileMap
 		bool drawBeforePlayer = true;
 		bool isCollisionLayer = false;
 
-		bool isVisible;
+		bool isVisible = true;
 	};
 
 	struct TileAnimation {

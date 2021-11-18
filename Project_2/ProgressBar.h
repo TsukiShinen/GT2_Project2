@@ -5,7 +5,7 @@ class ProgressBar : public sf::Drawable, public sf::Transformable
 public:
 	enum class Type { Single, Multiple, Circle };
 
-	ProgressBar() {}
+	ProgressBar();
 	ProgressBar(float minValue, float maxValue, sf::Sprite front, sf::Sprite* back = nullptr);
 	
 	void setValue(float value);

@@ -59,7 +59,7 @@ void Game::update(sf::Time& deltaTime)
                 sf::Vector2f enemyPos = enemy->getCenter();
                 sf::Vector2f playerPos = m_player.getCenter();
                 double angle = Utils::angle(playerPos, enemyPos);
-                sf::Vector2f force(cos(angle), sin(angle));
+                sf::Vector2f force(static_cast<float>(cos(angle)), static_cast<float>(sin(angle)));
                 force = Utils::normalize(force) * 5000.f;
                 enemy->addForce(force);
             }
@@ -68,7 +68,7 @@ void Game::update(sf::Time& deltaTime)
                 sf::Vector2f enemyPos = enemy->getCenter();
                 sf::Vector2f playerPos = m_player.getCenter();
                 double angle = Utils::angle(enemyPos, playerPos);
-                sf::Vector2f force(cos(angle), sin(angle));
+                sf::Vector2f force(static_cast<float>(cos(angle)), static_cast<float>(sin(angle)));
                 force = Utils::normalize(force) * 5000.f;
                 m_player.addForce(force);
                 m_player.takeDamage(1.f);
@@ -88,10 +88,10 @@ void Game::update(sf::Time& deltaTime)
         cameraPosition.x = 100;
     }
     if (cameraPosition.y > m_map.getHeight()-75) {
-        cameraPosition.y = m_map.getHeight() - 75;
+        cameraPosition.y = m_map.getHeight() - 75.f;
     }
     if (cameraPosition.x > m_map.getWidth() - 100) {
-        cameraPosition.x = m_map.getWidth() - 100;
+        cameraPosition.x = m_map.getWidth() - 100.f;
     }
     m_camera.Follow(deltaTime, cameraPosition);
 

@@ -9,7 +9,7 @@ Enemy::Enemy(sf::IntRect& zone, const sf::Texture* texture, const sf::Texture* l
 
 	m_zone = zone;
 	m_sprite.setOrigin(sf::Vector2f(12, 12));
-	m_sprite.setPosition(sf::Vector2f(rand() % m_zone.width + m_zone.left, rand() % m_zone.height + m_zone.top));
+	m_sprite.setPosition(sf::Vector2f(static_cast<float>(rand() % m_zone.width + m_zone.left), static_cast<float>(rand() % m_zone.height + m_zone.top)));
 	m_speed = 15.f;
 
 	m_lifeBar = ProgressBar(0.f, 5.f, sf::Sprite(*lifebarTexture));
@@ -141,8 +141,8 @@ void Enemy::Walk(sf::Time& deltaTime, const sf::Vector2f& playerPos)
 void Enemy::Follow(sf::Time& deltaTime, const sf::Vector2f& playerPos)
 {
 	double angle = Utils::angle(m_sprite.getPosition(), playerPos);
-	m_velocity.x = m_speed * cos(angle);
-	m_velocity.y = m_speed * sin(angle);
+	m_velocity.x = static_cast<float>(m_speed * cos(angle));
+	m_velocity.y = static_cast<float>(m_speed * sin(angle));
 	reloadDirection();
 
 	double distance = Utils::dist(m_sprite.getPosition(), playerPos);
@@ -172,9 +172,9 @@ void Enemy::ChangeDir(sf::Time& deltaTime, const sf::Vector2f& playerPos)
 		m_timeIdle = (rand() % 20 + 5) / 10.f;
 
 		// Calcul Angle
-		double angle = Utils::angle(m_sprite.getPosition(), sf::Vector2f(rand() % m_zone.width + m_zone.left, rand() % m_zone.height + m_zone.top));
-		m_velocity.x = m_speed * cos(angle);
-		m_velocity.y = m_speed * sin(angle);
+		double angle = Utils::angle(m_sprite.getPosition(), sf::Vector2f(static_cast<float>(rand() % m_zone.width + m_zone.left), static_cast<float>(rand() % m_zone.height + m_zone.top)));
+		m_velocity.x = static_cast<float>(m_speed * cos(angle));
+		m_velocity.y = static_cast<float>(m_speed * sin(angle));
 
 		m_currentState = State::WALK;
 		// Guard against 0 (0,00000...)

@@ -14,7 +14,7 @@ void Sword::setAnimation() {
 	m_animationController.changeCurrentAnim("Start");
 }
 
-void Sword::attack(float angle) {
+void Sword::attack(double angle) {
 	angle = fmod((angle + 360), 360);
 	m_ratio = 1; // ceil(180/ m_attackSpeed);
 	
@@ -28,7 +28,7 @@ void Sword::attack(float angle) {
 	}
 	m_hitting = true;
 	m_startAngle += m_offsetAngle;
-	m_sprite.setRotation(m_startAngle);
+	m_sprite.setRotation(static_cast<float>(m_startAngle));
 
 }
 
@@ -38,12 +38,12 @@ void Sword::update(sf::Time deltaTime, sf::Vector2f position, bool isAttacking, 
 	
 	if (m_hitting) {
 
-			double newAngle = fmod(ceil(m_startAngle + (180 * (m_elapsedTime/m_attackSpeed) * m_ratio) + 360), 360);
-			m_elapsedTime += deltaTime.asSeconds();
-			m_sprite.setRotation(newAngle);
-			if (m_elapsedTime > m_attackSpeed) {
+			double newAngle = fmod(ceil(m_startAngle + (180 * (m_elapsedTimeSinceAttacked/m_attackSpeed) * m_ratio) + 360), 360);
+			m_elapsedTimeSinceAttacked += deltaTime.asSeconds();
+			m_sprite.setRotation(static_cast<float>(newAngle));
+			if (m_elapsedTimeSinceAttacked > m_attackSpeed) {
 				m_hitting = false;
-				m_elapsedTime = 0;
+				m_elapsedTimeSinceAttacked = 0;
 			}
 
 	}

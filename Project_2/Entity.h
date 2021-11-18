@@ -7,7 +7,7 @@
 class Entity
 {
 public:
-	Entity(std::string name, size_t life, const sf::Texture* texture);
+	Entity(std::string name, float life, const sf::Texture* texture);
 
 	virtual void update(sf::Time& deltaTime);
 	virtual void draw(sf::RenderWindow& window, bool debugMode);

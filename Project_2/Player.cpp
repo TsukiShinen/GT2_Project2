@@ -167,29 +167,12 @@ void Player::update(sf::Time deltaTime, std::vector<sf::FloatRect>& listOfElemen
         if (m_rideDuration < m_rideTime) 
         {
             if (m_riding) {
-                float vecAngle = (m_movement.x == 0.f) ? 0 : (m_movement.x < 0) ? -m_rotationSpeed * deltaTime.asSeconds() : m_rotationSpeed * deltaTime.asSeconds();
+                double vecAngle = (m_movement.x == 0.f) ? 0 : (m_movement.x < 0) ? -m_rotationSpeed * deltaTime.asSeconds() : m_rotationSpeed * deltaTime.asSeconds();
                 vecAngle = fmod(m_sprite.getRotation() + vecAngle, 360);
-                float radAngle = (vecAngle * 3.141592653589793238463) / 180;
-                m_sprite.setRotation(vecAngle);
-
-               /* sf::Vector2f pos = getPosition();
-                float HalfSpriteWidth = m_sprite.getScale().x / 2;
-                float HalfSpriteHeight = m_sprite.getScale().y / 2;
-                float spriteX = pos.x - HalfSpriteWidth * cos(radAngle) + HalfSpriteHeight * sin(radAngle);
-                float spriteY = pos.y - HalfSpriteHeight * cos(radAngle) - HalfSpriteWidth * sin(radAngle);
-                m_sprite.setPosition(spriteX, spriteY);*/
-
-
-               /* m_sprite.setOrigin(sf::Vector2f(16, 16));
-                m_sprite.setRotation(vecAngle-90);
-                m_sprite.setOrigin(sf::Vector2f(-4, -4));*/
- 
+                m_sprite.setRotation(static_cast<float>(vecAngle));
                 
-                //sf::Vector2f center = getCenter();
-                // m_transform.rotate(vecAngle-90, center.x, center.y);
-                
-                m_movement.x = cos(vecAngle * 3.141592653589793238463 / 180)  * m_movement.y;
-                m_movement.y = sin(vecAngle * 3.141592653589793238463 / 180) * m_movement.y;
+                m_movement.x = static_cast<float>(cos(vecAngle * 3.141592653589793238463 / 180) * m_movement.y);
+                m_movement.y = static_cast<float>(sin(vecAngle * 3.141592653589793238463 / 180) * m_movement.y);
                
                 addForce(m_movement * m_speed);
             } else {
@@ -221,7 +204,7 @@ void Player::update(sf::Time deltaTime, std::vector<sf::FloatRect>& listOfElemen
 
     if (!m_isInventoryOpen && isAlive())
     {
-        m_sword.update(deltaTime, getCenter(), m_attack, calcDirectionAngle());
+        m_sword.update(deltaTime, getCenter(), m_attack, static_cast<float>(calcDirectionAngle()));
     }
         
     m_rideTime += deltaTime.asSeconds();

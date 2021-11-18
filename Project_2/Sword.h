@@ -9,7 +9,7 @@ private:
 	float m_damage = 2;
 	
 	float m_attackSpeed = 0.15f;
-	float m_elapsedTime = 0;
+	float m_elapsedTimeSinceAttacked = 0;
 
 	float m_angleRecovery = 0.21f;
 
@@ -17,14 +17,14 @@ private:
 	float m_attackAngle = 90.f;
 
 	float m_ratio = 180/m_attackSpeed;
-	float m_startAngle = 1;
+	double m_startAngle = 1;
 
 	bool m_hitting = false;
 
 public:
 	Sword(const sf::Texture* texture);
 	void setAnimation();
-	void attack(float angle);
+	void attack(double angle);
 	float& getDamage() { return m_damage; };
 	int& getRange() { return m_range; };
 	float& getAttackAngle() { return m_attackAngle; }

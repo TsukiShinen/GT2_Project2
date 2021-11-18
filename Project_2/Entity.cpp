@@ -2,7 +2,7 @@
 #include <iostream>
 #include "Utils.h"
 
-Entity::Entity(std::string name, size_t life, const sf::Texture* texture) :
+Entity::Entity(std::string name, float life, const sf::Texture* texture) :
 	m_name(name),
 	m_life(life),
 	m_sprite(*texture)
@@ -55,8 +55,7 @@ const sf::Vector2f& Entity::getPosition()
 
 const sf::Vector2f& Entity::getCenter()
 {
-	sf::Vector2f center(getPosition().x + m_size.x / 2, getPosition().y + m_size.y / 2);
-	return center;
+	return sf::Vector2f(getPosition().x + m_size.x / 2, getPosition().y + m_size.y / 2);
 }
 
 int Entity::getMapLevel()
