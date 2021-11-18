@@ -59,7 +59,7 @@
     <ClCompile Include="ParticleSystem.cpp">
       <Filter>Utils</Filter>
     </ClCompile>
-    <ClCompile Include="Inventaire.cpp">
+    <ClCompile Include="Inventory.cpp">
       <Filter>Items</Filter>
     </ClCompile>
     <ClCompile Include="Item.cpp">
@@ -110,7 +110,7 @@
     <ClInclude Include="Ressources.h">
       <Filter>Fichiers sources</Filter>
     </ClInclude>
-    <ClInclude Include="Inventaire.h">
+    <ClInclude Include="Inventory.h">
       <Filter>Items</Filter>
     </ClInclude>
     <ClInclude Include="Item.h">

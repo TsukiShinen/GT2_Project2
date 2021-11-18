@@ -5,7 +5,7 @@
 #include <functional>
 #include "Entity.h"
 #include "AnimationController.h"
-#include "Inventaire.h"
+#include "Inventory.h"
 #include "Sword.h"
 #include "Utils.h"
 #include "ProgressBar.h"
@@ -55,7 +55,7 @@ private:
 	ProgressBar m_lifeBar;
 
 	sf::RectangleShape m_movebox;
-	Inventaire m_inventaire;
+	Inventory m_inventory;
 
 	const sf::FloatRect m_walkingBox = sf::FloatRect(1, 6, 6, 2);
 	const sf::FloatRect m_horseHitBox = sf::FloatRect(-6, -5, 13, 12);
