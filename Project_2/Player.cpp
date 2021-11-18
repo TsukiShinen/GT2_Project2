@@ -17,6 +17,8 @@ Player::Player(const sf::Texture* texture, const sf::Texture* inventoryTexture, 
         m_life += value;
         m_lifeBar.setValue(m_life);
     };
+
+    
 }
 
 void Player::setAnimation() {
@@ -35,30 +37,58 @@ void Player::setAnimation() {
     for (const auto& Idle : IdleMap) {
         m_animationController.addAnimation(Idle.first, Idle.second.first, Idle.second.second, 0.31111f);
     }
+
+    m_animationController.addAnimation("FrontIdleRiding_R", 416, 16, 0.13f);
+    m_animationController.addAnimation("FrontIdleRiding_L", 432, 16, 0.13f);
+    m_animationController.addAnimation("FrontRiding_R", 448, 4, 0.13f);
+    m_animationController.addAnimation("FrontRiding_L", 464, 4, 0.13f);
+
+    m_animationController.addAnimation("IdleRide", 480, 16, 0.13f);
+    m_animationController.addAnimation("Ride", 496, 8, 0.13f);
+
+
     m_animationController.addAnimation("Die", 320, 12, 0.13f);
     timeAnimationDie = 12 * 0.13f;
 
     m_animationController.changeCurrentAnim("Idle_DL");
 }
 
-void Player::draw(sf::RenderWindow& window, bool debugMode) {
-   /* std::cout << m_life << std::endl;*/
+void Player::drawGestion(sf::RenderWindow& window, bool debugMode) {
     if (debugMode) {
         m_movebox.setFillColor(sf::Color::Green);
         window.draw(m_movebox);
     }
-    
     if (m_direction.down) {
-        Entity::draw(window, debugMode);
-        if (isAlive())
+        draw(window, debugMode);
+        if (isAlive() && !m_riding && m_rideDuration < m_rideTime)
             m_sword.draw(window, debugMode);
+        
+        
     }
     else {
-        m_sword.draw(window, debugMode);
-        if (isAlive())
-            Entity::draw(window, debugMode);
+        
+        if (isAlive() && !m_riding && m_rideDuration < m_rideTime)
+            m_sword.draw(window, debugMode);
+        draw(window, debugMode);
     }
-    
+}
+
+void Player::draw(sf::RenderWindow& window, bool debugMode)
+{
+    //sf::RenderStates states;
+    //states.transform = m_transform;
+    //// Draw entity
+    //window.draw(m_sprite, states);
+    window.draw(m_sprite);
+    // Draw boundingBox
+    if (debugMode) {
+        sf::FloatRect boundingBox = getBoundingBox();
+        sf::RectangleShape rectBoundingBox;
+        rectBoundingBox.setPosition(sf::Vector2f(boundingBox.left, boundingBox.top));
+        rectBoundingBox.setSize(sf::Vector2f(boundingBox.width, boundingBox.height));
+        rectBoundingBox.setFillColor(sf::Color(255, 0, 0, 50));
+        window.draw(rectBoundingBox);
+    }
 }
 
 void Player::drawUI(sf::RenderWindow& window, bool debugMode)
@@ -73,32 +103,50 @@ void Player::drawUI(sf::RenderWindow& window, bool debugMode)
 void Player::changeSprite() {
 
     std::string base = "";
+
     if (m_velocity.x != 0 || m_velocity.y != 0)
-        base = "Walk";
-    else
+    {
+        if (m_riding && m_rideDuration < m_rideTime) {
+            base = "Ride";
+        }
+        else {
+            base = "Walk";
+        }
+    }
+    else {
         base = "Idle";
+        if (m_riding && m_rideDuration < m_rideTime)
+            base.append("Ride");
+    }
 
     std::string dir = "";
-    if (m_direction.up)
-        dir += "U";
-    else if (m_direction.down)
-        dir += "D";
-    if (m_direction.right)
-        dir += "R";
-    else if (m_direction.left)
-        dir += "L";
-
-    std::string name = base + "_" + dir;
+    if(!m_riding || m_rideDuration > m_rideTime) 
+    {
+        if (m_direction.up)
+            dir += "U";
+        else if (m_direction.down)
+            dir += "D";
+        if (m_direction.right)
+            dir += "R";
+        else if (m_direction.left)
+            dir += "L";
+    }
+    
+    std::string name = "";
+    if (!m_riding || m_rideDuration > m_rideTime)
+       name = base + "_" + dir;
+    else
+       name = base;
+    
     m_animationController.changeCurrentAnim(name);
 }
 
 void Player::update(sf::Time deltaTime, std::vector<sf::FloatRect>& listOfElements) {
+    
     if (!m_isInventoryOpen && isAlive()) 
     {
         m_movement = { 0.f, 0.f };
-    
         if (m_attack) {
-            
             m_attack = m_sword.isHitting();
         }
 
@@ -110,58 +158,55 @@ void Player::update(sf::Time deltaTime, std::vector<sf::FloatRect>& listOfElemen
             m_movement.x += 1;
         }
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down) || sf::Keyboard::isKeyPressed(sf::Keyboard::S)) {
-
             m_movement.y += 1;
         }
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left) || sf::Keyboard::isKeyPressed(sf::Keyboard::Q) || sf::Keyboard::isKeyPressed(sf::Keyboard::A)) {
-            
             m_movement.x -= 1;
-        
         }
 
-        addForce(Utils::normalize(m_movement) * m_speed);
-
-        // direction changes
-        if (m_velocity.y < 0)
+        if (m_rideDuration < m_rideTime) 
         {
-            m_moveHistory.y = -1;
-            m_direction.up = true;
-            m_direction.down = false;
-        }
+            if (m_riding) {
+                float vecAngle = (m_movement.x == 0.f) ? 0 : (m_movement.x < 0) ? -m_rotationSpeed * deltaTime.asSeconds() : m_rotationSpeed * deltaTime.asSeconds();
+                vecAngle = fmod(m_sprite.getRotation() + vecAngle, 360);
+                float radAngle = (vecAngle * 3.141592653589793238463) / 180;
+                m_sprite.setRotation(vecAngle);
+
+               /* sf::Vector2f pos = getPosition();
+                float HalfSpriteWidth = m_sprite.getScale().x / 2;
+                float HalfSpriteHeight = m_sprite.getScale().y / 2;
+                float spriteX = pos.x - HalfSpriteWidth * cos(radAngle) + HalfSpriteHeight * sin(radAngle);
+                float spriteY = pos.y - HalfSpriteHeight * cos(radAngle) - HalfSpriteWidth * sin(radAngle);
+                m_sprite.setPosition(spriteX, spriteY);*/
+
+
+               /* m_sprite.setOrigin(sf::Vector2f(16, 16));
+                m_sprite.setRotation(vecAngle-90);
+                m_sprite.setOrigin(sf::Vector2f(-4, -4));*/
+ 
+                
+                //sf::Vector2f center = getCenter();
+                // m_transform.rotate(vecAngle-90, center.x, center.y);
+                
+                m_movement.x = cos(vecAngle * 3.141592653589793238463 / 180)  * m_movement.y;
+                m_movement.y = sin(vecAngle * 3.141592653589793238463 / 180) * m_movement.y;
+               
+                addForce(m_movement * m_speed);
+            } else {
+                addForce(Utils::normalize(m_movement) * m_speed);
+            }
            
-        if (m_velocity.x > 0)
-        {
-            m_moveHistory.x = 1;
-            m_direction.right = true;
-            m_direction.left = false;
+
+            directionChange();
+
+            sf::FloatRect futurePos = intersects(listOfElements, deltaTime);
+
+            // update de la movebox
+            m_movebox.setSize(sf::Vector2f(futurePos.width, futurePos.height));
+            m_movebox.setPosition(futurePos.left, futurePos.top);
         }
-            
-        if (m_velocity.y > 0)
-        {
-            m_moveHistory.y = 1;
-            m_direction.down = true;
-            m_direction.up = false;
-        }
-            
-        if (m_velocity.x < 0)
-        {
-            m_moveHistory.x = -1;
-            m_direction.left = true;
-            m_direction.right = false;
-        }
-            
-
-        sf::FloatRect futurePos = intersects(listOfElements, deltaTime);
-
-        /*futurePos.left += movement.x;
-        futurePos.top += movement.y;*/
-
-        // update de la movebox
-        m_movebox.setSize(sf::Vector2f(futurePos.width, futurePos.height));
-        m_movebox.setPosition(futurePos.left, futurePos.top);
-
         changeSprite();
-        m_sword.update(deltaTime, getCenter(), m_attack, calcDirectionAngle());
+        
     }
     if (!isAlive()) {
         chronoAniamtionDie += deltaTime.asSeconds();
@@ -169,13 +214,25 @@ void Player::update(sf::Time deltaTime, std::vector<sf::FloatRect>& listOfElemen
             m_toRemove = true;
         }
     }
+   
     if (!m_toRemove) {
         Entity::update(deltaTime);
     }
+
+    if (!m_isInventoryOpen && isAlive())
+    {
+        m_sword.update(deltaTime, getCenter(), m_attack, calcDirectionAngle());
+    }
+        
+    m_rideTime += deltaTime.asSeconds();
 }
 
 sf::FloatRect Player::getBoundingBox() {
+    if(!m_riding)
         return sf::FloatRect(getPosition().x, getPosition().y, m_size.x, m_size.y);
+    else {
+        return sf::FloatRect(getPosition().x + m_horseHitBox.left, getPosition().y + m_horseHitBox.top, m_horseHitBox.width, m_horseHitBox.height);
+    }
 }
 
 void Player::takeDamage(float damage)
@@ -187,7 +244,35 @@ void Player::takeDamage(float damage)
     }
 }
 
+void Player::directionChange() {
+    if (m_velocity.y < 0)
+    {
+        m_moveHistory.y = -1;
+        m_direction.up = true;
+        m_direction.down = false;
+    }
 
+    if (m_velocity.x > 0)
+    {
+        m_moveHistory.x = 1;
+        m_direction.right = true;
+        m_direction.left = false;
+    }
+
+    if (m_velocity.y > 0)
+    {
+        m_moveHistory.y = 1;
+        m_direction.down = true;
+        m_direction.up = false;
+    }
+
+    if (m_velocity.x < 0)
+    {
+        m_moveHistory.x = -1;
+        m_direction.left = true;
+        m_direction.right = false;
+    }
+}
 
 sf::FloatRect Player::intersects(std::vector<sf::FloatRect>& listOfElements, sf::Time& deltaTime) {
 
@@ -206,13 +291,13 @@ sf::FloatRect Player::intersects(std::vector<sf::FloatRect>& listOfElements, sf:
 
     sf::FloatRect playerPos = getBoundingBox();
     sf::FloatRect futurePos = playerPos;
-
-    futurePos.left += m_walkingBox.left;
-    futurePos.top += m_walkingBox.top;
-    futurePos.width = m_walkingBox.width;
-    futurePos.height = m_walkingBox.height;
-
-    // sf::Vector2f initial = m_velocity;
+    if (!m_riding) {
+        futurePos.left += m_walkingBox.left;
+        futurePos.top += m_walkingBox.top;
+        futurePos.width = m_walkingBox.width;
+        futurePos.height = m_walkingBox.height;
+    }
+    
     
     for (const sf::FloatRect& bound : listOfElements) {
 
@@ -235,20 +320,6 @@ sf::FloatRect Player::intersects(std::vector<sf::FloatRect>& listOfElements, sf:
             }
             futurePos.top -= futureVel.y;
         }
-
-        //if (futureVel.x != 0.f && futureVel.y != 0.f) {
-        //    futurePos.left += futureVel.x;
-        //    futurePos.top += futureVel.y;
-        //    if (futurePos.intersects(bound)) {
-        //        m_velocity.x = 0.f;
-        //        m_velocity.y = 0.f;
-        //        m_thrust.x = 0.f;
-        //        m_thrust.y = 0.f;
-        //        // reset only x : arbitrary choise
-        //    }
-        //    futurePos.top -= futureVel.y;
-        //    futurePos.left -= futureVel.x;
-        //}
     }
     return futurePos;
 }
@@ -282,6 +353,26 @@ bool Player::pickItem(Item* item)
     return m_inventaire.addItem(item);
 }
 
+void Player::movementShift() {
+    m_riding = !m_riding;
+
+    float tempSpeed = m_otherSpeed;
+    float tempMass = m_otherMass;
+    
+    m_otherSpeed = m_speed;
+    m_otherMass = m_masse;
+
+    m_speed = tempSpeed;
+    m_masse = tempMass;
+
+    m_sprite.setRotation(0);
+
+    m_rideTime = 0;
+    m_thrust = { 0.f , 0.f };
+    m_velocity = { 0.f , 0.f };
+}
+
+
 void Player::keypressed(sf::Keyboard::Key keyCode)
 {
     if (isAlive()) {
@@ -297,6 +388,9 @@ void Player::keypressed(sf::Keyboard::Key keyCode)
         if (keyCode == sf::Keyboard::Space) {
             attack();
         }
+        if (keyCode == sf::Keyboard::T) {
+            movementShift();
+        }
     }
 }
 
@@ -310,3 +404,28 @@ void Player::setProgressBar(ProgressBar& progressBar)
     m_lifeBar.setNumberOfSprite(5);
     m_lifeBar.setValue(m_life);
 }
+
+
+//void Player::update(sf::Time& deltaTime)
+//{
+//    // Move the sprite
+//    if (m_useAcceleration) {
+//       
+//        sf::Vector2f acc(m_thrust / m_masse - m_friction * m_velocity);
+//        
+//        m_velocity = m_velocity + acc;
+//        if (abs(m_velocity.x) < m_friction) {
+//            m_velocity.x = 0;
+//        }
+//        if (abs(m_velocity.y) < m_friction) {
+//            m_velocity.y = 0;
+//        }
+//    }
+//
+//    setPosition(getPosition() + m_velocity * deltaTime.asSeconds());
+//    m_thrust = { 0.f, 0.f };
+//
+//    // Animate
+//    m_animationController.update(deltaTime);
+//    m_sprite.setTextureRect(m_animationController.getCurrentRect());
+//}
