@@ -199,6 +199,7 @@ void Player::takeDamage(float damage)
     m_lifeBar.setValue(m_life);
     if (m_life <= 0) {
         m_animationController.changeCurrentAnim("Die");
+        m_sprite.setRotation(0);
     }
 }
 
