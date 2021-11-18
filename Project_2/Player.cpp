@@ -204,7 +204,8 @@ void Player::update(sf::Time deltaTime, std::vector<sf::FloatRect>& listOfElemen
 
     if (!m_isInventoryOpen && isAlive())
     {
-        m_sword.update(deltaTime, getCenter(), m_attack, static_cast<float>(calcDirectionAngle()));
+        m_sword.update(deltaTime, static_cast<float>(calcDirectionAngle()));
+        m_sword.setPosition(getCenter());
     }
         
     m_rideTime += deltaTime.asSeconds();

@@ -27,9 +27,7 @@ void Entity::update(sf::Time& deltaTime)
 	setPosition(getPosition() + m_velocity * deltaTime.asSeconds());
 	m_thrust = { 0.f, 0.f };
 
-	// Animate
-	m_animationController.update(deltaTime);
-	m_sprite.setTextureRect(m_animationController.getCurrentRect());
+	updateAniamtion(deltaTime);
 }
 
 void Entity::draw(sf::RenderWindow& window, bool debugMode)
@@ -79,6 +77,12 @@ void Entity::takeDamage(float damage)
 	if (m_life <= 0) {
 		m_life = 0;
 	}
+}
+
+void Entity::updateAniamtion(sf::Time& deltaTime)
+{
+	m_animationController.update(deltaTime);
+	m_sprite.setTextureRect(m_animationController.getCurrentRect());
 }
 
 void Entity::addForce(sf::Vector2f force)

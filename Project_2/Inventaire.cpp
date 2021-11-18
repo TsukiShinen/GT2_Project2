@@ -27,7 +27,7 @@ void Inventaire::draw(sf::RenderWindow& window, bool debugMode)
 		}
 		if (m_lstItem[i] != nullptr) {
 			if (m_lstItem[i]->getType() != Item::Type::None) {
-				m_lstItem[i]->setPosition(sf::Vector2f(static_cast<float>((i % m_sizeRow) * 13 - 2), static_cast<float>((i / m_sizeRow) * 13 - 2)) + offset);
+				m_lstItem[i]->setPosition(sf::Vector2f(static_cast<float>((i % m_sizeRow) * 13), static_cast<float>((i / m_sizeRow) * 13)) + offset);
 				m_lstItem[i]->drawIcon(window, debugMode);
 			}
 		}

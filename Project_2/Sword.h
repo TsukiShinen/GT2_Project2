@@ -29,6 +29,6 @@ public:
 	int& getRange() { return m_range; };
 	float& getAttackAngle() { return m_attackAngle; }
 	float& getAttackSpeed() { return m_attackSpeed; }
-	void update(sf::Time, sf::Vector2f, bool, float);
+	void update(sf::Time deltaTime, float angle);
 	bool isHitting() { return m_hitting; }
 };

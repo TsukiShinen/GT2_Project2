@@ -4,6 +4,7 @@ Sword::Sword(const sf::Texture* texture) :
 {
 	m_size = sf::Vector2f(8, 8);
 	m_sprite.setOrigin(m_rotationPoint);
+	m_useAcceleration = false;
 	setAnimation();
 }
 
@@ -15,24 +16,26 @@ void Sword::setAnimation() {
 }
 
 void Sword::attack(double angle) {
+	// Get angle attack
 	angle = fmod((angle + 360), 360);
-	m_ratio = 1; // ceil(180/ m_attackSpeed);
+	m_ratio = 1;
 	
+	// Get the starting angle
 	if (angle <= 90 || angle >= 270) {
-		// m_ratio *= (-1);
 		m_startAngle = fmod((angle - 90 + 360), 360);
 	}
 	else {
 		m_ratio *= (-1);
 		m_startAngle = fmod((angle + 90  + 360), 360);
 	}
+
+	// Play the attack
 	m_hitting = true;
 	m_startAngle += m_offsetAngle;
 	m_sprite.setRotation(static_cast<float>(m_startAngle));
-
 }
 
-void Sword::update(sf::Time deltaTime, sf::Vector2f position, bool isAttacking, float angle) {
+void Sword::update(sf::Time deltaTime, float angle) {
 	float actualRotation = m_sprite.getRotation() + m_offsetAngle;
 	
 	
@@ -47,15 +50,6 @@ void Sword::update(sf::Time deltaTime, sf::Vector2f position, bool isAttacking, 
 			}
 
 	}
-	/*else {
-		
-		m_sprite.setRotation(actualRotation + ((angle- actualRotation) * m_elapsedTime/m_attackSpeed));
-		if (m_elapsedTime > m_angleRecovery) {
-			m_elapsedTime = 0;
-		}
-	}
-	*/
-	setPosition(position);
-	Entity::update(deltaTime);
+	updateAniamtion(deltaTime);
 }
 

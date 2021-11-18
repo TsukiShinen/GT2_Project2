@@ -22,6 +22,7 @@ public:
 
 	virtual bool collides(const sf::FloatRect& rect);
 	virtual void takeDamage(float damage);
+	virtual void updateAniamtion(sf::Time& deltaTime);
 
 	void addForce(sf::Vector2f force);
 

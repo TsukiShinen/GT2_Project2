@@ -60,6 +60,7 @@ void TileMap::loadLayerInfoTo(Layer& layer, const json& layerJson) {
 }
 
 void TileMap::loadLayerPropertiesTo(Layer& layer, const json& layerJson) {
+    if (layerJson["properties"] == "") { return; }
     for (auto& property : layerJson["properties"]) {
         if (property["name"] == "level") {
             layer.heightLevel = property["value"];
@@ -158,8 +159,8 @@ void TileMap::loadTileAnimationTo(Tile* tile, const json& tileJson, const size_t
         {
             TileAnimation newTileAnim;
             sf::Vector2f animPos = getTilePositionFromId(tileSetwidth, anim["tileid"]);
-            newTileAnim.textureRect = sf::IntRect(static_cast<int>(animPos.x) * m_tileWidth,
-                                                    static_cast<int>(animPos.y) * m_tileHeight, 
+            newTileAnim.textureRect = sf::IntRect(static_cast<int>(animPos.x * m_tileWidth),
+                                                    static_cast<int>(animPos.y * m_tileHeight), 
                                                     static_cast<int>(m_tileWidth),
                                                     static_cast<int>(m_tileHeight));
             newTileAnim.duration = anim["duration"];
